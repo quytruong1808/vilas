@@ -1,0 +1,31 @@
+#:kivy 1.9.0
+
+<AnotherScreen>:
+
+    Button:
+        on_release: app.root.current = 'main'
+        text: 'back to the home screen'
+        font_size: 50
+
+
+<LabpiMain>:
+    canvas.before:
+        Color:
+            rgba: 1, 1, 1, 1
+        Rectangle:
+            # self here refers to the widget i.e BoxLayout
+            pos: self.pos
+            size: self.size
+
+    BoxLayout:
+        orientation: 'vertical'
+        Label:
+            font_size: 70  
+            center_x: root.width / 4
+            top: root.top - 50
+            text: "Hello World"
+            color: 0,0,0,1
+        Button:
+            text: 'Goto another'
+            size: 50, 100
+            on_press: root.manager.current = 'another'
