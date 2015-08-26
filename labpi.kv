@@ -1,31 +1,170 @@
 #:kivy 1.9.0
+#:import sys sys
+#:import lv kivy.uix.listview
+#:import la kivy.adapters.listadapter
+
+
+#---------------------------------------------------#
+# Item listview
+[CustomListItem@SelectableView+BoxLayout]:
+    size_hint: 1, None
+    height: 50
+    BoxLayout:
+        size_hint: 1, None
+        height: 50
+        BoxLayout:
+            size_hint_x: 1.5
+            Label:
+                # canvas.before:
+                #     Color:
+                #         rgba: 0, 0.94, 0.94, 1
+                #     Rectangle:
+                #         pos: self.pos
+                #         size: self.size
+                size_hint: None, 1
+                color: 0,0,0,1
+                font_size: '16sp'            
+                text: ctx.text
+        
+        Button:
+            size_hint_x: 0.5
+            background_color: 1, 1, 1, 0
+            on_press: root.parent.remove_item();
+            Image:
+                source: 'img/remove.png'
+                size: 25, 25
+                center_x: self.parent.center_x
+                center_y: self.parent.center_y
+                allow_stretch: True
+
+
+
+#---------------------------------------------------#
+# Screen
 
 <AnotherScreen>:
-
     Button:
-        on_release: app.root.current = 'main'
+        on_release: app.root.current = 'load'
         text: 'back to the home screen'
         font_size: 50
 
 
-<LabpiMain>:
+<LoadScreen>:
+    boxlist_1: box_list_1    
+
     canvas.before:
         Color:
-            rgba: 1, 1, 1, 1
+            rgba: 0.94, 0.94, 0.94, 1
         Rectangle:
             # self here refers to the widget i.e BoxLayout
             pos: self.pos
             size: self.size
 
-    BoxLayout:
-        orientation: 'vertical'
-        Label:
-            font_size: 70  
-            center_x: root.width / 4
-            top: root.top - 50
-            text: "Hello World"
-            color: 0,0,0,1
+    FloatLayout:
         Button:
-            text: 'Goto another'
-            size: 50, 100
+            background_color: 1, 1, 1, 0
+            size_hint: None, None
+            size: 50, 50
+            pos: root.width-100, 30
             on_press: root.manager.current = 'another'
+            Image:
+                source: 'img/next.png'
+                size: 50, 50
+                center_x: self.parent.center_x
+                center_y: self.parent.center_y
+                allow_stretch: True
+
+        Button:
+            background_color: 1, 1, 1, 0
+            size_hint: None, None
+            size: 50, 50
+            pos: 50, 30
+            on_press: root.manager.current = 'another'
+            Image:
+                source: 'img/setting.png'
+                size: 50, 50
+                center_x: self.parent.center_x
+                center_y: self.parent.center_y
+                allow_stretch: True
+
+        BoxLayout:
+            id: box_load
+            size_hint: None, None
+            size: root.width * 8/10, root.height * 6/10
+            pos: root.width /10, root.height * 2/10
+            spacing: 20
+            BoxLayout:
+                id: box_load_1
+                orientation: "vertical"
+                spacing: 10
+                Button:
+                    background_color: 0, 0.588, 0.533, 1
+                    background_normal: ''
+                    text: 'Add Receptor'
+                    size_hint: None, None
+                    size: box_load_1.width, 30
+                    on_release: root.show_load()
+                BoxLayout:
+                    id: box_list_1
+                    size: box_load_1.width, box_load_1.height-40
+                    canvas.before:
+                        Color:
+                            rgba: 1,1,1, 1
+                        Rectangle:
+                            pos: self.pos
+                            size: self.size
+                    canvas.after:
+                        Color:
+                            rgb: 0.92, 0.92, 0.92
+                        Line:
+                            rectangle: self.x,self.y,self.width,self.height
+                    # ListView:
+                    #     id: pdb_list_1
+                    #     adapter:
+                    #         la.ListAdapter(data=[], template='CustomListItem')
+
+            BoxLayout:
+                id: box_load_2
+                orientation: "vertical"
+                spacing: 10
+                Button:
+                    background_color: 0, 0.588, 0.533, 1
+                    background_normal: ''
+                    text: 'Add Ligand'
+                    size_hint: None, None
+                    size: box_load_2.width, 30
+                    on_release: root.show_load()
+                BoxLayout:
+                    size: box_load_1.width, box_load_1.height-40
+                    canvas.before:
+                        Color:
+                            rgba: 1,1,1, 1
+                        Rectangle:
+                            pos: self.pos
+                            size: self.size
+                    canvas.after:
+                        Color:
+                            rgb: 0.92, 0.92, 0.92
+                        Line:
+                            rectangle: self.x,self.y,self.width,self.height
+
+#---------------------------------------------------#
+# Dialog
+<LoadDialog>:
+    BoxLayout:
+        size: root.size
+        pos: root.pos
+        orientation: "vertical"
+        FileChooserIconView:
+            id: filechooser
+
+        BoxLayout:
+            size_hint_y: None
+            height: 30
+            Button:
+                text: "Cancel"
+                on_release: root.cancel()
+
+            Button:
+                text: "Load"
+                on_release: root.load(filechooser.path, filechooser.selection)
