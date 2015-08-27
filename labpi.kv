@@ -2,6 +2,7 @@
 #:import sys sys
 #:import lv kivy.uix.listview
 #:import la kivy.adapters.listadapter
+#:import os os
 
 
 #---------------------------------------------------#
@@ -29,7 +30,7 @@
         Button:
             size_hint_x: 0.5
             background_color: 1, 1, 1, 0
-            on_press: root.parent.remove_item();
+            on_press: ctx.remove_item(ctx.item_id)
             Image:
                 source: 'img/remove.png'
                 size: 25, 25
@@ -54,7 +55,7 @@
 
     canvas.before:
         Color:
-            rgba: 0.94, 0.94, 0.94, 1
+            rgba: 0.92, 0.92, 0.92, 1
         Rectangle:
             # self here refers to the widget i.e BoxLayout
             pos: self.pos
@@ -157,6 +158,7 @@
         orientation: "vertical"
         FileChooserIconView:
             id: filechooser
+            path: os.getcwd()
 
         BoxLayout:
             size_hint_y: None
