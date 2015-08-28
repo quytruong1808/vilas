@@ -1,0 +1,9 @@
+kivy
+numpy
+prody
+
+[test]
+coverage
+
+[dev]
+check-manifest

@@ -1,0 +1,3 @@
+[gui_scripts]
+labpi = labpi.main:main
+
