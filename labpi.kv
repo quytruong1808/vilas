@@ -8,37 +8,71 @@
 #---------------------------------------------------#
 # Item listview
 [CustomListItem@SelectableView+BoxLayout]:
-    size_hint: 1, None
-    height: 50
+    cbLayout: cb_layout
+    size_hint_y: None
     BoxLayout:
-        size_hint: 1, None
-        height: 50
+        id: item_id
+        orientation: "vertical"
+        size_hint_y: None
+        # canvas.before:
+        #     Color:
+        #         rgba: 0, 0.94, 0.94, 1
+        #     Rectangle:
+        #         pos: self.pos
+        #         size: self.size
         BoxLayout:
-            size_hint_x: 1.5
-            Label:
-                # canvas.before:
-                #     Color:
-                #         rgba: 0, 0.94, 0.94, 1
-                #     Rectangle:
-                #         pos: self.pos
-                #         size: self.size
-                size_hint: None, 1
-                color: 0,0,0,1
-                font_size: '16sp'            
-                text: ctx.text
-        
-        Button:
-            size_hint_x: 0.5
-            background_color: 1, 1, 1, 0
-            on_press: ctx.remove_item(ctx.item_id)
-            Image:
-                source: 'img/remove.png'
-                size: 25, 25
-                center_x: self.parent.center_x
-                center_y: self.parent.center_y
-                allow_stretch: True
+            size_hint: 1, None
+            height: 40
+            BoxLayout:
+                size_hint_x: 1.5
+                padding: 10, 0, 0, 0
+                Label:
+                    text_size: self.width, None
+                    color: 0,0,0,1
+                    font_size: '16sp'            
+                    text: ctx.text
+            
+            Button:
+                size_hint_x: 0.5
+                background_color: 1, 1, 1, 0
+                on_press: ctx.remove_item(ctx.item_id, ctx.list_id)
+                Image:
+                    source: 'img/remove.png'
+                    size: 20, 20
+                    center_x: self.parent.center_x
+                    center_y: self.parent.center_y
+                    allow_stretch: True
 
+        BoxLayout:
+            id: cb_layout
+            orientation: "vertical"
+            size_hint_y: None
+            height: 50
 
+        BoxLayout:
+            size_hint_y: None
+            height: 1
+            canvas.before:
+                Color:
+                    rgba: 0.92, 0.92, 0.92, 1
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+
+<ItemCheckBox>:
+    chainName: chain_name
+    spacing: 20
+    CheckBox:
+        size_hint_x: None
+        width: 50
+        active: True
+    Label:
+        id: chain_name
+        text: ''
+        color: 0,0,0,1
+        font_size: '14sp'
+        text_size: self.width, None
+        halign: 'left'
 
 #---------------------------------------------------#
 # Screen
@@ -50,8 +84,35 @@
         font_size: 50
 
 
+<SettingScreen>:
+    canvas.before:
+        Color:
+            rgba: 0.92, 0.92, 0.92, 1
+        Rectangle:
+            # self here refers to the widget i.e BoxLayout
+            pos: self.pos
+            size: self.size
+    FloatLayout:
+    Label:
+        text: 'Settings'
+        font_size: 50
+        color: 0,0,0,1
+    Button:
+        background_color: 1, 1, 1, 0
+        size_hint: None, None
+        size: 50, 50
+        pos: 50, 30
+        on_press: root.manager.current = 'load'
+        Image:
+            source: 'img/back.png'
+            size: 50, 50
+            center_x: self.parent.center_x
+            center_y: self.parent.center_y
+            allow_stretch: True
+
 <LoadScreen>:
     boxlist_1: box_list_1    
+    boxlist_2: box_list_2
 
     canvas.before:
         Color:
@@ -80,7 +141,7 @@
             size_hint: None, None
             size: 50, 50
             pos: 50, 30
-            on_press: root.manager.current = 'another'
+            on_press: root.manager.current = 'setting'
             Image:
                 source: 'img/setting.png'
                 size: 50, 50
@@ -91,8 +152,8 @@
         BoxLayout:
             id: box_load
             size_hint: None, None
-            size: root.width * 8/10, root.height * 6/10
-            pos: root.width /10, root.height * 2/10
+            size: root.width * 9/10, root.height * 6/10
+            pos: root.width /20, root.height * 2/10
             spacing: 20
             BoxLayout:
                 id: box_load_1
@@ -104,7 +165,7 @@
                     text: 'Add Receptor'
                     size_hint: None, None
                     size: box_load_1.width, 30
-                    on_release: root.show_load()
+                    on_release: root.show_load_receptor()
                 BoxLayout:
                     id: box_list_1
                     size: box_load_1.width, box_load_1.height-40
@@ -134,8 +195,9 @@
                     text: 'Add Ligand'
                     size_hint: None, None
                     size: box_load_2.width, 30
-                    on_release: root.show_load()
+                    on_release: root.show_load_ligand()
                 BoxLayout:
+                    id: box_list_2
                     size: box_load_1.width, box_load_1.height-40
                     canvas.before:
                         Color:
@@ -159,6 +221,7 @@
         FileChooserIconView:
             id: filechooser
             path: os.getcwd()
+            multiselect: True
 
         BoxLayout:
             size_hint_y: None

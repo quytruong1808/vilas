@@ -18,6 +18,9 @@ from LabpiLoad import LoadScreen
 class AnotherScreen(Screen):
     pass
 
+class SettingScreen(Screen):
+    pass
+
 
 #--------------------------------------------------------#
 # Main function
@@ -30,6 +33,7 @@ class LabpiApp(App):
         sm = ScreenManager(transition = FadeTransition())
         sm.add_widget(LoadScreen(name='load'))
         sm.add_widget(AnotherScreen(name='another'))
+        sm.add_widget(SettingScreen(name='setting'))
         return sm
 
 
