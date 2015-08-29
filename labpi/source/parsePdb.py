@@ -1,16 +1,20 @@
 from prody import *
 
+from source.Utils import Chain
+
+
+
+
 class ParsePdb(object):
     #Read pdb file
-    def __init__(self, Receptors = [], Ligands = [], char_system = ''):
+    def __init__(self, Receptors = [], Ligands = []):
         self.Receptors = Receptors
         self.Ligands = Ligands
-        self.char_system = char_system
 
     def listChain(self, pdbFile):
         listProtein = []
         listLigand = []
-        listItems = []
+        listChains = []
         input = parsePDB(pdbFile)
 
         #Check protein
@@ -33,14 +37,22 @@ class ParsePdb(object):
 
         for x in range(0, len(listProtein) + len(listLigand)):
             if x < len(listProtein):
-                listItems.append("{0:8s} - {1:10s}{2:4s}{3:9s}".format(str(listProtein[x]), "protein - ", str(listProtein[x].numResidues()), ' residues'))
+                chain_name = "{0:8s} - {1:10s}{2:4s}{3:9s}".format(str(listProtein[x]), "protein - ", str(listProtein[x].numResidues()), ' residues')
+                resindices = [listProtein[x].getResindices()[0], listProtein[x].getResindices()[len(listProtein[x].getResindices())-1] ]
+                chain = Chain(chain_id = x, chain_type = 'protein', chain_name = chain_name, is_selected = True, resindices = resindices, is_group = True)
+                
             else: 
                 y = x - len(listProtein)
-                listItems.append("{0:8s} - {1:10s}{2:4s}{3:9s}".format(str(listLigand[y].getResnames()[0]), "ligand  - ", str(listLigand[y].numAtoms()), ' atoms'))
-
-        return listItems
-
+                chain_name = "{0:8s} - {1:10s}{2:4s}{3:9s}".format(str(listLigand[y].getResnames()[0]), "ligand  - ", str(listLigand[y].numAtoms()), ' atoms')
+                chain = Chain(chain_id = x, chain_type = 'ligand', chain_name = chain_name, is_selected = True, listLigand = [], is_group = True)
+            listChains.append(chain)
+        return listChains
 
     pass
 
+
+class Variable():
+    parsepdb = ParsePdb()
+
+    pass
   

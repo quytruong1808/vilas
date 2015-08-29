@@ -17,10 +17,12 @@ from kivy.adapters.listadapter import ListAdapter
 
 #source
 from source.parsePdb import ParsePdb
+from source.parsePdb import Variable
+from source.Utils import PdbFile
+from source.Utils import Chain
 
-# global variable
+# global Variable
 ItemId = 0
-parsepdb = ParsePdb()
 
 class LoadScreen(Screen):
     boxlist_1 = ObjectProperty(None)
@@ -29,11 +31,11 @@ class LoadScreen(Screen):
     def __init__(self, *args, **kwargs):
         super(LoadScreen, self).__init__(*args, **kwargs)
 
-        list_item_args_converter = lambda row_index, obj: {'item_id': obj.item_id, 'text': obj.text, 'file_path': obj.file_path, 'remove_item': obj.remove_item, 'list_id': obj.list_id}
+        list_item_args_converter = lambda row_index, obj: {'item_id': obj.item_id, 'text': obj.text, 'pdbFile': obj.pdbFile, 'remove_item': obj.remove_item, 'list_id': obj.list_id}
 
         list_adapter_receptor = LoadAdapter(data=[], 
                             args_converter=list_item_args_converter,
-                            template='CustomListItem')
+                            template='LoadListItem')
         pdb_list_1 = ListView(adapter=list_adapter_receptor, 
                             divider_height= 1,
                             id='pdb_list_1')
@@ -41,7 +43,7 @@ class LoadScreen(Screen):
 
         list_adapter_ligand = LoadAdapter(data=[], 
                             args_converter=list_item_args_converter,
-                            template='CustomListItem')
+                            template='LoadListItem')
         pdb_list_2 = ListView(adapter=list_adapter_ligand, 
                             divider_height= 1,
                             id='pdb_list_2')
@@ -69,16 +71,19 @@ class LoadScreen(Screen):
         widget = self.findWidget(self.boxlist_1, 'pdb_list_1')
         if(not widget is None):
             global ItemId
-            global parsepdb
             dataItem = []
 
             for fl in file_path:
                 filename = os.path.basename(fl)
                 if(os.path.splitext(filename)[1].split('.')[1]=='pdb'):     
                     ItemId += 1
-                    dataItem.append(DataItem(item_id=ItemId, text=filename, file_path=fl, remove_item=self.remove_item, list_id = 'pdb_list_1'))
-                    parsepdb.Receptors.append(fl)
+                    #Add pdb file and chains to variable
+                    chains = ParsePdb().listChain(fl)
+                    pdbFile = PdbFile(file_path = fl, chains = chains)
+                    Variable.parsepdb.Receptors.append(pdbFile)
 
+                    dataItem.append(DataItem(item_id=ItemId, text=filename, pdbFile=pdbFile , remove_item=self.remove_item, list_id = 'pdb_list_1'))
+                
             # print parsepdb.Receptors
             widget.adapter.data.extend(dataItem)
             widget._trigger_reset_populate()
@@ -90,15 +95,18 @@ class LoadScreen(Screen):
         widget = self.findWidget(self.boxlist_2, 'pdb_list_2')
         if(not widget is None):
             global ItemId
-            global parsepdb
             dataItem = []
 
             for fl in file_path:
                 filename = os.path.basename(fl)
                 if(os.path.splitext(filename)[1].split('.')[1]=='pdb'):     
                     ItemId += 1
-                    dataItem.append(DataItem(item_id=ItemId, text=filename, file_path=fl, remove_item=self.remove_item, list_id = 'pdb_list_2'))
-                    parsepdb.Ligands.append(fl)
+                    #Add pdb file and chains to variable
+                    chains = ParsePdb().listChain(fl)
+                    pdbFile = PdbFile(file_path = fl, chains = chains)
+                    Variable.parsepdb.Ligands.append(pdbFile)
+
+                    dataItem.append(DataItem(item_id=ItemId, text=filename, pdbFile=pdbFile, remove_item=self.remove_item, list_id = 'pdb_list_2'))            
 
             # print parsepdb.Receptors
             widget.adapter.data.extend(dataItem)
@@ -107,7 +115,7 @@ class LoadScreen(Screen):
         self.dismiss_popup()
     
     # Listview
-    def remove_item(self, item_id, list_id):
+    def remove_item(self, item_id, list_id, pdbFile):
         widget = self.findWidget(self.boxlist_1, list_id)
         if(not widget is None):
             for dataItem in widget.adapter.data:
@@ -117,8 +125,11 @@ class LoadScreen(Screen):
                     widget._trigger_reset_populate()
 
                     #Xoa trong parsePDB
-                    global parsepdb
-                    parsepdb.Receptors.remove(dataItem.file_path)
+                    if(list_id == 'pdb_list_1'):
+                        Variable.parsepdb.Receptors.remove(pdbFile)
+                    else:
+                        Variable.parsepdb.Ligands.remove(pdbFile)
+
                     break
 
     def findWidget(self, layout, widget_id):
@@ -132,6 +143,7 @@ class LoadScreen(Screen):
 #--------------------------------------------------------#
 # ListView class
 class LoadAdapter(ListAdapter):
+
     def create_view(self, index):
         item = self.get_data_item(index)
         if item is None:
@@ -171,23 +183,37 @@ class LoadAdapter(ListAdapter):
             child.bind(on_release=self.handle_selection)
 
         # Set checkbox
-        listChains = parsepdb.listChain(item.file_path)
-        for chain in listChains:
+        chains = item.pdbFile.chains
+        for chain in chains:
             itemCB = ItemCheckBox()
-            itemCB.chainName.text = str(chain)
+            itemCB.chainName.text = chain.chain_name
+            itemCB.chainBox.id = item.list_id + '-_-' + str(index) + '-_-' + str(chain.chain_id)
+            itemCB.chainBox.bind(active = self.on_check_active)
+            itemCB.chainBox.active = chain.is_selected
             view_instance.cbLayout.add_widget(itemCB)
         return view_instance
+
+    def on_check_active(self, checkbox, value):
+        list_id = checkbox.id.split('-_-')[0]
+        index = int(checkbox.id.split('-_-')[1])
+        chain_id = int(checkbox.id.split('-_-')[2])
+
+        if(list_id == 'pdb_list_1'):
+            Variable.parsepdb.Receptors[index].chains[chain_id].is_selected = value   
+        else:
+            Variable.parsepdb.Ligands[index].chains[chain_id].is_selected = value
+        
 
     pass
 
 
 
 class DataItem(object):
-    def __init__(self, item_id=0, text='', file_path='', remove_item = ObjectProperty(None), list_id = ''):
+    def __init__(self, item_id=0, text='', pdbFile='', remove_item = ObjectProperty(None), list_id = ''):
         self.item_id = item_id
         self.text = text
         self.remove_item = remove_item
-        self.file_path = file_path
+        self.pdbFile = pdbFile
         self.list_id = list_id
 
 class ItemCheckBox(BoxLayout):
