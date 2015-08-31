@@ -216,6 +216,269 @@
 
 #---------------------------------------------------#
 # Screen
+<ConfigurationScreen>:
+    optimizedButton: optimized_button
+    customButton: custom_button
+
+    optimizedTick: optimized_tick
+    customTick: custom_tick
+
+    configLayout: config_layout
+
+    canvas.before:
+        Color:
+            rgba: 0.92, 0.92, 0.92, 1
+        Rectangle:
+            # self here refers to the widget i.e BoxLayout
+            pos: self.pos
+            size: self.size
+
+    FloatLayout:
+        Button:
+            background_color: 1, 1, 1, 0
+            size_hint: None, None
+            size: 50, 50
+            pos: root.width-100, 30
+            on_press: root.manager.changeScreen('load')
+            Image:
+                source: 'img/next.png'
+                size: 50, 50
+                center_x: self.parent.center_x
+                center_y: self.parent.center_y
+                allow_stretch: True
+
+        Button:
+            background_color: 1, 1, 1, 0
+            size_hint: None, None
+            size: 50, 50
+            pos: root.width-200, 30
+            on_press: root.manager.changeScreen('receptor')
+            Image:
+                source: 'img/back.png'
+                size: 50, 50
+                center_x: self.parent.center_x
+                center_y: self.parent.center_y
+                allow_stretch: True
+
+        Button:
+            background_color: 1, 1, 1, 0
+            size_hint: None, None
+            size: 50, 50
+            pos: 50, 30
+            on_press: root.manager.changeScreen('setting')
+            Image:
+                source: 'img/setting.png'
+                size: 50, 50
+                center_x: self.parent.center_x
+                center_y: self.parent.center_y
+                allow_stretch: True
+        BoxLayout:
+            size_hint: None, None
+            size: root.width * 9/10, root.height * 6/10
+            pos: root.width /20, root.height * 2/10
+            spacing: 10
+            orientation: "vertical"
+            Button:
+                id: optimized_button
+                background_color: 0, 0.588, 0.533, 1
+                background_normal: ''
+                canvas.after:
+                    Color:
+                        rgb: 0.9, 0.9, 0.9, 1
+                    Line:
+                        rectangle: self.x,self.y,self.width,self.height
+
+                size_hint: None, None
+                size: self.parent.width, 30
+                text: 'Using the optimized configuration available'
+                on_press: root.optimizedConfig()
+                Image:
+                    id: optimized_tick
+                    source: 'img/tick.png'
+                    size_hint_x: None
+                    width: 25
+                    center_x: self.parent.center_x - self.parent.width/2 + 40
+                    center_y: self.parent.center_y
+                    
+            Button:
+                id: custom_button
+                background_color: 0.62, 0.62, 0.62, 1
+                background_normal: ''
+                canvas.after:
+                    Color:
+                        rgb: 0.9, 0.9, 0.9, 1
+                    Line:
+                        rectangle: self.x,self.y,self.width,self.height
+                size_hint: None, None
+                size: self.parent.width, 30    
+                text: 'Using your custom configuration'
+                on_press: root.customConfig()
+                Image:
+                    id: custom_tick
+                    source: 'img/tick.png'
+                    color: 0,0,0,0
+                    size_hint_x: None
+                    width: 25
+                    center_x: self.parent.center_x - self.parent.width/2 + 40
+                    center_y: self.parent.center_y
+
+            ScrollView:
+                id: config_layout
+                size_hint: None, None
+                size: self.parent.width, self.parent.height-80
+                canvas.before:
+                    Color:
+                        rgba: 1,1,1,1
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                canvas.after:
+                    Color:
+                        rgb: 0.9, 0.9, 0.9
+                    Line:
+                        rectangle: self.x,self.y,self.width,self.height
+                GridLayout:
+                    cols: 1
+                    size_hint_y: None
+                    height: box_1.height + box_2.height + box_3.height + box_4.height + box_5.height + box_6.height 
+                    BoxLayout:
+                        id: box_1
+                        size_hint_y: None
+                        height: 50
+                        padding: self.width/8, 0, 20, 0
+                        Label:
+                            text: ' Use Caver tool'
+                            color: 0,0,0,1
+                            disabled_color: 0,0,0,1
+                            font_size: '16sp'
+                            text_size: self.width, None
+                            halign: 'left'
+                            valign: 'middle'
+                            size_hint_x: None
+                            width: self.parent.width/2
+                        CheckBox:
+                            size_hint_x: None 
+                            width: 30
+                            pos: 0,0
+
+                    BoxLayout:
+                        id: box_2
+                        size_hint_y: None
+                        height: 50
+                        padding: self.width/8, 0, 20, 0
+                        Label:
+                            text: ' Use automatic for setting parameter for ligand'
+                            color: 0,0,0,1
+                            disabled_color: 0,0,0,1
+                            font_size: '16sp'
+                            text_size: self.width, None
+                            halign: 'left'
+                            valign: 'middle'
+                            size_hint_x: None
+                            width: self.parent.width/2
+                        CheckBox:
+                            size_hint_x: None 
+                            width: 30
+                            pos: 0,0
+                            active: True
+
+
+                    BoxLayout:
+                        id: box_3
+                        size_hint_y: None
+                        height: 50
+                        padding: self.width/8, 0, 20, 0
+                        Label:
+                            text: ' How many times to repeat?'
+                            color: 0,0,0,1
+                            disabled_color: 0,0,0,1
+                            font_size: '16sp'
+                            text_size: self.width, None
+                            halign: 'left'
+                            valign: 'middle'
+                            size_hint_x: None
+                            width: self.parent.width/2
+                        TextInput:
+                            size_hint: None, 0.6
+                            width: 100
+                            pos_hint: {'center_y': 0.5}
+                            text: '3'
+                            color: 0,0,0,1
+                            disabled_color: 0,0,0,1
+                            font_size: '16sp'
+                            text_size: self.width, None
+                            halign: 'left'
+                            valign: 'middle'
+
+                    BoxLayout:
+                        id: box_4
+                        size_hint_y: None
+                        height: 50
+                        padding: self.width/8, 0, 20, 0
+                        Label:
+                            text: ' Do you want to run in backgroud (nohup)?'
+                            color: 0,0,0,1
+                            disabled_color: 0,0,0,1
+                            font_size: '16sp'
+                            text_size: self.width, None
+                            halign: 'left'
+                            valign: 'middle'
+                            size_hint_x: None
+                            width: self.parent.width/2
+                        CheckBox:
+                            size_hint_x: None 
+                            width: 30
+                            pos: 0,0
+
+                    BoxLayout:
+                        id: box_5
+                        size_hint_y: None
+                        height: 50
+                        padding: self.width/8, 0, 20, 0
+                        Label:
+                            text: ' Maximum cores for this task'
+                            color: 0,0,0,1
+                            disabled_color: 0,0,0,1
+                            font_size: '16sp'
+                            text_size: self.width, None
+                            halign: 'left'
+                            valign: 'middle'
+                            size_hint_x: None
+                            width: self.parent.width/2
+                        TextInput:
+                            size_hint: None, 0.6
+                            width: 100
+                            pos_hint: {'center_y': 0.5}
+                            text: '99'
+                            color: 0,0,0,1
+                            disabled_color: 0,0,0,1
+                            font_size: '16sp'
+                            text_size: self.width, None
+                            halign: 'left'
+                            valign: 'middle'
+
+                    BoxLayout:
+                        id: box_6
+                        size_hint_y: None
+                        height: 50
+                        padding: self.width/8, 0, 20, 0
+                        Label:
+                            text: ' Auto use GPU to calculate'
+                            color: 0,0,0,1
+                            disabled_color: 0,0,0,1
+                            font_size: '16sp'
+                            text_size: self.width, None
+                            halign: 'left'
+                            valign: 'middle'
+                            size_hint_x: None
+                            width: self.parent.width/2
+                        CheckBox:
+                            size_hint_x: None 
+                            width: 30
+                            pos: 0,0
+                            active: True
+
+
 
 <ReceptorScreen>:
     receptorList: receptor_list
@@ -233,7 +496,7 @@
             size_hint: None, None
             size: 50, 50
             pos: root.width-100, 30
-            on_press: root.manager.changeScreen('load')
+            on_press: root.manager.changeScreen('configuration')
             Image:
                 source: 'img/next.png'
                 size: 50, 50
@@ -274,16 +537,27 @@
             pos: root.width /20, root.height * 2/10
             spacing: 10
             orientation: "vertical"
-            Label:
+            BoxLayout:
                 canvas.before:
                     Color:
-                        rgb: 0, 0.588, 0.533, 1
+                        rgb: 0.62, 0.62, 0.62, 1
                     Rectangle:
                         pos: self.pos
                         size: self.size
-                text: '(i) Please select receptor groups'
                 size_hint: None, None
                 size: receptor_layout.width, 30
+                padding: 20, 0, 20, 0
+                Image:
+                    source: 'img/info.png'
+                    size_hint_x: None
+                    width: 20
+                    center_x: self.parent.center_x
+                    center_y: self.parent.center_y
+                    allow_stretch: True
+                Label:
+                    
+                    text: 'Please select receptor groups or skip to next step'
+                
             BoxLayout:
                 BoxLayout:
                     id: receptor_list
@@ -296,37 +570,11 @@
                             size: self.size
                     canvas.after:
                         Color:
-                            rgb: 0.92, 0.92, 0.92
+                            rgb: 0.9, 0.9, 0.9
                         Line:
                             rectangle: self.x,self.y,self.width,self.height
 
 
-
-<SettingScreen>:
-    canvas.before:
-        Color:
-            rgba: 0.92, 0.92, 0.92, 1
-        Rectangle:
-            # self here refers to the widget i.e BoxLayout
-            pos: self.pos
-            size: self.size
-    FloatLayout:
-    Label:
-        text: 'Settings'
-        font_size: 50
-        color: 0,0,0,1
-    Button:
-        background_color: 1, 1, 1, 0
-        size_hint: None, None
-        size: 50, 50
-        pos: 50, 30
-        on_press: root.manager.changeScreen('load')
-        Image:
-            source: 'img/back.png'
-            size: 50, 50
-            center_x: self.parent.center_x
-            center_y: self.parent.center_y
-            allow_stretch: True
 
 <LoadScreen>:
     boxlist_1: box_list_1    
@@ -395,7 +643,7 @@
                             size: self.size
                     canvas.after:
                         Color:
-                            rgb: 0.92, 0.92, 0.92
+                            rgb: 0.9, 0.9, 0.9, 1
                         Line:
                             rectangle: self.x,self.y,self.width,self.height
                     # ListView:
@@ -425,7 +673,7 @@
                             size: self.size
                     canvas.after:
                         Color:
-                            rgb: 0.92, 0.92, 0.92
+                            rgb: 0.9, 0.9, 0.9, 1
                         Line:
                             rectangle: self.x,self.y,self.width,self.height
 

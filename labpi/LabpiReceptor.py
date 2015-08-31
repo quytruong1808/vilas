@@ -115,7 +115,7 @@ class ReceptorAdapter(ListAdapter):
             itemCB.resdiueFrom.text = str(chain.resindices[0])
             itemCB.resdiueFrom.multiline=False
             itemCB.resdiueFrom.bind(text=self.on_text_change)
-            itemCB.resdiueFrom.id = '1-_-' + item.list_id + '-_-' + str(index) + '-_-' + str(chain.chain_id)
+            itemCB.resdiueTo.id = '1-_-' + item.list_id + '-_-' + str(index) + '-_-' + str(chain.chain_id)
             itemCB.resdiueTo.text = str(chain.resindices[1])
             itemCB.resdiueTo.multiline=False
             itemCB.resdiueTo.bind(text=self.on_text_change)
@@ -133,14 +133,12 @@ class ReceptorAdapter(ListAdapter):
 
     def on_text_change(self, instance, value):
         et_type = int(instance.id.split('-_-')[0])
-        list_id = checkbox.id.split('-_-')[1]
-        index = int(checkbox.id.split('-_-')[2])
-        chain_id = int(checkbox.id.split('-_-')[3])
+        list_id = instance.id.split('-_-')[1]
+        index = int(instance.id.split('-_-')[2])
+        chain_id = int(instance.id.split('-_-')[3])
 
         if(list_id == 'receptor_lv'):
-            Variable.parsepdb.Receptors[index].chains[chain_id].group[et_type] = value   
-
-        print value
+            Variable.parsepdb.Receptors[index].chains[chain_id].resindices[et_type] = value   
 
     pass
 

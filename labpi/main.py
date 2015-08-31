@@ -11,16 +11,10 @@ from kivy.uix.screenmanager import ScreenManager, Screen, FadeTransition
 #import module
 from LabpiLoad import LoadScreen
 from LabpiReceptor import ReceptorScreen
+from LabpiConfiguration import ConfigurationScreen
+from LabpiSetting import SettingScreen
 
 # Builder.load_file("LabpiLoad.py")
-
-#--------------------------------------------------------#
-# Screen class
-
-
-class SettingScreen(Screen):
-    pass
-
 
 #--------------------------------------------------------#
 # Main function
@@ -38,6 +32,7 @@ class ScreenManagement(ScreenManager):
 class LabpiApp(App):
     def build(self):
         sm = ScreenManagement(transition = FadeTransition())
+        sm.add_widget(ConfigurationScreen(name='configuration'))
         sm.add_widget(LoadScreen(name='load'))
         sm.add_widget(ReceptorScreen(name='receptor'))
         sm.add_widget(SettingScreen(name='setting'))
