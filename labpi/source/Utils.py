@@ -13,3 +13,28 @@ class Chain(object):
         self.resindices = resindices
         self.is_group = is_group 
     pass
+
+class DataController(object):
+    def getdata(self, name):
+        f = open('data/setting.txt', "r")
+        contents = f.readlines()
+        f.close()
+        if len(self.substring(name,contents)) > 0:
+            return contents[self.substring(name,contents)[0]].split(' = ')[1].split('\n')[0]
+        else: 
+            return ''
+
+    def setdata(self, name, value):
+        f = open('data/setting.txt', "r")
+        contents = f.readlines()
+        f.close()
+
+        contents[self.substring(name,contents)[0]] = name + ' = ' + value + '\n'
+
+        f = open('data/setting.txt', "w")
+        contents = "".join(contents)
+        f.write(contents)
+        f.close()
+
+    def substring(self, mystr, mylist): 
+        return [i for i, val in enumerate(mylist) if mystr in val]

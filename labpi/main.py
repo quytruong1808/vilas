@@ -13,6 +13,7 @@ from LabpiLoad import LoadScreen
 from LabpiReceptor import ReceptorScreen
 from LabpiConfiguration import ConfigurationScreen
 from LabpiSetting import SettingScreen
+from LabpiRunning import RunningScreen
 
 # Builder.load_file("LabpiLoad.py")
 
@@ -24,6 +25,9 @@ class ScreenManagement(ScreenManager):
     def changeScreen(self, screen):
         if(screen == 'receptor'):
             self.get_screen(screen).setupView()
+        elif (screen == 'running'):
+            self.get_screen(screen).setupView()
+
         self.current = screen
         print screen
 
@@ -36,6 +40,7 @@ class LabpiApp(App):
         sm.add_widget(LoadScreen(name='load'))
         sm.add_widget(ReceptorScreen(name='receptor'))
         sm.add_widget(SettingScreen(name='setting'))
+        sm.add_widget(RunningScreen(name='running'))
         return sm
 
 def main():

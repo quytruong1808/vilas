@@ -1,0 +1,19 @@
+nvt-nsteps  = 500
+nvt-nst = 5000
+npt-nsteps = 500
+npt-nst = 5000
+md-nsteps = 1000
+md-nst = 5000
+smd-nsteps = 1000
+smd-nst  = 5000
+smd-vel = 0.004
+smd-k  = 600
+
+config_auto  = False
+path = ~/Documents/labpi-result
+caver = False
+ligand_auto = True
+repeat_times  = 3
+nohup  = False
+maximum_cores  = 99
+gpu_auto  = True

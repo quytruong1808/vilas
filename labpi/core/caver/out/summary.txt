@@ -1,0 +1,38 @@
+            ID: Identification of a given tunnel cluster = ranking of a given cluster 
+                based on the Priority.
+            No: Total number of tunnels belonging to a given cluster.
+      No_snaps: Nubmer of snapshots with at least one tunnel 
+                with a radius >= probe_radius (see config.txt).
+        Avg_BR: Average bottleneck radius [A].
+        Max_BR: Maximimum bottleneck radius [A].
+         Avg_L: Average tunnel length [A].
+         Avg_C: Average tunnel curvature.
+      Priority: Tunnel priority calculated by averaging tunnel
+                throughputs over all snapshots (zero value used for 
+                snapshots without tunnel).
+Avg_throughput: Average tunnel throughput.
+   Avg_up_E_BR: Average upper error bound of bottleneck radius estimation.
+   Avg_up_E_TR: Average upper error bound of tunnel profile radii estimation.
+   Max_up_E_BR: Maximal upper errors bound of bottleneck radii estimation.
+   Max_up_E_TR: Maximal upper error bound of tunnel radii estimation.
+            SD: Standard deviation [A].
+All averaged values are calculated over snapshots, where a given cluster has at least one tunnel. The only exception is the Priority, where the average is calculated over all snapshots.
+If there are more tunnels in one snapshot, the cheapest tunnel is chosen. 
+
+
+
+  ID      No   No_snaps   Avg_BR       SD   Max_BR    Avg_L      SD   Avg_C      SD    Priority  Avg_throughput       SD   Avg_up_E_BR      SD   Max_up_E_BR  Avg_up_E_TR   Max_up_E_TR
+   1       1          1    2.988    0.000     2.99    4.950   0.000   1.092   0.000     0.92925         0.92925  0.00000             -       -             -            -             -
+   2       1          1    2.885    0.000     2.88   12.262   0.000   1.100   0.000     0.87542         0.87542  0.00000             -       -             -            -             -
+
+
+
+-----------------------------------------------------------------------
+ Thank you for using CAVER, please cite:
+
+ Chovancova, E., Pavelka, A., Benes, P., Strnad, O., Brezovsky, J.,
+ Kozlikova, B., Gora, A., Sustr, V., Klvana, M., Medek, P.,
+ Biedermannova, L., Sochor, J. Damborsky, J. (2012) CAVER 3.0: A Tool
+ for the Analysis of Transport Pathways in Dynamic Protein Structures.
+ PLoS Comput Biol 8: e1002708. doi:10.1371/journal.pcbi.1002708
+-----------------------------------------------------------------------

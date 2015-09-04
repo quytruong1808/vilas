@@ -225,6 +225,16 @@
 
     configLayout: config_layout
 
+    # config
+    pathText: path_text
+    caverBox: caver_box
+    ligandAutoBox: ligand_auto_box
+    repeatTimesText: repeat_times_text
+    nohupBox: nohup_box
+    maximumCoresText: maximum_cores_text
+    gpuAutoBox: gpu_auto_box
+
+
     canvas.before:
         Color:
             rgba: 0.92, 0.92, 0.92, 1
@@ -239,7 +249,7 @@
             size_hint: None, None
             size: 50, 50
             pos: root.width-100, 30
-            on_press: root.manager.changeScreen('load')
+            on_press: root.manager.changeScreen('running')
             Image:
                 source: 'img/next.png'
                 size: 50, 50
@@ -340,7 +350,34 @@
                 GridLayout:
                     cols: 1
                     size_hint_y: None
-                    height: box_1.height + box_2.height + box_3.height + box_4.height + box_5.height + box_6.height 
+                    height: box_0.height + box_1.height + box_2.height + box_3.height + box_4.height + box_5.height + box_6.height 
+                    BoxLayout:
+                        id: box_0
+                        size_hint_y: None
+                        height: 50
+                        padding: self.width/8, 0, 20, 0
+                        Label:
+                            text: ' Save to path'
+                            color: 0,0,0,1
+                            disabled_color: 0,0,0,1
+                            font_size: '16sp'
+                            text_size: self.width, None
+                            halign: 'left'
+                            valign: 'middle'
+                            size_hint_x: None
+                            width: self.parent.width/2
+                        TextInput:
+                            id: path_text
+                            size_hint: 1, 0.6
+                            pos_hint: {'center_y': 0.5}
+                            text: '3'
+                            color: 0,0,0,1
+                            disabled_color: 0,0,0,1
+                            font_size: '16sp'
+                            text_size: self.width, None
+                            halign: 'left'
+                            valign: 'middle'
+
                     BoxLayout:
                         id: box_1
                         size_hint_y: None
@@ -357,6 +394,7 @@
                             size_hint_x: None
                             width: self.parent.width/2
                         CheckBox:
+                            id: caver_box
                             size_hint_x: None 
                             width: 30
                             pos: 0,0
@@ -377,6 +415,7 @@
                             size_hint_x: None
                             width: self.parent.width/2
                         CheckBox:
+                            id: ligand_auto_box
                             size_hint_x: None 
                             width: 30
                             pos: 0,0
@@ -399,6 +438,7 @@
                             size_hint_x: None
                             width: self.parent.width/2
                         TextInput:
+                            id: repeat_times_text
                             size_hint: None, 0.6
                             width: 100
                             pos_hint: {'center_y': 0.5}
@@ -426,6 +466,7 @@
                             size_hint_x: None
                             width: self.parent.width/2
                         CheckBox:
+                            id: nohup_box
                             size_hint_x: None 
                             width: 30
                             pos: 0,0
@@ -446,6 +487,7 @@
                             size_hint_x: None
                             width: self.parent.width/2
                         TextInput:
+                            id: maximum_cores_text
                             size_hint: None, 0.6
                             width: 100
                             pos_hint: {'center_y': 0.5}
@@ -473,6 +515,7 @@
                             size_hint_x: None
                             width: self.parent.width/2
                         CheckBox:
+                            id: gpu_auto_box
                             size_hint_x: None 
                             width: 30
                             pos: 0,0

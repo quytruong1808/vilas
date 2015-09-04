@@ -1,0 +1,29 @@
+MODEL        0
+ATOM      1  H   FIL T   2      10.594  61.875 102.227        4.38              
+ATOM      2  H   FIL T   2       9.803  61.774 102.241        4.00              
+ATOM      3  H   FIL T   2       8.889  61.784 102.648        3.64              
+ATOM      4  H   FIL T   2       8.001  61.709 102.995        3.39              
+ATOM      5  H   FIL T   2       7.029  61.634 103.216        3.19              
+ATOM      6  H   FIL T   2       6.038  61.538 103.264        2.98              
+ATOM      7  H   FIL T   2       5.045  61.426 103.275        2.95              
+ATOM      8  H   FIL T   2       4.173  60.977 103.133        2.89              
+ATOM      9  H   FIL T   2       3.315  60.490 102.970        3.01              
+ATOM     10  H   FIL T   2       2.454  60.011 102.798        3.34              
+ATOM     11  H   FIL T   2       2.035  59.461 102.585        3.48              
+ATOM     12  H   FIL T   2       1.118  59.119 102.456        3.40              
+ATOM     13  H   FIL T   2       0.285  58.736 102.144        3.31              
+
+CONECT    1    2
+CONECT    2    3
+CONECT    3    4
+CONECT    4    5
+CONECT    5    6
+CONECT    6    7
+CONECT    7    8
+CONECT    8    9
+CONECT    9   10
+CONECT   10   11
+CONECT   11   12
+CONECT   12   13
+
+ENDMDL

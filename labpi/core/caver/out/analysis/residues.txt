@@ -1,0 +1,53 @@
+# Tunnel-lining resiudes (residues wihtin the 3.0 A distnace from individual tunnels)
+# Column content
+# C:     chain
+# res:   residue index in PDB file
+# AA:    amino acid
+# N:     number of snapshots in which the residue lined the tunnel
+# sideN: same as N, but backbone atoms are not counted (those named H, N, C, O, CA or HA)
+# atoms: tunnel-lining atoms. Format is <number of snapshots>:<atom name>_<atom serial number>
+#
+== Tunnel cluster 1 ==
+# C    res  AA       N   sideN atoms
+  A     41 GLN       1       1 1:CB_390 1:CG_391 1:CD_392 1:OE1_393 1:NE2_394 
+  A     57 HIS       1       1 1:CA_511 1:C_512 1:O_513 1:CB_514 1:CG_515 1:ND1_516 1:CD2_517 1:CE1_518 1:NE2_519 
+  A     81 ASP       1       1 1:OD2_689 
+  A    132 VAL       1       1 1:CA_1067 1:C_1068 1:O_1069 1:CB_1070 1:CG1_1071 1:CG2_1072 
+  A    135 LEU       1       1 1:C_1093 1:O_1094 1:CB_1095 
+  A    136 LYS       1       1 1:N_1099 1:CA_1100 1:C_1101 1:CB_1103 1:CG_1104 1:CD_1105 1:CE_1106 1:NZ_1107 
+  A    139 SER       1       1 1:CA_1119 1:CB_1122 1:OG_1123 
+  A    154 PHE       1       1 1:CE1_1220 1:CE2_1221 1:CZ_1222 
+  A    156 ALA       1       1 1:N_1234 1:CA_1235 1:C_1236 1:O_1237 1:CB_1238 
+  A    157 ALA       1       1 1:N_1239 1:CA_1240 1:C_1241 1:O_1242 1:CB_1243 
+  A    159 CYS       1       1 1:CB_1255 1:SG_1256 
+  A    526 GLN       1       1 1:CB_3969 1:CG_3970 1:CD_3971 1:OE1_3972 1:NE2_3973 
+  A     58 GLY       1       0 1:N_520 
+  A    137 GLY       1       0 1:N_1108 1:CA_1109 
+  A    155 ARG       1       0 1:CA_1224 1:C_1225 1:O_1226 
+  A    158 VAL       1       0 1:N_1244 
+== Tunnel cluster 2 ==
+# C    res  AA       N   sideN atoms
+  A     41 GLN       1       1 1:OE1_393 1:NE2_394 
+  A     57 HIS       1       1 1:N_510 1:CA_511 1:C_512 1:CB_514 1:CG_515 1:ND1_516 1:CD2_517 1:CE1_518 1:NE2_519 
+  A     79 ASP       1       1 1:N_665 1:CA_666 1:C_667 1:O_668 1:CB_669 
+  A     80 GLN       1       1 1:N_673 1:CA_674 1:C_675 1:O_676 1:CB_677 1:CD_679 1:NE2_681 
+  A     81 ASP       1       1 1:N_682 1:CA_683 1:C_684 1:O_685 1:CB_686 1:CG_687 1:OD1_688 1:OD2_689 
+  A    123 ARG       1       1 1:NH2_1008 
+  A    132 VAL       1       1 1:CA_1067 1:C_1068 1:O_1069 1:CB_1070 1:CG1_1071 1:CG2_1072 
+  A    135 LEU       1       1 1:C_1093 1:O_1094 1:CB_1095 
+  A    136 LYS       1       1 1:N_1099 1:CA_1100 1:C_1101 1:CB_1103 1:CG_1104 1:CD_1105 1:CE_1106 1:NZ_1107 
+  A    139 SER       1       1 1:CA_1119 1:CB_1122 1:OG_1123 
+  A    154 PHE       1       1 1:CE1_1220 1:CE2_1221 1:CZ_1222 
+  A    155 ARG       1       1 1:CA_1224 1:C_1225 1:O_1226 1:CB_1227 1:CG_1228 1:CD_1229 1:NE_1230 1:CZ_1231 1:NH1_1232 1:NH2_1233 
+  A    156 ALA       1       1 1:N_1234 1:CA_1235 1:C_1236 1:O_1237 1:CB_1238 
+  A    157 ALA       1       1 1:N_1239 1:CA_1240 1:C_1241 1:O_1242 1:CB_1243 
+  A    159 CYS       1       1 1:CB_1255 1:SG_1256 
+  A    168 ASP       1       1 1:CB_1316 1:CG_1317 1:OD1_1318 1:OD2_1319 
+  A    485 MET       1       1 1:CG_3655 1:SD_3656 1:CE_3657 
+  A    524 VAL       1       1 1:CA_3953 1:C_3954 1:O_3955 1:CB_3956 1:CG1_3957 1:CG2_3958 
+  A    525 CYS       1       1 1:N_3959 1:CA_3960 1:C_3961 1:O_3962 1:CB_3963 
+  A    526 GLN       1       1 1:N_3965 1:CA_3966 1:C_3967 1:O_3968 1:CB_3969 1:CG_3970 1:CD_3971 1:OE1_3972 1:NE2_3973 
+  A    527 ASP       1       1 1:N_3974 1:CA_3975 1:CB_3978 
+  A     78 VAL       1       0 1:C_660 1:O_661 
+  A    137 GLY       1       0 1:N_1108 
+  A    158 VAL       1       0 1:N_1244 

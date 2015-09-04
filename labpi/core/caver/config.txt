@@ -1,0 +1,90 @@
+#*****************************
+# CALCULATION SETUP      
+#*****************************
+load_tunnels no
+load_cluster_tree no
+
+#*****************************
+# INPUT DATA       
+#*****************************
+time_sparsity 1
+first_frame 1
+last_frame 10
+
+
+#*****************************
+# TUNNEL CALCULATION
+#*****************************
+
+starting_point_coordinates 8.03809090909 61.5628454545 101.552163636
+#starting_point_atom 1270
+#starting_point_atom 1257
+
+probe_radius 2.5
+shell_radius 5
+shell_depth 10 
+
+#*****************************
+# TUNNEL CLUSTERING
+#*****************************
+
+clustering average_link
+weighting_coefficient 1
+clustering_threshold 3.5
+exclude_start_zone 2
+exclude_end_zone 0
+min_middle_zone 5
+save_zones yes
+
+#max_output_clusters 10
+#visualize_tunnels_per_cluster 10
+#desired_radius 10.0
+
+
+#*****************************
+# GENERATION OF OUTPUTS
+#*****************************
+one_tunnel_in_snapshot cheapest
+save_dynamics_visualization yes
+
+generate_summary yes
+generate_tunnel_characteristics yes
+generate_tunnel_profiles yes
+
+generate_histograms yes
+bottleneck_histogram 0.0 2.0 20
+throughput_histogram 0 1.0 10
+
+generate_bottleneck_heat_map yes
+bottleneck_heat_map_range 1.0 2.0
+bottleneck_heat_map_element_size 10 20
+
+generate_profile_heat_map yes
+profile_heat_map_resolution 0.5
+profile_heat_map_range 1.0 2.0
+profile_heat_map_element_size 20 10
+
+compute_tunnel_residues yes
+residue_contact_distance 3.0
+
+compute_bottleneck_residues yes
+bottleneck_contact_distance 3.0
+
+
+#*****************************
+# ADVANCED SETTINGS
+#*****************************
+
+number_of_approximating_balls 12
+
+compute_errors no
+save_error_profiles no
+
+#path_to_vmd "C:/Program Files/University of Illinois/VMD/vmd.exe"
+generate_trajectory yes
+
+#-----------------------------
+# Others
+#-----------------------------
+swap no
+seed 1

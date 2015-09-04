@@ -1,0 +1,29 @@
+#:kivy 1.9.0
+#:import sys sys
+#:import lv kivy.uix.listview
+#:import la kivy.adapters.listadapter
+#:import os os
+
+# Screen
+<RunningScreen>:
+    canvas.before:
+	    Color:
+	        rgba: 0.92, 0.92, 0.92, 1
+	    Rectangle:
+	        # self here refers to the widget i.e BoxLayout
+	        pos: self.pos
+	        size: self.size
+
+    FloatLayout:
+        Button:
+            background_color: 1, 1, 1, 0
+            size_hint: None, None
+            size: 50, 50
+            pos: root.width-100, 30
+            # on_press: root.manager.changeScreen('running')
+            Image:
+                source: 'img/next.png'
+                size: 50, 50
+                center_x: self.parent.center_x
+                center_y: self.parent.center_y
+                allow_stretch: True
