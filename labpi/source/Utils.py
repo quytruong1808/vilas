@@ -5,13 +5,14 @@ class PdbFile(object):
    	pass
 
 class Chain(object):
-    def __init__(self, chain_id = 0, chain_type = '', chain_name = '', is_selected = True, resindices = [], is_group = True):
+    def __init__(self, chain_id = 0, chain_type = '', chain_name = '', chain_view = '', is_selected = True, resindices = [], is_group = True):
         self.chain_id = chain_id
         self.chain_type = chain_type
         self.chain_name = chain_name
+        self.chain_view = chain_view #Information about this chain in prody format
         self.is_selected = is_selected
         self.resindices = resindices
-        self.is_group = is_group 
+        self.is_group = is_group  #If this chain is a part of receptor group for pulling
     pass
 
 class DataController(object):

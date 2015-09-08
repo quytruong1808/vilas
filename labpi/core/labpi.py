@@ -19,16 +19,6 @@ from source.Utils import PdbFile
 from source.Utils import DataController
 
 
-TAG_SYSTEM = 'system'
-TAG_RECEPTOR = 'receptor'
-TAG_METHOD = 'method'
-TAG_GROMACS = 'gromacs'
-TAG_OPTION = 'option'
-TAG_AUTO = 'auto'
-TAG_CAVER = 'caver'
-TAG_NOHUP = 'nohup'
-TAG_REPEAT = 'repeat'
-
 AminoAcid = ["ALA", "ARG", "ASN", "ASP", "CYS", "GLU", "GLN", "GLY", "HIS", "ILE", "LEU", "LYS", "MET", "PHE", "PRO", "SER", "THR", "TRP", "TYR", "VAL", "SEC", "PYL", "ASX", "GLX", "XLE", "XAA"]
 ChainNames = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','P','Q','R','S','T','U','V','Y','Z']
 ForceField = 'amber99sb'
@@ -37,93 +27,71 @@ GroRight = ''
 GroOption = ''
 GroVersion = '0'
 AvogadroAuto = ''
-ReceptorCenter = []
-ReceptorFile = []
-ReceptorResidues = []
-ReceptorChain = ''
-ReceptorNumAtom = 0
 run_caver = ''
 run_nohup = ''
 repeat_times = '0'
-
 Method = ''
+
+ReceptorCenter = []
+ReceptorFile = []
+LigandFile = []
+
 
 
 class GromacsRun(object):
-  zataController = DataController()
+  dataController = DataController()
 
   #**********************************************************************#
   #***************************** Prepare Fuction ************************#
   #**********************************************************************#
 
   def ParsePDBInput():
+    Receptors = Variable.parsepdb.Receptors
+    Ligands = Variable.parsepdb.Ligands
 
-      #Export receptor to seperate pdb file
-      call('mkdir output/receptor', shell=True)
-      call('rm output/receptor/*', shell=True)
-      char_array = char_system.split(',')
-      char_receptor = char_receptors.split(' ')
-      global ReceptorCenter, ReceptorFile, ReceptorNumAtom, ReceptorResidues
-      ResidueNumber = 0
-      lastResidueId = 0
-      listCenter = [0,0,0] 
-      for x in range(0, len(char_array)):
-        if char_array[x].replace(" ", "") == "": continue
-        index_x = int(char_array[x].replace(" ", ""))
+    #Export receptor to seperate pdb file
+    root_path = self.dataController.getdata('path ')
+    call('rm ' + root_path +'/output/receptor/*', shell=True)
 
-        if index_x < len(listProtein): 
-          protein = listProtein[index_x]
-          #Check if protein is receptor or not
-          z = 0
-          while z < len(char_receptor):
-            insertLine('tag_index', 0, 'index_x = '+str(index_x) + ' char_receptor='+ str(int(char_receptor[z].split('-')[0])) +'\n', 'log.txt') 
-            if index_x == int(char_receptor[z].split('-')[0]):
-              break
-            z += 1
-          if z < len(char_receptor):
-            fileName = 'output/receptor/receptor_' + str(ProteInFile[index_x]) + "_" + str(protein) 
-            writePDB( fileName.replace(" ", ""), protein)
+    global ReceptorCenter, ReceptorFile, ReceptorNumAtom, ReceptorResidues
+    
+    ResidueNumber = 0
+    lastResidueId = 0
+    listCenter = [0,0,0] 
 
-            #If receptor don't have residue ex: 0 1 2
-            if len(char_receptor[z].split("-")) == 1:
-              resBegin = protein.getResnums()[0]
-              ReceptorResidues.append(str(protein.getResnums()[0]-resBegin + lastResidueId)+':'+str(protein.getResnums()[len(protein.getResnums()) -1] - resBegin + lastResidueId))
-              
-              for resId in range(protein.getResnums()[0],protein.getResnums()[len(protein.getResnums()) -1]+1):
-                listCenter += calcCenter(protein[resId])
+    for receptor in Receptors:
+      filename = os.path.basename(receptor.path)
+      for chain in receptor.chains:
 
-              ReceptorNumAtom +=  protein.numAtoms()
-              ResidueNumber = protein.numResidues()
-            #If receptor have residue ex: 0-100:123 2-320:600
-            else:
-              #If parameter residues is enable
-              ResidueStart = int(char_receptor[z].split("-")[1].split(":")[0])
-              RedidueEnd = int(char_receptor[z].split("-")[1].split(":")[1])
-              for resId in range(ResidueStart,RedidueEnd+1):
-                listCenter += calcCenter(protein[resId])
+        if chain.chain_type == 'protein': 
+          protein = chain.chain_view
+          
+          fileName = root_path + '/output/receptor/receptor_' + filename + "_" + str(protein) 
+          writePDB( fileName.replace(" ", ""), protein)
+          
+          if chain.is_group == True:
+            #If parameter residues is enable
+            ResidueStart = int(chain.resindices[0])
+            RedidueEnd = int(chain.resindices[1])
+            for resId in range(ResidueStart,RedidueEnd+1):
+              listCenter += calcCenter(protein[resId])
 
-              ReceptorNumAtom += protein.numAtoms()
-              ResidueNumber = protein.numResidues()
+            ReceptorNumAtom += protein.numAtoms()
+            ResidueNumber += RedidueEnd - ResidueStart + 1
 
-              #format ReceptorResidues
-              resBegin = protein.getResnums()[0]
-              ReceptorResidues.append(str(ResidueStart-resBegin + lastResidueId)+':'+str(RedidueEnd - resBegin + lastResidueId))
+            #format ReceptorResidues
+            resBegin = protein.getResnums()[0]
+            ReceptorResidues.append(str(ResidueStart-resBegin + lastResidueId)+':'+str(RedidueEnd - resBegin + lastResidueId))
             
             lastResidueId += protein.numResidues()
             ReceptorFile.append(fileName.replace(" ", ""))
-          else:
-            fileName = 'output/receptor/protein_' + str(ProteInFile[index_x]) + "_" + str(protein) 
-            writePDB( fileName.replace(" ", ""), protein)
 
         else:
-          index_y = index_x - len(listProtein)
-          ligand = listLigand[index_y]
-          fileName ='output/receptor/ligand_' +  str(LigandInFile[index_y]) + "_" + str(ligand.getResnames()[0])
+          ligand = chain.chain_view
+          fileName = root_path + '/output/receptor/ligand_' +  filename + "_" + str(ligand.getResnames()[0])
           writePDB(fileName.replace(" ", ""), ligand)
 
-      ReceptorCenter = listCenter/ResidueNumber
-    else:
-      sys.exit()
+    ReceptorCenter = listCenter/ResidueNumber
 
 
 

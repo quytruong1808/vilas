@@ -20,13 +20,13 @@ class RunningScreen(Screen):
 
     def setupView(self):
         #Check if folder is exits
-        if not os.path.exists(dataController.getdata('path ')):
-            os.makedirs(dataController.getdata('path '))
+        if not os.path.exists(self.dataController.getdata('path ')):
+            os.makedirs(self.dataController.getdata('path '))
 
-        if not os.path.exists(dataController.getdata('path ')+'/run'):
-            os.makedirs(dataController.getdata('path ')+'/run')
+        if not os.path.exists(self.dataController.getdata('path ')+'/run'):
+            os.makedirs(self.dataController.getdata('path ')+'/run')
 
-        if not os.path.exists(dataController.getdata('path ')+'/output'):
-            os.makedirs(dataController.getdata('path ')+'/output')
+        if not os.path.exists(self.dataController.getdata('path ')+'/output'):
+            os.makedirs(self.dataController.getdata('path ')+'/output')
 
         self.gromacsRun.main()

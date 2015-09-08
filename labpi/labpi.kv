@@ -350,7 +350,8 @@
                 GridLayout:
                     cols: 1
                     size_hint_y: None
-                    height: box_0.height + box_1.height + box_2.height + box_3.height + box_4.height + box_5.height + box_6.height 
+                    height: box_7.height + box_0.height + box_1.height + box_2.height + box_3.height + box_4.height + box_5.height + box_6.height 
+
                     BoxLayout:
                         id: box_0
                         size_hint_y: None
@@ -520,6 +521,23 @@
                             width: 30
                             pos: 0,0
                             active: True
+
+                    BoxLayout:
+                        id: box_7
+                        size_hint_y: None
+                        height: 50
+                        padding: self.width/8, 0, 20, 0
+                        Label:
+                            text: ' Gromacs version'
+                            color: 0,0,0,1
+                            disabled_color: 0,0,0,1
+                            font_size: '16sp'
+                            text_size: self.width, None
+                            halign: 'left'
+                            valign: 'middle'
+                            size_hint_x: None
+                            width: self.parent.width/2
+                        
 
 
 

@@ -34,8 +34,6 @@ class ReceptorScreen(Screen):
         self.receptorList.add_widget(self.recetor_lv)
 
     def setupView(self):
-        print "Receptor screen"
-        print Variable.parsepdb.Receptors
 
         data = []
         global ItemId
@@ -44,10 +42,10 @@ class ReceptorScreen(Screen):
         for pdbFile in pdbFiles:
             ItemId+=1
 
-            # Find number of chain avarible
+            # Find number of chain avarible for kivy height
             number_chain = 0
             for chain in pdbFile.chains:
-                if(chain.is_selected):
+                if(chain.is_selected and chain.chain_type != 'ligand'):
                     number_chain += 1
 
             filename = os.path.basename(pdbFile.file_path)
