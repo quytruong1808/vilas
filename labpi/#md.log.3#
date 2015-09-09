@@ -1,5 +1,5 @@
-Log file opened on Wed Sep  9 09:07:33 2015
-Host: superuser  pid: 10580  nodeid: 0  nnodes:  1
+Log file opened on Wed Sep  9 09:07:23 2015
+Host: superuser  pid: 10556  nodeid: 0  nnodes:  1
 Gromacs version:    VERSION 4.6.5
 Precision:          single
 Memory model:       64 bit
@@ -30,7 +30,7 @@ CUDA runtime:       5.50
 
                          :-)  G  R  O  M  A  C  S  (-:
 
-            Georgetown Riga Oslo Madrid Amsterdam Chisinau Stockholm
+              GROningen Mixture of Alchemy and Childrens' Stories
 
                             :-)  VERSION 4.6.5  (-:
 
@@ -96,5 +96,5 @@ For more information and tips for troubleshooting, please check the GROMACS
 website at http://www.gromacs.org/Documentation/Errors
 -------------------------------------------------------
 
-"Oh, There Goes Gravity" (Eminem)
+"If I Wanted You to Understand This, I Would Explain it Better" (J. Cruijff)
 

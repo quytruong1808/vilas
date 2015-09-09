@@ -10,10 +10,13 @@ smd-vel = 0.004
 smd-k  = 600
 
 config_auto  = False
-path = ~/Documents/labpi-result
+path  = /home/superuser/Documents/labpi-result
+/Documents/labpi-result
 caver = False
 ligand_auto = True
-repeat_times  = 3
+repeat_times  = 1
 nohup  = False
 maximum_cores  = 99
 gpu_auto  = True
+gromacs_version  = mdrun_mpi    VERSION 4.6.5
+

@@ -225,6 +225,9 @@
 
     configLayout: config_layout
 
+    boxGromacs: box_7
+    versionButton: version_button
+
     # config
     pathText: path_text
     caverBox: caver_box
@@ -300,7 +303,7 @@
 
                 size_hint: None, None
                 size: self.parent.width, 30
-                text: 'Using the optimized configuration available'
+                text: 'Using the optimized obtions available'
                 on_press: root.optimizedConfig()
                 Image:
                     id: optimized_tick
@@ -321,7 +324,7 @@
                         rectangle: self.x,self.y,self.width,self.height
                 size_hint: None, None
                 size: self.parent.width, 30    
-                text: 'Using your custom configuration'
+                text: 'Using your custom obtions'
                 on_press: root.customConfig()
                 Image:
                     id: custom_tick
@@ -356,7 +359,7 @@
                         id: box_0
                         size_hint_y: None
                         height: 50
-                        padding: self.width/8, 0, 20, 0
+                        padding: 10, 0, 20, 0
                         Label:
                             text: ' Save to path'
                             color: 0,0,0,1
@@ -383,7 +386,7 @@
                         id: box_1
                         size_hint_y: None
                         height: 50
-                        padding: self.width/8, 0, 20, 0
+                        padding: 10, 0, 20, 0
                         Label:
                             text: ' Use Caver tool'
                             color: 0,0,0,1
@@ -404,7 +407,7 @@
                         id: box_2
                         size_hint_y: None
                         height: 50
-                        padding: self.width/8, 0, 20, 0
+                        padding: 10, 0, 20, 0
                         Label:
                             text: ' Use automatic for setting parameter for ligand'
                             color: 0,0,0,1
@@ -427,7 +430,7 @@
                         id: box_3
                         size_hint_y: None
                         height: 50
-                        padding: self.width/8, 0, 20, 0
+                        padding: 10, 0, 20, 0
                         Label:
                             text: ' How many times to repeat?'
                             color: 0,0,0,1
@@ -455,7 +458,7 @@
                         id: box_4
                         size_hint_y: None
                         height: 50
-                        padding: self.width/8, 0, 20, 0
+                        padding: 10, 0, 20, 0
                         Label:
                             text: ' Do you want to run in backgroud (nohup)?'
                             color: 0,0,0,1
@@ -476,7 +479,7 @@
                         id: box_5
                         size_hint_y: None
                         height: 50
-                        padding: self.width/8, 0, 20, 0
+                        padding: 10, 0, 20, 0
                         Label:
                             text: ' Maximum cores for this task'
                             color: 0,0,0,1
@@ -504,7 +507,7 @@
                         id: box_6
                         size_hint_y: None
                         height: 50
-                        padding: self.width/8, 0, 20, 0
+                        padding: 10, 0, 20, 0
                         Label:
                             text: ' Auto use GPU to calculate'
                             color: 0,0,0,1
@@ -526,7 +529,7 @@
                         id: box_7
                         size_hint_y: None
                         height: 50
-                        padding: self.width/8, 0, 20, 0
+                        padding: 10, 0, 20, 0
                         Label:
                             text: ' Gromacs version'
                             color: 0,0,0,1
@@ -537,7 +540,14 @@
                             valign: 'middle'
                             size_hint_x: None
                             width: self.parent.width/2
-                        
+                        Button: 
+                            id: version_button
+                            background_color: 0.2, 0.7, 0.9, 1
+                            background_normal: ''
+                            size_hint: 0.8, 0.7
+                            pos_hint: {'center_y': 0.5}
+                            pos: 0,0
+                            text: 'version ...'
 
 
 

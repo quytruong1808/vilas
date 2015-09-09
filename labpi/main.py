@@ -23,6 +23,8 @@ from LabpiRunning import RunningScreen
 class ScreenManagement(ScreenManager):
 
     def changeScreen(self, screen):
+        self.current = screen
+        
         if(screen == 'receptor'):
             self.get_screen(screen).setupView()
         elif (screen == 'running'):
@@ -36,11 +38,11 @@ class ScreenManagement(ScreenManager):
 class LabpiApp(App):
     def build(self):
         sm = ScreenManagement(transition = FadeTransition())
-        sm.add_widget(ConfigurationScreen(name='configuration'))
         sm.add_widget(LoadScreen(name='load'))
         sm.add_widget(ReceptorScreen(name='receptor'))
-        sm.add_widget(SettingScreen(name='setting'))
+        sm.add_widget(ConfigurationScreen(name='configuration'))
         sm.add_widget(RunningScreen(name='running'))
+        sm.add_widget(SettingScreen(name='setting'))
         return sm
 
 def main():

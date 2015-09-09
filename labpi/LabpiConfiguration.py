@@ -4,8 +4,11 @@ from kivy.properties import ObjectProperty
 from kivy.lang import Builder
 from kivy.uix.boxlayout import BoxLayout
 from kivy.core.image import Image
-
+from kivy.uix.dropdown import DropDown
+from kivy.uix.button import Button
 from source.Utils import DataController
+
+from subprocess import check_output
 
 class ConfigurationScreen(Screen):
     dataController = DataController()
@@ -15,6 +18,8 @@ class ConfigurationScreen(Screen):
     OptimizedButton = ObjectProperty(None)
     optimizedTick = ObjectProperty(None)
     configLayout = ObjectProperty(None)
+    boxGromacs = ObjectProperty(None)
+    versionButton = ObjectProperty(None)
     is_optimized = True
 
     pathText = ObjectProperty(None)
@@ -28,7 +33,31 @@ class ConfigurationScreen(Screen):
 
     def __init__(self, *args, **kwargs):
         super(ConfigurationScreen, self).__init__(*args, **kwargs)
-        # 
+        #Check root path
+        if self.dataController.getdata('path ') == '':
+            username = check_output('echo $USER',shell=True).split('\n')[0]
+            root_path = '/home/'+username+'/Documents/labpi-result'
+            self.dataController.setdata('path ', root_path)
+        
+        #Check gromacs version 
+        command_version = check_output("compgen -ac | grep mdrun", shell=True, executable='/bin/bash').splitlines()
+        dropdown = DropDown()
+        for x in range(0, len(command_version)):
+            versions = check_output(str(command_version[x])+" -version", shell=True, executable='/bin/bash').splitlines()
+            version = [s for s in versions if "Gromacs version" in s][0].split(":")[1]
+            btn = Button(text=str(command_version[x]) + version, size_hint_y=None, height=35)
+            btn.bind(on_release=lambda btn: dropdown.select(btn.text))
+            # then add the button inside the dropdown
+            dropdown.add_widget(btn)
+            #Set first gromacs found
+            if x == 0 and self.dataController.getdata('gromacs_version ') == '':
+                self.versionButton.text = str(command_version[x]) + version
+                self.dataController.setdata('gromacs_version ', str(command_version[x] + version))
+            if self.dataController.getdata('gromacs_version ') == str(command_version[x]) + version:
+                self.versionButton.text = str(command_version[x]) + version
+        self.versionButton.bind(on_release=dropdown.open)
+        dropdown.bind(on_select=self.gromacs_version_check)
+
 
         if ( self.dataController.getdata('config_auto ') == 'True' ):
             self.configLayout.disabled = True
@@ -79,6 +108,7 @@ class ConfigurationScreen(Screen):
         self.maximumCoresText.bind(text = self.maximum_cores)
         self.gpuAutoBox.bind(active = self.gpu_auto_check)
 
+
     def path_change(self, instance, value):
         self.dataController.setdata('path ', value)
         
@@ -100,6 +130,9 @@ class ConfigurationScreen(Screen):
     def gpu_auto_check(self, checkbox, value):
         self.dataController.setdata('gpu_auto ', str(value))
 
+    def gromacs_version_check(self, instance, value):
+        self.dataController.setdata('gromacs_version ', str(value))
+        self.versionButton.text = value
 
     # For 2 button
     def optimizedConfig(self):
