@@ -3,11 +3,14 @@ from kivy.properties import ObjectProperty
 from kivy.lang import Builder
 from kivy.uix.boxlayout import BoxLayout
 
-from source.Utils import DataController
+import os
 
-Builder.load_file("setting.kv")
+from Utils import DataController
+
+Builder.load_file(os.path.dirname(__file__)+"/LabpiSetting.kv")
 
 class SettingScreen(Screen):
+    root_path = os.path.dirname(__file__)
     dataController = DataController()
 
     nvtNsteps =  ObjectProperty(None)

@@ -1,6 +1,10 @@
 from prody import *
+import os
+import sys
+labpi_path = os.path.dirname(__file__) + '/..'
+sys.path.insert(0, labpi_path)
 
-from source.Utils import Chain
+from Utils import Chain
 
 
 class ParsePdb(object):

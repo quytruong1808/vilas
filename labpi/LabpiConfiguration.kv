@@ -1,0 +1,380 @@
+#---------------------------------------------------#
+# Screen
+<ConfigurationScreen>:
+    optimizedButton: optimized_button
+    customButton: custom_button
+
+    optimizedTick: optimized_tick
+    customTick: custom_tick
+
+    configLayout: config_layout
+
+    boxGromacs: box_7
+    versionButton: version_button
+
+    # config
+    pathText: path_text
+    caverBox: caver_box
+    ligandAutoBox: ligand_auto_box
+    repeatTimesText: repeat_times_text
+    nohupBox: nohup_box
+    maximumCoresText: maximum_cores_text
+    gpuAutoBox: gpu_auto_box
+
+
+    canvas.before:
+        Color:
+            rgba: 0.92, 0.92, 0.92, 1
+        Rectangle:
+            # self here refers to the widget i.e BoxLayout
+            pos: self.pos
+            size: self.size
+
+    FloatLayout:
+        Button:
+            background_color: 1, 1, 1, 0
+            size_hint: None, None
+            size: 50, 50
+            pos: root.width-100, 30
+            on_press: root.manager.changeScreen('running')
+            Image:
+                source: root.root_path+'/img/next.png'
+                size: 50, 50
+                center_x: self.parent.center_x
+                center_y: self.parent.center_y
+                allow_stretch: True
+
+        Button:
+            background_color: 1, 1, 1, 0
+            size_hint: None, None
+            size: 50, 50
+            pos: root.width-200, 30
+            on_press: root.manager.changeScreen('receptor')
+            Image:
+                source: root.root_path+'/img/back.png'
+                size: 50, 50
+                center_x: self.parent.center_x
+                center_y: self.parent.center_y
+                allow_stretch: True
+
+        Button:
+            background_color: 1, 1, 1, 0
+            size_hint: None, None
+            size: 50, 50
+            pos: 50, 30
+            on_press: root.manager.changeScreen('setting')
+            Image:
+                source: root.root_path+'/img/setting.png'
+                size: 50, 50
+                center_x: self.parent.center_x
+                center_y: self.parent.center_y
+                allow_stretch: True
+
+
+        BoxLayout:
+            size_hint: None, None
+            size: root.width * 9/10, root.height * 2/10
+            pos: root.width /20, root.height * 8/10
+            canvas.before:
+                Color:
+                    rgba: 0.62, 0.62, 0.62, 1
+                Rectangle:
+                    pos: self.width/8 + root.width/20, self.center_y-5
+                    size: self.width*3/4, 10
+        BoxLayout:
+            size_hint: None, None
+            size: root.width * 9/10, root.height * 2/10
+            pos: root.width /20, root.height * 8/10
+            FloatLayout:
+                Image:
+                    source: root.root_path +'/img/1.png'
+                    size_hint: None, None
+                    size: 90, 90
+                    center_x: self.parent.center_x
+                    center_y: self.parent.center_y
+            FloatLayout:
+                Image:
+                    source: root.root_path +'/img/2.png'
+                    size_hint: None, None
+                    size: 90, 90
+                    center_x: self.parent.center_x
+                    center_y: self.parent.center_y
+            FloatLayout:
+                Image:
+                    source: root.root_path +'/img/3.png'
+                    size_hint: None, None
+                    size: 90, 90
+                    center_x: self.parent.center_x
+                    center_y: self.parent.center_y
+            FloatLayout:
+                Image:
+                    source: root.root_path +'/img/4_dis.png'
+                    size_hint: None, None
+                    size: 90, 90
+                    center_x: self.parent.center_x
+                    center_y: self.parent.center_y
+
+
+        BoxLayout:
+            size_hint: None, None
+            size: root.width * 9/10, root.height * 6/10
+            pos: root.width /20, root.height * 1.8/10
+            spacing: 10
+            orientation: "vertical"
+            Button:
+                id: optimized_button
+                background_color: 0, 0.588, 0.533, 1
+                background_normal: ''
+                canvas.after:
+                    Color:
+                        rgb: 0.9, 0.9, 0.9, 1
+                    Line:
+                        rectangle: self.x,self.y,self.width,self.height
+
+                size_hint: None, None
+                size: self.parent.width, 30
+                text: 'Using the optimized obtions available'
+                on_press: root.optimizedConfig()
+                Image:
+                    id: optimized_tick
+                    source: root.root_path+'/img/tick.png'
+                    size_hint_x: None
+                    width: 25
+                    center_x: self.parent.center_x - self.parent.width/2 + 40
+                    center_y: self.parent.center_y
+                    
+            Button:
+                id: custom_button
+                background_color: 0.62, 0.62, 0.62, 1
+                background_normal: ''
+                canvas.after:
+                    Color:
+                        rgb: 0.9, 0.9, 0.9, 1
+                    Line:
+                        rectangle: self.x,self.y,self.width,self.height
+                size_hint: None, None
+                size: self.parent.width, 30    
+                text: 'Using your custom obtions'
+                on_press: root.customConfig()
+                Image:
+                    id: custom_tick
+                    source: root.root_path+'/img/tick.png'
+                    color: 0,0,0,0
+                    size_hint_x: None
+                    width: 25
+                    center_x: self.parent.center_x - self.parent.width/2 + 40
+                    center_y: self.parent.center_y
+
+            ScrollView:
+                id: config_layout
+                size_hint: None, None
+                size: self.parent.width, self.parent.height-80
+                canvas.before:
+                    Color:
+                        rgba: 1,1,1,1
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                canvas.after:
+                    Color:
+                        rgb: 0.9, 0.9, 0.9
+                    Line:
+                        rectangle: self.x,self.y,self.width,self.height
+                GridLayout:
+                    cols: 1
+                    size_hint_y: None
+                    height: box_7.height + box_0.height + box_1.height + box_2.height + box_3.height + box_4.height + box_5.height + box_6.height 
+
+                    BoxLayout:
+                        id: box_0
+                        size_hint_y: None
+                        height: 50
+                        padding: 10, 0, 20, 0
+                        Label:
+                            text: ' Save to path'
+                            color: 0,0,0,1
+                            disabled_color: 0,0,0,1
+                            font_size: '16sp'
+                            text_size: self.width, None
+                            halign: 'left'
+                            valign: 'middle'
+                            size_hint_x: None
+                            width: self.parent.width/2
+                        TextInput:
+                            id: path_text
+                            size_hint: 1, 0.6
+                            pos_hint: {'center_y': 0.5}
+                            text: '3'
+                            color: 0,0,0,1
+                            disabled_color: 0,0,0,1
+                            font_size: '16sp'
+                            text_size: self.width, None
+                            halign: 'left'
+                            valign: 'middle'
+
+                    BoxLayout:
+                        id: box_1
+                        size_hint_y: None
+                        height: 50
+                        padding: 10, 0, 20, 0
+                        Label:
+                            text: ' Use Caver tool'
+                            color: 0,0,0,1
+                            disabled_color: 0,0,0,1
+                            font_size: '16sp'
+                            text_size: self.width, None
+                            halign: 'left'
+                            valign: 'middle'
+                            size_hint_x: None
+                            width: self.parent.width/2
+                        CheckBox:
+                            id: caver_box
+                            size_hint_x: None 
+                            width: 30
+                            pos: 0,0
+
+                    BoxLayout:
+                        id: box_2
+                        size_hint_y: None
+                        height: 50
+                        padding: 10, 0, 20, 0
+                        Label:
+                            text: ' Use automatic for setting parameter for ligand'
+                            color: 0,0,0,1
+                            disabled_color: 0,0,0,1
+                            font_size: '16sp'
+                            text_size: self.width, None
+                            halign: 'left'
+                            valign: 'middle'
+                            size_hint_x: None
+                            width: self.parent.width/2
+                        CheckBox:
+                            id: ligand_auto_box
+                            size_hint_x: None 
+                            width: 30
+                            pos: 0,0
+                            active: True
+
+
+                    BoxLayout:
+                        id: box_3
+                        size_hint_y: None
+                        height: 50
+                        padding: 10, 0, 20, 0
+                        Label:
+                            text: ' How many times to repeat?'
+                            color: 0,0,0,1
+                            disabled_color: 0,0,0,1
+                            font_size: '16sp'
+                            text_size: self.width, None
+                            halign: 'left'
+                            valign: 'middle'
+                            size_hint_x: None
+                            width: self.parent.width/2
+                        TextInput:
+                            id: repeat_times_text
+                            size_hint: None, 0.6
+                            width: 100
+                            pos_hint: {'center_y': 0.5}
+                            text: '3'
+                            color: 0,0,0,1
+                            disabled_color: 0,0,0,1
+                            font_size: '16sp'
+                            text_size: self.width, None
+                            halign: 'left'
+                            valign: 'middle'
+
+                    BoxLayout:
+                        id: box_4
+                        size_hint_y: None
+                        height: 50
+                        padding: 10, 0, 20, 0
+                        Label:
+                            text: ' Do you want to run in backgroud (nohup)?'
+                            color: 0,0,0,1
+                            disabled_color: 0,0,0,1
+                            font_size: '16sp'
+                            text_size: self.width, None
+                            halign: 'left'
+                            valign: 'middle'
+                            size_hint_x: None
+                            width: self.parent.width/2
+                        CheckBox:
+                            id: nohup_box
+                            size_hint_x: None 
+                            width: 30
+                            pos: 0,0
+
+                    BoxLayout:
+                        id: box_5
+                        size_hint_y: None
+                        height: 50
+                        padding: 10, 0, 20, 0
+                        Label:
+                            text: ' Maximum cores for this task'
+                            color: 0,0,0,1
+                            disabled_color: 0,0,0,1
+                            font_size: '16sp'
+                            text_size: self.width, None
+                            halign: 'left'
+                            valign: 'middle'
+                            size_hint_x: None
+                            width: self.parent.width/2
+                        TextInput:
+                            id: maximum_cores_text
+                            size_hint: None, 0.6
+                            width: 100
+                            pos_hint: {'center_y': 0.5}
+                            text: '99'
+                            color: 0,0,0,1
+                            disabled_color: 0,0,0,1
+                            font_size: '16sp'
+                            text_size: self.width, None
+                            halign: 'left'
+                            valign: 'middle'
+
+                    BoxLayout:
+                        id: box_6
+                        size_hint_y: None
+                        height: 50
+                        padding: 10, 0, 20, 0
+                        Label:
+                            text: ' Auto use GPU to calculate'
+                            color: 0,0,0,1
+                            disabled_color: 0,0,0,1
+                            font_size: '16sp'
+                            text_size: self.width, None
+                            halign: 'left'
+                            valign: 'middle'
+                            size_hint_x: None
+                            width: self.parent.width/2
+                        CheckBox:
+                            id: gpu_auto_box
+                            size_hint_x: None 
+                            width: 30
+                            pos: 0,0
+                            active: True
+
+                    BoxLayout:
+                        id: box_7
+                        size_hint_y: None
+                        height: 50
+                        padding: 10, 0, 20, 0
+                        Label:
+                            text: ' Gromacs version'
+                            color: 0,0,0,1
+                            disabled_color: 0,0,0,1
+                            font_size: '16sp'
+                            text_size: self.width, None
+                            halign: 'left'
+                            valign: 'middle'
+                            size_hint_x: None
+                            width: self.parent.width/2
+                        Button: 
+                            id: version_button
+                            background_color: 0.2, 0.7, 0.9, 1
+                            background_normal: ''
+                            size_hint: 0.8, 0.7
+                            pos_hint: {'center_y': 0.5}
+                            pos: 0,0
+                            text: 'version ...'

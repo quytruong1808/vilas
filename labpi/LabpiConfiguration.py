@@ -6,11 +6,19 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.core.image import Image
 from kivy.uix.dropdown import DropDown
 from kivy.uix.button import Button
-from source.Utils import DataController
 
 from subprocess import check_output
+import os
+
+
+from Utils import DataController
+
+#Kivy file
+Builder.load_file(os.path.dirname(__file__)+"/LabpiConfiguration.kv")
 
 class ConfigurationScreen(Screen):
+    root_path = os.path.dirname(__file__)
+
     dataController = DataController()
 
     optimizedButton = ObjectProperty(None)
@@ -31,14 +39,7 @@ class ConfigurationScreen(Screen):
     gpuAutoBox = ObjectProperty(None)
 
 
-    def __init__(self, *args, **kwargs):
-        super(ConfigurationScreen, self).__init__(*args, **kwargs)
-        #Check root path
-        if self.dataController.getdata('path ') == '':
-            username = check_output('echo $USER',shell=True).split('\n')[0]
-            root_path = '/home/'+username+'/Documents/labpi-result'
-            self.dataController.setdata('path ', root_path)
-        
+    def setupView(self):
         #Check gromacs version 
         command_version = check_output("compgen -ac | grep mdrun", shell=True, executable='/bin/bash').splitlines()
         dropdown = DropDown()
@@ -49,6 +50,7 @@ class ConfigurationScreen(Screen):
             btn.bind(on_release=lambda btn: dropdown.select(btn.text))
             # then add the button inside the dropdown
             dropdown.add_widget(btn)
+            print str(command_version[x]) + version
             #Set first gromacs found
             if x == 0 and self.dataController.getdata('gromacs_version ') == '':
                 self.versionButton.text = str(command_version[x]) + version
@@ -58,6 +60,8 @@ class ConfigurationScreen(Screen):
         self.versionButton.bind(on_release=dropdown.open)
         dropdown.bind(on_select=self.gromacs_version_check)
 
+    def __init__(self, *args, **kwargs):
+        super(ConfigurationScreen, self).__init__(*args, **kwargs)        
 
         if ( self.dataController.getdata('config_auto ') == 'True' ):
             self.configLayout.disabled = True

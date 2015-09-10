@@ -12,18 +12,23 @@ from kivy.uix.listview import ListView
 from kivy.adapters.listadapter import ListAdapter
 
 # import source
-from source.parsePdb import Variable
-from source.Utils import PdbFile
+from parsePdb import Variable
+from Utils import PdbFile
 #global variable
 ItemId = 0
 
+#Kivy file
+Builder.load_file(os.path.dirname(__file__)+"/LabpiReceptor.kv")
+
 class ReceptorScreen(Screen):
+    root_path = os.path.dirname(__file__)
+
     receptorList = ObjectProperty(None)
     recetor_lv = ListView()
 
     def __init__(self, *args, **kwargs):
         super(ReceptorScreen, self).__init__(*args, **kwargs)
-        list_item_args_converter = lambda row_index, obj: {'item_id': obj.item_id, 'text': obj.text, 'pdbFile': obj.pdbFile, 'list_id': obj.list_id, 'number_chain': obj.number_chain}
+        list_item_args_converter = lambda row_index, obj: {'root_path': obj.root_path, 'item_id': obj.item_id, 'text': obj.text, 'pdbFile': obj.pdbFile, 'list_id': obj.list_id, 'number_chain': obj.number_chain}
 
         list_adapter_receptor = ReceptorAdapter(data=[],
                             args_converter=list_item_args_converter,
@@ -49,7 +54,7 @@ class ReceptorScreen(Screen):
                     number_chain += 1
 
             filename = os.path.basename(pdbFile.file_path)
-            data.append(DataItem(item_id=ItemId, text=filename, pdbFile=pdbFile , list_id = 'receptor_lv', number_chain = number_chain))
+            data.append(DataItem(root_path=self.root_path, item_id=ItemId, text=filename, pdbFile=pdbFile , list_id = 'receptor_lv', number_chain = number_chain))
 
         self.recetor_lv.adapter.data = data
         self.recetor_lv._trigger_reset_populate()
@@ -141,8 +146,9 @@ class ReceptorAdapter(ListAdapter):
     pass
 
 class DataItem(object):
-    def __init__(self, item_id=0, text='', pdbFile='', list_id='', number_chain=0):
+    def __init__(self, root_path='', item_id=0, text='', pdbFile='', list_id='', number_chain=0):
         self.item_id = item_id
+        self.root_path = root_path
         self.text = text
         self.pdbFile = pdbFile
         self.list_id = list_id

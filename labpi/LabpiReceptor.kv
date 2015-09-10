@@ -1,0 +1,257 @@
+[GroupListItem@SelectableView+BoxLayout]:
+    cbLayout: cb_layout
+    size_hint_y: None 
+    height: 30 + 75*int(ctx.number_chain) + 1
+    BoxLayout:
+        id: item_id
+        orientation: "vertical"
+        BoxLayout:
+            size_hint: 1, None
+            height: 30
+            FloatLayout:
+                size_hint_x: None
+                width: 30
+                padding: 10, 0, 0, 0
+                Image:
+                    source: ctx.root_path +'/img/file.png'
+                    size: 20, 20
+                    allow_stretch: True
+                    size_hint: None, None
+                    center_x: self.parent.center_x
+                    center_y: self.parent.center_y
+
+            BoxLayout:
+                size_hint_x: 1.5
+                Label:
+                    text_size: self.width, None
+                    color: 0,0,0,1
+                    font_size: '16sp'            
+                    text: ctx.text
+                    valign: 'middle'
+
+        BoxLayout:
+            id: cb_layout
+            orientation: "vertical"
+            padding: 25,0,0,0
+            # size_hint_y: None
+            # height: 50
+
+        BoxLayout:
+            size_hint_y: None
+            height: 1
+            canvas.before:
+                Color:
+                    rgba: 0.92, 0.92, 0.92, 1
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+
+<GroupCheckBox>:
+    chainName: chain_name
+    chainBox: chain_box
+    resdiueFrom: resdiue_from
+    resdiueTo: resdiue_to
+
+    padding: 0, 5, 10, 5
+    BoxLayout:
+        orientation: "vertical"
+        BoxLayout:
+            size_hint_y: None
+            height: 40  
+            CheckBox:
+                id: chain_box
+                size_hint_x: None
+                width: 50
+                active: True
+            Label:
+                id: chain_name
+                text: ''
+                color: 0,0,0,1
+                font_size: '14sp'
+                text_size: self.width, None
+                halign: 'left'
+        BoxLayout:
+            size_hint_y: None
+            height: 25  
+            padding: 50,0,0,0
+            Label:
+                text: 'Residue: '
+                color: 0,0,0,1
+                font_size: '14sp'
+                text_size: self.width, None
+                halign: 'left'
+                size_hint_x: root.width * 1/10
+            Label:
+                text: ' from '
+                color: 0,0,0,1
+                font_size: '14sp'
+                text_size: self.width, None
+                halign: 'center'
+                size_hint_x: root.width * 1/10
+            TextInput:
+                id: resdiue_from
+                text: ''
+                color: 0,0,0,1
+                font_size: '14sp'
+                text_size: self.width, None
+                halign: 'left'
+                valign: 'center'
+                size_hint_x: root.width * 2/10
+                padding_y: 5
+            Label:
+                text: ' to '
+                color: 0,0,0,1
+                font_size: '14sp'
+                text_size: self.width, None
+                halign: 'center'
+                size_hint_x: root.width * 1/10
+            TextInput:
+                id: resdiue_to
+                text: ''
+                color: 0,0,0,1
+                font_size: '14sp'
+                text_size: self.width, None
+                halign: 'left'
+                valign: 'center'
+                size_hint_x: root.width * 2/10
+                padding_y: 5
+            BoxLayout:
+                size_hint_x: root.width * 2/10
+
+<ReceptorScreen>:
+    receptorList: receptor_list
+
+    canvas.before:
+        Color:
+            rgba: 0.92, 0.92, 0.92, 1
+        Rectangle:
+            # self here refers to the widget i.e BoxLayout
+            pos: self.pos
+            size: self.size
+    FloatLayout:
+        Button:
+            background_color: 1, 1, 1, 0
+            size_hint: None, None
+            size: 50, 50
+            pos: root.width-100, 30
+            on_press: root.manager.changeScreen('configuration')
+            Image:
+                source: root.root_path +'/img/next.png'
+                size: 50, 50
+                center_x: self.parent.center_x
+                center_y: self.parent.center_y
+                allow_stretch: True
+
+        Button:
+            background_color: 1, 1, 1, 0
+            size_hint: None, None
+            size: 50, 50
+            pos: root.width-200, 30
+            on_press: root.manager.changeScreen('load')
+            Image:
+                source: root.root_path +'/img/back.png'
+                size: 50, 50
+                center_x: self.parent.center_x
+                center_y: self.parent.center_y
+                allow_stretch: True
+
+        Button:
+            background_color: 1, 1, 1, 0
+            size_hint: None, None
+            size: 50, 50
+            pos: 50, 30
+            on_press: root.manager.changeScreen('setting')
+            Image:
+                source: root.root_path +'/img/setting.png'
+                size: 50, 50
+                center_x: self.parent.center_x
+                center_y: self.parent.center_y
+                allow_stretch: True
+
+
+        BoxLayout:
+            size_hint: None, None
+            size: root.width * 9/10, root.height * 2/10
+            pos: root.width /20, root.height * 8/10
+            canvas.before:
+                Color:
+                    rgba: 0.62, 0.62, 0.62, 1
+                Rectangle:
+                    pos: self.width/8 + root.width/20, self.center_y-5
+                    size: self.width*3/4, 10
+        BoxLayout:
+            size_hint: None, None
+            size: root.width * 9/10, root.height * 2/10
+            pos: root.width /20, root.height * 8/10
+            FloatLayout:
+                Image:
+                    source: root.root_path +'/img/1.png'
+                    size_hint: None, None
+                    size: 90, 90
+                    center_x: self.parent.center_x
+                    center_y: self.parent.center_y
+            FloatLayout:
+                Image:
+                    source: root.root_path +'/img/2.png'
+                    size_hint: None, None
+                    size: 90, 90
+                    center_x: self.parent.center_x
+                    center_y: self.parent.center_y
+            FloatLayout:
+                Image:
+                    source: root.root_path +'/img/3_dis.png'
+                    size_hint: None, None
+                    size: 90, 90
+                    center_x: self.parent.center_x
+                    center_y: self.parent.center_y
+            FloatLayout:
+                Image:
+                    source: root.root_path +'/img/4_dis.png'
+                    size_hint: None, None
+                    size: 90, 90
+                    center_x: self.parent.center_x
+                    center_y: self.parent.center_y
+
+        BoxLayout:
+            id: receptor_layout
+            size_hint: None, None
+            size: root.width * 9/10, root.height * 6/10
+            pos: root.width /20, root.height * 1.8/10
+            spacing: 10
+            orientation: "vertical"
+            BoxLayout:
+                canvas.before:
+                    Color:
+                        rgb: 0.62, 0.62, 0.62, 1
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                size_hint: None, None
+                size: receptor_layout.width, 30
+                padding: 20, 0, 20, 0
+                Image:
+                    source: root.root_path +'/img/info.png'
+                    size_hint_x: None
+                    width: 25
+                    center_x: self.parent.center_x
+                    center_y: self.parent.center_y
+                    allow_stretch: True
+                Label:
+                    
+                    text: 'Please select receptor groups or skip to next step'
+                
+            BoxLayout:
+                BoxLayout:
+                    id: receptor_list
+                    size: receptor_layout.width, receptor_layout.height-40
+                    canvas.before:
+                        Color:
+                            rgba: 1,1,1,1
+                        Rectangle:
+                            pos: self.pos
+                            size: self.size
+                    canvas.after:
+                        Color:
+                            rgb: 0.9, 0.9, 0.9
+                        Line:
+                            rectangle: self.x,self.y,self.width,self.height

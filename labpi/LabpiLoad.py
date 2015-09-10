@@ -16,22 +16,28 @@ from kivy.uix.listview import ListView
 from kivy.adapters.listadapter import ListAdapter
 
 #source
-from source.parsePdb import ParsePdb
-from source.parsePdb import Variable
-from source.Utils import PdbFile
-from source.Utils import Chain
+from parsePdb import ParsePdb
+from parsePdb import Variable
+from Utils import PdbFile
+from Utils import Chain
+
+
+#Kivy file
+Builder.load_file(os.path.dirname(__file__)+"/LabpiLoad.kv")
 
 # global Variable
 ItemId = 0
 
 class LoadScreen(Screen):
+    root_path = os.path.dirname(__file__)
+
     boxlist_1 = ObjectProperty(None)
     boxlist_2 = ObjectProperty(None)
 
     def __init__(self, *args, **kwargs):
         super(LoadScreen, self).__init__(*args, **kwargs)
 
-        list_item_args_converter = lambda row_index, obj: {'item_id': obj.item_id, 'text': obj.text, 'pdbFile': obj.pdbFile, 'remove_item': obj.remove_item, 'list_id': obj.list_id}
+        list_item_args_converter = lambda row_index, obj: {'root_path': obj.root_path, 'item_id': obj.item_id, 'text': obj.text, 'pdbFile': obj.pdbFile, 'remove_item': obj.remove_item, 'list_id': obj.list_id}
 
         list_adapter_receptor = LoadAdapter(data=[], 
                             args_converter=list_item_args_converter,
@@ -82,11 +88,13 @@ class LoadScreen(Screen):
                     pdbFile = PdbFile(file_path = fl, chains = chains)
                     Variable.parsepdb.Receptors.append(pdbFile)
 
-                    dataItem.append(DataItem(item_id=ItemId, text=filename, pdbFile=pdbFile , remove_item=self.remove_item, list_id = 'pdb_list_1'))
+                    dataItem.append(DataItem(root_path=self.root_path, item_id=ItemId, text=filename, pdbFile=pdbFile , remove_item=self.remove_item, list_id = 'pdb_list_1'))
                 
             # print parsepdb.Receptors
             widget.adapter.data.extend(dataItem)
             widget._trigger_reset_populate()
+
+            print len(Variable.parsepdb.Receptors)
 
         self.dismiss_popup()
 
@@ -106,7 +114,7 @@ class LoadScreen(Screen):
                     pdbFile = PdbFile(file_path = fl, chains = chains)
                     Variable.parsepdb.Ligands.append(pdbFile)
 
-                    dataItem.append(DataItem(item_id=ItemId, text=filename, pdbFile=pdbFile, remove_item=self.remove_item, list_id = 'pdb_list_2'))            
+                    dataItem.append(DataItem(root_path=self.root_path, item_id=ItemId, text=filename, pdbFile=pdbFile, remove_item=self.remove_item, list_id = 'pdb_list_2'))            
 
             # print parsepdb.Receptors
             widget.adapter.data.extend(dataItem)
@@ -209,12 +217,13 @@ class LoadAdapter(ListAdapter):
 
 
 class DataItem(object):
-    def __init__(self, item_id=0, text='', pdbFile='', remove_item = ObjectProperty(None), list_id = ''):
+    def __init__(self, root_path = '', item_id=0, text='', pdbFile='', remove_item = ObjectProperty(None), list_id = ''):
         self.item_id = item_id
         self.text = text
         self.remove_item = remove_item
         self.pdbFile = pdbFile
         self.list_id = list_id
+        self.root_path = root_path
 
 class ItemCheckBox(BoxLayout):
     pass

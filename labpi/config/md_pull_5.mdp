@@ -9,14 +9,14 @@ nstcomm         = 100           ; fix center of mass
 comm_grps       = Protein Non-Protein
 
 ; Output control
-nstxout		= 1000		; save coordinates every 10 ps
-nstvout		= 1000		; save velocities every 10 ps
-nstxtcout	= 1000		; xtc compressed trajectory output every 10 ps
-nstenergy	= 1000		; save energies every 10 ps
-nstlog		= 1000		; update log file every 10 ps
-energygrps      = Protein
+nstxout		= 500		; save coordinates every 10 ps
+nstvout		= 500		; save velocities every 10 ps
+nstxtcout	= 500		; xtc compressed trajectory output every 10 ps
+nstenergy	= 500		; save energies every 10 ps
+nstlog		= 500		; update log file every 10 ps
+energygrps      = Protein FAD A01
 ; Bond parameters
-continuation	= no		; Restarting after NPT 
+continuation	= yes		; Restarting after NPT 
 constraint_algorithm = lincs	; holonomic constraints 
 constraints	= all-bonds	; all bonds (even heavy atom-H bonds) constrained
 lincs_iter	= 1		; accuracy of LINCS
@@ -33,9 +33,9 @@ pme_order	= 4		; cubic interpolation
 fourierspacing	= 0.16		; grid spacing for FFT
 ; Temperature coupling is on
 tcoupl		= V-rescale	; modified Berendsen thermostat
-tc-grps         = Protein Water_and_ions
-tau_t           = 0.1 0.1
-ref_t           = 300 300
+tc-grps         = Protein_FAD_A01 Water_and_ions
+tau_t		= 0.1	0.1	; time constant, in ps
+ref_t		= 300 	300	; reference temperature, one for each group, in K
 ; Pressure coupling is on
 pcoupl		= Parrinello-Rahman	; Pressure coupling on in NPT
 pcoupltype	= isotropic	; uniform scaling of box vectors
@@ -47,19 +47,16 @@ pbc		= xyz		; 3-D PBC
 ; Dispersion correction
 DispCorr	= EnerPres	; account for cut-off vdW scheme
 ; Velocity generation
-gen_vel		= yes		; assign velocities from Maxwell distribution
-gen_temp	= 300		; temperature for Maxwell distribution
-gen_seed	= -1		; generate a random seed
+gen_vel		= no		; Velocity generation is off 
 cutoff-scheme = Verlet
 ; Pull code
 pull            = umbrella
-pull_geometry   = distance  ; simple distance increase 
-pull_dim        = N N Y
-pull_start      = yes       ; define initial COM distance > 0
-pull_ngroups    = 1
-pull_nstxout    = 1
-pull_nstfout    = 1
-pull_group0     = Receptor 
-pull_group1     = p28
-pull_rate1      = 0.004     ; 0.002 nm per ps = 2 nm per ns
-pull_k1         = 600       ; kJ mol^-1 nm^-2
+pull-geometry   = distance  ; simple distance increase 
+pull-dim        = N N Y
+pull-start      = yes       ; define initial COM distance > 0
+pull-ngroups    = 2
+pull-coord1-groups   = 1 2
+pull-group1-name     = Receptor
+pull-group2-name     = Chain_CF 
+pull-coord2-rate      = 0.005      ; 0.005 nm per ps = 5 nm per ns
+pull-coord2-k         = 1000      ; kJ mol^-1 nm^-2

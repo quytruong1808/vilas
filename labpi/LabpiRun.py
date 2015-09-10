@@ -12,11 +12,11 @@ from subprocess import check_output
 from subprocess import call
 import subprocess
 
-
 # import source
-from source.parsePdb import Variable
-from source.Utils import PdbFile
-from source.Utils import DataController
+from parsePdb import Variable
+from Utils import PdbFile
+from Utils import DataController
+from Utils import CheckPoint
 
 
 AminoAcid = ["ALA", "ARG", "ASN", "ASP", "CYS", "GLU", "GLN", "GLY", "HIS", "ILE", "LEU", "LYS", "MET", "PHE", "PRO", "SER", "THR", "TRP", "TYR", "VAL", "SEC", "PYL", "ASX", "GLX", "XLE", "XAA"]
@@ -25,11 +25,13 @@ ForceField = 'amber99sb'
 GroLeft  = ''
 GroRight = ''
 GroOption = ''
+GroVersion = ''
 AvogadroAuto = ''
 run_caver = ''
 run_nohup = ''
 repeat_times = '0'
 Method = '1'
+main_path = ''
 root_path = ''
 
 ReceptorNumAtom = 0
@@ -41,6 +43,8 @@ LigandFile = []
 
 
 class GromacsRun(object):
+  global root_path
+  root_path = os.path.dirname(__file__)
   dataController = DataController()
 
   #**********************************************************************#
@@ -57,11 +61,12 @@ class GromacsRun(object):
     listCenter = [0,0,0] 
 
     #Init root path
-    global root_path
-    root_path = self.dataController.getdata('path ')
-    call('rm ' + root_path +'/output/receptor/*', shell=True)
+    global main_path
+    main_path = self.dataController.getdata('path ')
+    call('rm ' + main_path +'/output/receptor/*', shell=True)
 
     #Parse PDB and save to variable
+    print len(Receptors)
     for receptor in Receptors:
       filename = os.path.basename(receptor.file_path)
       filename = os.path.splitext(filename)[0]
@@ -72,7 +77,7 @@ class GromacsRun(object):
         if chain.chain_type == 'protein': 
           protein = chain.chain_view
           
-          fileName = root_path + '/output/receptor/receptor_' + filename + "_" + str(protein) 
+          fileName = main_path + '/output/receptor/receptor_' + filename + "_" + str(protein) 
           writePDB( fileName.replace(" ", ""), protein)
           
           #If receptor is in group for pulling
@@ -94,7 +99,7 @@ class GromacsRun(object):
 
         else:
           ligand = chain.chain_view
-          fileName = root_path + '/output/receptor/ligand_' +  filename + "_" + str(ligand.getResnames()[0])
+          fileName = main_path + '/output/receptor/ligand_' +  filename + "_" + str(ligand.getResnames()[0])
           writePDB(fileName.replace(" ", ""), ligand)
 
     ReceptorCenter = listCenter/ResidueNumber
@@ -107,15 +112,17 @@ class GromacsRun(object):
   #Chon version gromacs tuong ung
   def setupOptions(self):
     # Get version of gromacs
-    global GroLeft, GroRight
+    global GroLeft, GroRight, GroVersion
     gromacs_version = self.dataController.getdata('gromacs_version ')
     version_array = gromacs_version.split(' VERSION ')[1].split('.')
     mdrun_array = gromacs_version.split(' VERSION ')[0].split('mdrun')
 
     if int(version_array[0]) == 5:
       GroLeft = 'gmx '
+      GroVersion = 5
     else:
       GroLeft = mdrun_array[0]
+      GroVersion = 4
     GroRight = mdrun_array[1]
 
     # Set number of core or gpu
@@ -130,7 +137,7 @@ class GromacsRun(object):
     global run_caver
     if self.dataController.getdata('caver ') == 'True':
       run_caver = 'y'
-      call('cp -r core/caver '+self.dataController.getdata('path '), shell=True)
+      call('cp -r '+root_path+'/caver '+self.dataController.getdata('path '), shell=True)
     else:
       run_caver = 'n'
 
@@ -180,59 +187,68 @@ class GromacsRun(object):
   def SetParameter(self, ligandNamePDB, charge, patchOutput):
     #check how to add net charge auto or by hand
     if AvogadroAuto == 'true': 
-      call('cp core/source/acpype.py '+ patchOutput +'; cd '+ patchOutput+ '; python2.7 acpype.py -i '+ ligandNamePDB +' -n '+ str(charge) +'; rm acpype.py', shell=True, executable='/bin/bash');
+      call('cp '+root_path+'/source/acpype.py '+ patchOutput +'; cd '+ patchOutput+ '; python2.7 acpype.py -i '+ ligandNamePDB +' -n '+ str(charge) +'; rm acpype.py', shell=True, executable='/bin/bash');
     elif AvogadroAuto == 'false':  
       charge = raw_input("Enter net charge: ")
-      call('cp core/source/acpype.py '+ patchOutput +'; cd '+ patchOutput+ '; python2.7 acpype.py -i '+ ligandNamePDB +' -n '+ str(charge) +'; rm acpype.py', shell=True, executable='/bin/bash');
+      call('cp '+root_path+'/source/acpype.py '+ patchOutput +'; cd '+ patchOutput+ '; python2.7 acpype.py -i '+ ligandNamePDB +' -n '+ str(charge) +'; rm acpype.py', shell=True, executable='/bin/bash');
 
   #**********************************************************************#
   #*************************** Prepare File *****************************#
   #**********************************************************************#
 
   def PrepareLigand(self):
-    call('mkdir '+root_path+'/output/ligand/', shell=True)
-    call('rm '+root_path+'/output/ligand/*', shell=True)
+    call('mkdir '+main_path+'/output/ligand/', shell=True)
+    call('rm '+main_path+'/output/ligand/*', shell=True)
     
     ligands = Variable.parsepdb.Ligands
+    index = 0
     for ligand in ligands:
-
+      index+=1
+      #Check name of ligands
+      filename = os.path.basename(ligand.file_path)
+      filename = filename.split('.pdb')[0]
       #Copy file from input to output
-      call('cp '+ligand.file_path +' '+ root_path+'/output/ligand', shell=True)
+      ligand_name = os.path.basename(ligand.file_path)
+      if(len(filename)>3 or filename[0].isdigit() == True):
+        ligand_name = ("A%02d" % (index))+'.pdb'
+        
+      call('cp '+ligand.file_path +' '+ main_path+'/output/ligand/'+ ligand_name, shell=True)
+      lg = parsePDB(main_path+'/output/ligand/'+ ligand_name)
+      
 
       #Check if this pdb is protein => add 'protein_' before this to identify
-      lg = parsePDB(root_path+'/output/ligand/'+os.path.basename(ligand.file_path))
       if (not lg.select('protein') is None) or (not lg.select('resname A U G T C') is None):
-        self.CallCommand(root_path+'/output/ligand', 'mv '+os.path.basename(ligand.file_path)+' protein_'+os.path.basename(ligand.file_path))
+        self.CallCommand(main_path+'/output/ligand', 'mv '+ligand_name+' protein_'+ligand_name)
         continue
 
       #Add hydrogen to ligand
-      AddHydrogen(root_path+'/output/ligand/'+os.path.basename(ligand.file_path))
+      AddHydrogen(main_path+'/output/ligand/'+ligand_name)
 
       #Count charge of ligand
-      charge = self.CountCharge(root_path+'/output/ligand/'+os.path.basename(ligand.file_path))
+      charge = self.CountCharge(main_path+'/output/ligand/'+ligand_name)
 
       #Set parameter (ff) for ligand
-      self.SetParameter(ligand.file_path, charge, root_path+'/output/ligand')
+      self.SetParameter(main_path+'/output/ligand/'+ligand_name, charge, main_path+'/output/ligand')
 
   def PrepareLigandReceptor(self):
     ligands = ''
     try:
-      ligands = check_output('cd '+root_path+'/output/receptor; ls ligand_*.pdb', shell = True).splitlines()
+      ligands = check_output('cd '+main_path+'/output/receptor; ls ligand_*.pdb', shell = True).splitlines()
     except subprocess.CalledProcessError as e:
 
       for x in range(0,len(ligands)):
         #Add hydrogen to ligand
-        AddHydrogen(root_path+'/output/receptor/'+ligands[x])
+        AddHydrogen(main_path+'/output/receptor/'+ligands[x])
 
         #Count charge of ligand
-        charge = self.CountCharge(root_path+'/output/receptor/'+ligands[x])
+        charge = self.CountCharge(main_path+'/output/receptor/'+ligands[x])
 
         #Set parameter (ff) for ligand
-        self.SetParameter(ligands[x], charge, root_path+'/output/receptor')
+        self.SetParameter(ligands[x], charge, main_path+'/output/receptor')
 
   def PrepareCluster(self):
     global ReceptorChain
-    ligands = check_output('cd '+root_path+'/output/ligand; ls *.pdb', shell = True).splitlines()
+    ligands = check_output('cd '+main_path+'/output/ligand; ls *.pdb', shell = True).splitlines()
     #cp file vo run
     for x in range(0,len(ligands)):
       ligandName = ligands[x].split('.')[0]
@@ -240,19 +256,19 @@ class GromacsRun(object):
       if 'protein_' in ligandName:
         isProtein = True
         ligandName = ligandName.split('_')[1]
-        call('mkdir '+root_path+'/run/run_' + ligandName, shell = True)
-        call('mkdir '+root_path+'/run/run_' + ligandName+'/mdp', shell = True)
-        call('cp '+root_path+'/output/ligand/'+ligands[x]+' '+root_path+'/run/run_' + ligandName+'/'+ligandName+'.pdb', shell = True)
-        call('cp -r core/config/* '+root_path+'/run/run_'+ligandName+'/mdp', shell = True)
+        call('mkdir '+main_path+'/run/run_' + ligandName, shell = True)
+        call('mkdir '+main_path+'/run/run_' + ligandName+'/mdp', shell = True)
+        call('cp '+main_path+'/output/ligand/'+ligands[x]+' '+main_path+'/run/run_' + ligandName+'/'+ligandName+'.pdb', shell = True)
+        call('cp -r '+root_path+'/config/* '+main_path+'/run/run_'+ligandName+'/mdp', shell = True)
       else:      
-        call('mkdir '+root_path+'/run/run_' + ligandName, shell = True)
-        call('mkdir '+root_path+'/run/run_' + ligandName+'/mdp', shell = True)
-        call('cp -r '+root_path+'/output/ligand/'+ligandName+'.acpype '+root_path+'/run/run_'+ligandName, shell = True)
-        call('cp -r core/config/* '+root_path+'/run/run_'+ligandName+'/mdp', shell = True)
+        call('mkdir '+main_path+'/run/run_' + ligandName, shell = True)
+        call('mkdir '+main_path+'/run/run_' + ligandName+'/mdp', shell = True)
+        call('cp -r '+main_path+'/output/ligand/'+ligandName+'.acpype '+main_path+'/run/run_'+ligandName, shell = True)
+        call('cp -r '+root_path+'/config/* '+main_path+'/run/run_'+ligandName+'/mdp', shell = True)
 
-      call('cp core/source/parse_pull.py '+root_path+'/run/run_'+ligandName, shell=True)
-      call('cp core/source/MmPbSaStat.py '+root_path+'/run/run_'+ligandName, shell=True)
-      call('cp -r '+root_path+'/output/receptor/*.acpype '+root_path+'/run/run_'+ligandName, shell = True)
+      call('cp '+root_path+'/source/parse_pull.py '+main_path+'/run/run_'+ligandName, shell=True)
+      call('cp '+root_path+'/source/MmPbSaStat.py '+main_path+'/run/run_'+ligandName, shell=True)
+      call('cp -r '+main_path+'/output/receptor/*.acpype '+main_path+'/run/run_'+ligandName, shell = True)
 
       #Luu tung chain vao array de cong dong lai
       chains = []
@@ -270,23 +286,23 @@ class GromacsRun(object):
 
       #If ligand is protein => add it to pdb file 
       if isProtein == True:
-        chains.append(parsePDB(root_path+'/output/ligand/'+ligands[x]))
+        chains.append(parsePDB(main_path+'/output/ligand/'+ligands[x]))
         chainName = []
         for z in range(0, chains[numR+1].numAtoms()): 
           chainName.append(ChainNames[numR+1])
         chains[numR+1].setChids(chainName)
     
-        file = open(root_path+'/run/run_' + ligandName+ '/ligand_residues.txt', 'w')
+        file = open(main_path+'/run/run_' + ligandName+ '/ligand_residues.txt', 'w')
         file.close
-        self.addLine(str(totalResidue)+'-'+str(totalResidue-1 + chains[numR+1].numResidues()),root_path+'/run/run_' + ligandName+ '/ligand_residues.txt')
+        self.addLine(str(totalResidue)+'-'+str(totalResidue-1 + chains[numR+1].numResidues()),main_path+'/run/run_' + ligandName+ '/ligand_residues.txt')
       else: 
-        call('rm '+root_path+'/run/run_' + ligandName + '/ligand_residues.txt', shell=True)
+        call('rm '+main_path+'/run/run_' + ligandName + '/ligand_residues.txt', shell=True)
 
       #Check if /receptor has other protein or not
       try:
-        proteins = check_output('cd '+root_path+'/output/receptor; ls protein*', shell = True).splitlines()
+        proteins = check_output('cd '+main_path+'/output/receptor; ls protein*', shell = True).splitlines()
         for y in range(len(chains), len(proteins)+len(chains)):
-          chains.append(parsePDB(root_path+'/output/receptor/'+proteins[y-len(chains)]))
+          chains.append(parsePDB(main_path+'/output/receptor/'+proteins[y-len(chains)]))
           chainName = []
           for z in range(0, chains[y].numAtoms()): 
             chainName.append(ChainNames[y])
@@ -300,13 +316,63 @@ class GromacsRun(object):
         if y > 0:
           sumProtein += chains[y]
    
-      call('rm '+root_path+'/run/run_'+ligandName+'/protein.pdb', shell=True)
-      call('rm '+root_path+'/run/run_'+ligandName+'/system.pdb', shell=True)
+      call('rm '+main_path+'/run/run_'+ligandName+'/protein.pdb', shell=True)
+      call('rm '+main_path+'/run/run_'+ligandName+'/system.pdb', shell=True)
       if 'protein_' in ligandName:
-        writePDB(root_path+'/run/run_'+ligandName.split('_')[1]+'/protein.pdb',sumProtein)
+        writePDB(main_path+'/run/run_'+ligandName.split('_')[1]+'/protein.pdb',sumProtein)
       else:
-        writePDB(root_path+'/run/run_'+ligandName+'/protein.pdb',sumProtein)
+        writePDB(main_path+'/run/run_'+ligandName+'/protein.pdb',sumProtein)
 
+  def EditMdpFile(self):
+    runfolders = check_output('ls '+main_path+'/run/', shell = True).splitlines()
+    for x in range(0,len(runfolders)):
+      mdpFolder = main_path+'/run/'+runfolders[x]+'/mdp'
+
+      nsteps = int(self.dataController.getdata('nvt-nsteps '))/0.002
+      nstout = self.dataController.getdata('nvt-nst ')
+      self.replaceLine('nsteps', 'nsteps     = '+str(nsteps)+'\n', mdpFolder+'/nvt.mdp')
+      self.replaceLine('nstxout', 'nstxout     = '+str(nstout)+'\n', mdpFolder+'/nvt.mdp')
+      self.replaceLine('nstvout', 'nstvout     = '+str(nstout)+'\n', mdpFolder+'/nvt.mdp')
+      self.replaceLine('nstenergy', 'nstenergy     = '+str(nstout)+'\n', mdpFolder+'/nvt.mdp')
+      self.replaceLine('nstlog', 'nstlog     = '+str(nstout)+'\n', mdpFolder+'/nvt.mdp')
+
+      nsteps = int(self.dataController.getdata('npt-nsteps '))/0.002
+      nstout = self.dataController.getdata('npt-nst ')
+      self.replaceLine('nsteps', 'nsteps     = '+str(nsteps)+'\n', mdpFolder+'/npt.mdp')
+      self.replaceLine('nstxout', 'nstxout     = '+str(nstout)+'\n', mdpFolder+'/npt.mdp')
+      self.replaceLine('nstvout', 'nstvout     = '+str(nstout)+'\n', mdpFolder+'/npt.mdp')
+      self.replaceLine('nstenergy', 'nstenergy     = '+str(nstout)+'\n', mdpFolder+'/npt.mdp')
+      self.replaceLine('nstlog', 'nstlog     = '+str(nstout)+'\n', mdpFolder+'/npt.mdp')
+
+      nsteps = int(self.dataController.getdata('md-nsteps '))/0.002
+      nstout = self.dataController.getdata('md-nst ')
+      self.replaceLine('nsteps', 'nsteps     = '+str(nsteps)+'\n', mdpFolder+'/md.mdp')
+      self.replaceLine('nstxout', 'nstxout     = '+str(nstout)+'\n', mdpFolder+'/md.mdp')
+      self.replaceLine('nstvout', 'nstvout     = '+str(nstout)+'\n', mdpFolder+'/md.mdp')
+      self.replaceLine('nstxtcout', 'nstxtcout     = '+str(nstout)+'\n', mdpFolder+'/md.mdp')
+      self.replaceLine('nstenergy', 'nstenergy     = '+str(nstout)+'\n', mdpFolder+'/md.mdp')
+      self.replaceLine('nstlog', 'nstlog     = '+str(nstout)+'\n', mdpFolder+'/md.mdp')
+
+      nsteps = int(self.dataController.getdata('smd-nsteps '))/0.002
+      nstout = self.dataController.getdata('smd-nst ')
+      vel_pull = self.dataController.getdata('smd-vel ')
+      k_pull = self.dataController.getdata('smd-k ')
+      if(GroVersion >= 5):
+        mdp_pull_file = '/md_pull_5.mdp'
+        self.replaceLine('pull-coord2-rate', 'pull-coord2-rate      = '+str(vel_pull)+'\n', mdpFolder+mdp_pull_file)
+        self.replaceLine('pull-coord2-k', 'pull-coord2-k         = '+str(k_pull)+'\n', mdpFolder+mdp_pull_file)
+      else:
+        mdp_pull_file = '/md_pull.mdp'
+        self.replaceLine('pull_rate1', 'pull_rate1      = '+str(vel_pull)+'\n', mdpFolder+mdp_pull_file)
+        self.replaceLine('pull_k1', 'pull_k1         = '+str(k_pull)+'\n', mdpFolder+mdp_pull_file)
+
+      self.replaceLine('nsteps', 'nsteps     = '+str(nsteps)+'\n', mdpFolder+mdp_pull_file)
+      self.replaceLine('nstxout', 'nstxout     = '+str(nstout)+'\n', mdpFolder+mdp_pull_file)
+      self.replaceLine('nstvout', 'nstvout     = '+str(nstout)+'\n', mdpFolder+mdp_pull_file)
+      self.replaceLine('nstxtcout', 'nstxtcout     = '+str(nstout)+'\n', mdpFolder+mdp_pull_file)
+      self.replaceLine('nstenergy', 'nstenergy     = '+str(nstout)+'\n', mdpFolder+mdp_pull_file)
+      self.replaceLine('nstlog', 'nstlog     = '+str(nstout)+'\n', mdpFolder+mdp_pull_file)
+      
 
   #**********************************************************************#
   #************************* Calc Fuction ****************************#
@@ -385,7 +451,6 @@ class GromacsRun(object):
     self.Log('systemCenter', str(systemCenter[2]))
     self.Log('ratio',str(ratio))
       
-    print 'editconf_mpi -f '+inputfile+' -o '+patch+outputfile +' -box '+str(d_x)+' '+str(d_y)+' '+str(d_z)+ ' -center '+str(systemCenter[0])+' '+str(systemCenter[1])+' '+str(systemCenter[2])
     call('cd '+patch+';'+GroLeft+'editconf'+GroRight+' -f '+inputfile+' -o '+outputfile +' -box '+str(d_x)+' '+str(d_y)+' '+str(d_z)+ ' -center '+str(systemCenter[0])+' '+str(systemCenter[1])+' '+str(systemCenter[2]), shell=True, executable='/bin/bash') 
 
 
@@ -438,18 +503,18 @@ class GromacsRun(object):
     return self.rotatePoint(obj.getCoords()[posAtom], vectorPull)
 
   def setupCaver(self, ligandCenter, filepdb):
-    call('rm -r '+root_path+'/caver/input/*', shell=True)
-    call('cp '+str(filepdb)+' '+root_path+'/caver/input', shell=True)
+    call('rm -r '+main_path+'/caver/input/*', shell=True)
+    call('cp '+str(filepdb)+' '+main_path+'/caver/input', shell=True)
     coord_ligand = str(ligandCenter[0]) + ' ' + str(ligandCenter[1]) + ' ' + str(ligandCenter[2]) + '\n'
-    replaceLine('starting_point_coordinates','starting_point_coordinates '+coord_ligand,root_path+'/caver/config.txt')
-    call('cd '+root_path+'/caver; sh caver.sh', shell=True)
+    replaceLine('starting_point_coordinates','starting_point_coordinates '+coord_ligand,main_path+'/caver/config.txt')
+    call('cd '+main_path+'/caver; sh caver.sh', shell=True)
 
     outputFile = []
     try:
-      outputFile = check_output('cd '+root_path+'/caver/out/data/clusters; ls *.pdb', shell = True).splitlines()
+      outputFile = check_output('cd '+main_path+'/caver/out/data/clusters; ls *.pdb', shell = True).splitlines()
     except subprocess.CalledProcessError as e:
       return None
-    tunel = parsePDB(root_path+'/caver/out/data/clusters/'+outputFile[0])
+    tunel = parsePDB(main_path+'/caver/out/data/clusters/'+outputFile[0])
     tunelVector = tunel.getCoords()[tunel.numAtoms()-1] - tunel.getCoords()[tunel.numAtoms()-2]
     return tunelVector
 
@@ -558,22 +623,22 @@ class GromacsRun(object):
   #**********************************************************************#
   def SetupSystem(self):
     global GroLeft, GroRight
-    runfolders = check_output('ls '+root_path+'/run/', shell = True).splitlines()
+    runfolders = check_output('ls '+main_path+'/run/', shell = True).splitlines()
     for x in range(0,len(runfolders)):
 
-      topolfile = root_path+'/run/'+runfolders[x]+'/topol.top'
+      topolfile = main_path+'/run/'+runfolders[x]+'/topol.top'
       ligandCurrent = runfolders[x].split('_')[1] #A01
       try:
-        ligandFolders = check_output('cd '+root_path+'/run/'+runfolders[x]+'; ls -d *.acpype', shell = True).splitlines()
+        ligandFolders = check_output('cd '+main_path+'/run/'+runfolders[x]+'; ls -d *.acpype', shell = True).splitlines()
       except subprocess.CalledProcessError as e:
         ligandFolders = []
-      proteinfiles = check_output('cd '+root_path+'/run/'+runfolders[x]+'; ls protein*', shell = True).splitlines()
+      proteinfiles = check_output('cd '+main_path+'/run/'+runfolders[x]+'; ls protein*', shell = True).splitlines()
 
       #*****************************************************************************************************#
       #Add force field to protein
       #for y in range(0, len(proteinfiles)):
       #proteinname = proteinfiles[0].split(".")[0]
-      self.CallCommand(root_path+'/run/'+runfolders[x],GroLeft+'pdb2gmx'+GroRight+' -ff '+ForceField+' -f protein.pdb -o protein.gro -water spce -missing -ignh')
+      self.CallCommand(main_path+'/run/'+runfolders[x],GroLeft+'pdb2gmx'+GroRight+' -ff '+ForceField+' -f protein.pdb -o protein.gro -water spce -missing -ignh')
 
       #if ligand is protein
       # if os.path.isfile('run/'+runfolders[x]+'/'+ligandCurrent+'.pdb') is True:
@@ -582,14 +647,14 @@ class GromacsRun(object):
       #*****************************************************************************************************#
       #Merge *.gro file
       #Read file protein.gro
-      proteingro = open(root_path+'/run/'+runfolders[x]+'/protein.gro', 'r')
+      proteingro = open(main_path+'/run/'+runfolders[x]+'/protein.gro', 'r')
       proteinData = proteingro.readlines()
       proteingro.close()
       
       for y in range(0, len(ligandFolders)):
         #Read file *.gro
         ligandName = ligandFolders[y].split('.')[0]
-        gro = open(root_path+'/run/'+runfolders[x]+'/'+ligandFolders[y]+'/'+ligandName+'_GMX.gro', 'r')
+        gro = open(main_path+'/run/'+runfolders[x]+'/'+ligandFolders[y]+'/'+ligandName+'_GMX.gro', 'r')
         ligandData = gro.readlines()
         gro.close()
 
@@ -599,7 +664,7 @@ class GromacsRun(object):
           proteinData.insert(len(proteinData)-1, line)
 
       #save to system.gro
-      f = open(root_path+'/run/'+runfolders[x]+'/system.gro', "w")
+      f = open(main_path+'/run/'+runfolders[x]+'/system.gro', "w")
       for item in proteinData:
         f.write(item)
       f.close()
@@ -610,7 +675,7 @@ class GromacsRun(object):
       for y in range(0, len(ligandFolders)):
         #Read file *.itp
         ligandName = ligandFolders[y].split('.')[0]
-        itp = open(root_path+'/run/'+runfolders[x]+'/'+ligandFolders[y]+'/'+ligandName+'_GMX.itp', 'r')
+        itp = open(main_path+'/run/'+runfolders[x]+'/'+ligandFolders[y]+'/'+ligandName+'_GMX.itp', 'r')
         itpline = itp.readlines()
         atomtypes.extend( itpline[self.substring('[ atomtypes ]',itpline)[0]: self.substring('[ moleculetype ]',itpline)[0]] )
      
@@ -619,7 +684,7 @@ class GromacsRun(object):
         atomtopologys = itpline[self.substring('[ moleculetype ]',itpline)[0]:]
         itp.close()
    
-        f = open(root_path+'/run/'+runfolders[x]+'/'+ligandName+'.itp', "w")
+        f = open(main_path+'/run/'+runfolders[x]+'/'+ligandName+'.itp', "w")
         for item in atomtopologys:
           f.write(item)
         f.close()
@@ -632,7 +697,7 @@ class GromacsRun(object):
         self.addLine(ligandName+'                 1\n', topolfile)
 
       #save atomtypes to ligand_atomtypes.itp
-      f = open(root_path+'/run/'+runfolders[x]+'/ligand_atomtypes.itp', "w")
+      f = open(main_path+'/run/'+runfolders[x]+'/ligand_atomtypes.itp', "w")
       for item in atomtypes:
         f.write(item)
       f.close()
@@ -642,15 +707,15 @@ class GromacsRun(object):
 
       #*****************************************************************************************************#
       #setup Box
-      if os.path.isfile(root_path+'/run/'+runfolders[x]+'/'+ligandCurrent+'.acpype/'+ligandCurrent+'.pdb') is True:
-        ligand = parsePDB(root_path+'/run/'+runfolders[x]+'/'+ligandCurrent+'.acpype/'+ligandCurrent+'.pdb')
+      if os.path.isfile(main_path+'/run/'+runfolders[x]+'/'+ligandCurrent+'.acpype/'+ligandCurrent+'.pdb') is True:
+        ligand = parsePDB(main_path+'/run/'+runfolders[x]+'/'+ligandCurrent+'.acpype/'+ligandCurrent+'.pdb')
       else:
-        ligand = parsePDB(root_path+'/run/'+runfolders[x]+'/'+ligandCurrent+'.pdb')
+        ligand = parsePDB(main_path+'/run/'+runfolders[x]+'/'+ligandCurrent+'.pdb')
       ligandCenter = calcCenter(ligand)
 
       #check if user want to use caver
       if run_caver == 'y':
-        vectorPull = self.setupCaver(ligandCenter, root_path+'/run/'+runfolders[x]+'/protein.pdb')
+        vectorPull = self.setupCaver(ligandCenter, main_path+'/run/'+runfolders[x]+'/protein.pdb')
         if vectorPull is None:
           vectorPull = ligandCenter - ReceptorCenter
       else:
@@ -658,36 +723,42 @@ class GromacsRun(object):
       self.Log('ligandCenter',str(ligandCenter))
       self.Log('ReceptorCenter',str(ReceptorCenter))
 
-      call('cp core/source/rotate.py '+root_path+'/run/'+runfolders[x]+'/', shell = True)
-      self.CallCommand(root_path+'/run/'+runfolders[x]+'/', 'python2.7 rotate.py -i system.gro -o rotate_system.gro -v '+str(vectorPull[0])+','+str(vectorPull[1])+','+str(vectorPull[2]))
+      call('cp '+root_path+'/source/rotate.py '+main_path+'/run/'+runfolders[x]+'/', shell = True)
+      self.CallCommand(main_path+'/run/'+runfolders[x]+'/', 'python2.7 rotate.py -i system.gro -o rotate_system.gro -v '+str(vectorPull[0])+','+str(vectorPull[1])+','+str(vectorPull[2]))
       
       #*****************************************************************************************************#
       #set Boxsize
       #read distance 
-      pullspeed = float(self.searchLine('pull_rate1', root_path+'/run/'+runfolders[x]+'/mdp/md_pull.mdp').split("=")[1].split(';')[0])
-      pulltime = float(self.searchLine('nsteps', root_path+'/run/'+runfolders[x]+'/mdp/md_pull.mdp').split("=")[1].split(';')[0])*float(self.searchLine('dt', root_path+'/run/'+runfolders[x]+'/mdp/md_pull.mdp').split("=")[1].split(';')[0])
+      pullspeed = float(self.searchLine('pull_rate1', main_path+'/run/'+runfolders[x]+'/mdp/md_pull.mdp').split("=")[1].split(';')[0])
+      pulltime = float(self.searchLine('nsteps', main_path+'/run/'+runfolders[x]+'/mdp/md_pull.mdp').split("=")[1].split(';')[0])*float(self.searchLine('dt', main_path+'/run/'+runfolders[x]+'/mdp/md_pull.mdp').split("=")[1].split(';')[0])
       distance = pullspeed*pulltime
 
       #Calc ratio of receptor/ligand
-      if os.path.isfile(root_path+'/run/'+runfolders[x]+'/'+ligandCurrent+'.acpype/'+ligandCurrent+'.pdb') is True:
-        ligand = parsePDB(root_path+'/run/'+runfolders[x]+'/'+ligandCurrent+'.acpype/'+ligandCurrent+'.pdb')
+      if os.path.isfile(main_path+'/run/'+runfolders[x]+'/'+ligandCurrent+'.acpype/'+ligandCurrent+'.pdb') is True:
+        ligand = parsePDB(main_path+'/run/'+runfolders[x]+'/'+ligandCurrent+'.acpype/'+ligandCurrent+'.pdb')
       else:
-        ligand = parsePDB(root_path+'/run/'+runfolders[x]+'/'+ligandCurrent+'.pdb')
+        ligand = parsePDB(main_path+'/run/'+runfolders[x]+'/'+ligandCurrent+'.pdb')
       ligandNumAtom = ligand.numAtoms()
 
       self.Log('number atom', str(ReceptorNumAtom) + ' ' + str(ligandNumAtom))
       ratio = float(float(ReceptorNumAtom)/float(ligandNumAtom))
       ligandMax = self.getMaxCoord(2, ligand, vectorPull)
-      receptor = Avogadro.MoleculeFile.readMolecule(root_path+'/run/'+runfolders[x]+'/protein.gro')
-      self.setbox(root_path+'/run/'+runfolders[x]+'/', 'rotate_system.gro', 'newbox.gro', receptor.numResidues, distance, ratio, ligandMax[2]/10)
+      receptor = Avogadro.MoleculeFile.readMolecule(main_path+'/run/'+runfolders[x]+'/protein.gro')
+      self.setbox(main_path+'/run/'+runfolders[x]+'/', 'rotate_system.gro', 'newbox.gro', receptor.numResidues, distance, ratio, ligandMax[2]/10)
       
       #Add solv
-      self.CallCommand(root_path+'/run/'+runfolders[x],GroLeft+'genbox'+GroRight+' -cp newbox.gro -cs spc216.gro -p topol.top -o solv.gro')
-
+      if GroVersion >=5:
+        self.CallCommand(main_path+'/run/'+runfolders[x],GroLeft+'solvate'+GroRight+' -cp newbox.gro -cs spc216.gro -p topol.top -o solv.gro')
+      else:
+        self.CallCommand(main_path+'/run/'+runfolders[x],GroLeft+'genbox'+GroRight+' -cp newbox.gro -cs spc216.gro -p topol.top -o solv.gro')
+      
   def runGromacs(self):
-    runfolders = check_output('ls '+root_path+'/run/', shell = True).splitlines()
+    runfolders = check_output('ls '+main_path+'/run/', shell = True).splitlines()
     for x in range(0,len(runfolders)):
-      run_path = root_path+'/run/'+runfolders[x]
+      # Check point to show log
+      CheckPoint.point = runfolders[x]
+
+      run_path = main_path+'/run/'+runfolders[x]
       #Add ions to solv 
       #self.CallCommand('run/'+runfolders[x], 'cp solv.gro solv_ions.gro')
       self.CallCommand(run_path, GroLeft+'grompp'+GroRight+' -maxwarn 10 -f mdp/ions.mdp -c solv.gro -p topol.top -o ions.tpr')
@@ -849,15 +920,26 @@ class GromacsRun(object):
       
       if int(Method) == 1:
         if (int(repeat_times) == 1 or int(repeat_times) == 0 ):
-          self.replaceLine('pull_group1', 'pull_group1     = '+ligandCurrent+'\n', run_path+'/mdp/md_pull.mdp')
-          groCmd += GroLeft+'grompp'+GroRight+ ' -maxwarn 20 -f mdp/md_pull.mdp -c md.gro -t md.cpt -p topol.top -n index.ndx -o md_1.tpr \n'
+          if(GroVersion >= 5):
+            self.replaceLine('pull-group2-name', 'pull-group2-name     = '+ligandCurrent+'\n', run_path+'/mdp/md_pull_5.mdp')
+            groCmd += GroLeft+'grompp'+GroRight+ ' -maxwarn 20 -f mdp/md_pull_5.mdp -c md.gro -t md.cpt -p topol.top -n index.ndx -o md_1.tpr \n'
+          else:
+            self.replaceLine('pull_group1', 'pull_group1     = '+ligandCurrent+'\n', run_path+'/mdp/md_pull.mdp')
+            groCmd += GroLeft+'grompp'+GroRight+ ' -maxwarn 20 -f mdp/md_pull.mdp -c md.gro -t md.cpt -p topol.top -n index.ndx -o md_1.tpr \n'
+          
           groCmd += GroLeft+'mdrun'+GroRight+ ' '+GroOption+ ' -px pullx.xvg -pf pullf.xvg -deffnm md_1 -v \n'
         else:
           # Repeat the steered for times
-          self.CallCommand(run_path, 'cp mdp/md_pull.mdp mdp/md_pull_repeat.mdp')
-          self.replaceLine('continuation', 'continuation  = no   ; Restarting after NPT\n', run_path+'/mdp/md_pull_repeat.mdp')
-          self.replaceLine('gen_vel','gen_vel   = yes\ngen_temp = 300\ngen_seed = -1\n', run_path+'/mdp/md_pull_repeat.mdp')
-          self.replaceLine('pull_group1', 'pull_group1     = '+ligandCurrent+'\n', run_path+'/mdp/md_pull_repeat.mdp')
+          if(GroVersion >= 5):
+            self.CallCommand(run_path, 'cp mdp/md_pull_5.mdp mdp/md_pull_repeat.mdp')
+            self.replaceLine('continuation', 'continuation  = no   ; Restarting after NPT\n', run_path+'/mdp/md_pull_repeat.mdp')
+            self.replaceLine('gen_vel','gen_vel   = yes\ngen_temp = 300\ngen_seed = -1\n', run_path+'/mdp/md_pull_repeat.mdp')
+            self.replaceLine('pull-group2-name', 'pull-group2-name     = '+ligandCurrent+'\n', run_path+'/mdp/md_pull_repeat.mdp')
+          else:
+            self.CallCommand(run_path, 'cp mdp/md_pull.mdp mdp/md_pull_repeat.mdp')
+            self.replaceLine('continuation', 'continuation  = no   ; Restarting after NPT\n', run_path+'/mdp/md_pull_repeat.mdp')
+            self.replaceLine('gen_vel','gen_vel   = yes\ngen_temp = 300\ngen_seed = -1\n', run_path+'/mdp/md_pull_repeat.mdp')
+            self.replaceLine('pull_group1', 'pull_group1     = '+ligandCurrent+'\n', run_path+'/mdp/md_pull_repeat.mdp')
           
           for k in range(0,int(repeat_times)):
             groCmd += GroLeft+'grompp'+GroRight+ ' -maxwarn 20 -f mdp/md_pull_repeat.mdp -c md.gro -t md.cpt -p topol.top -n index.ndx -o md_1_'+str(k)+'.tpr \n'
@@ -890,6 +972,7 @@ class GromacsRun(object):
     self.PrepareLigand()
     self.PrepareLigandReceptor()
     self.PrepareCluster()
+    self.EditMdpFile()
     self.SetupSystem()
     self.runGromacs()
 
