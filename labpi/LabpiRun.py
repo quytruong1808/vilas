@@ -800,7 +800,7 @@ class GromacsRun(object):
         replace_4 += ' 300'     
 
       replace_1 += '\n'
-      replace_2 += ' Water_and_ions\n'
+      replace_2 += ' non-Protein\n'
       replace_3 += '\n'
       replace_4 += '\n'
        
@@ -809,24 +809,28 @@ class GromacsRun(object):
       self.replaceLine('energygrps', replace_1, run_path+'/mdp/npt.mdp')
       self.replaceLine('energygrps', replace_1, run_path+'/mdp/md.mdp')
       self.replaceLine('energygrps', replace_1, run_path+'/mdp/md_pull.mdp')
+      self.replaceLine('energygrps', replace_1, run_path+'/mdp/md_pull_5.mdp')
       self.replaceLine('energygrps', replace_1, run_path+'/mdp/md_md.mdp')
 
       self.replaceLine('tc-grps', replace_2, run_path+'/mdp/nvt.mdp')
       self.replaceLine('tc-grps', replace_2, run_path+'/mdp/npt.mdp')
       self.replaceLine('tc-grps', replace_2, run_path+'/mdp/md.mdp')
       self.replaceLine('tc-grps', replace_2, run_path+'/mdp/md_pull.mdp') 
+      self.replaceLine('tc-grps', replace_2, run_path+'/mdp/md_pull_5.mdp') 
       self.replaceLine('tc-grps', replace_2, run_path+'/mdp/md_md.mdp') 
 
       self.replaceLine('tau_t', replace_3, run_path+'/mdp/nvt.mdp')
       self.replaceLine('tau_t', replace_3, run_path+'/mdp/npt.mdp')
       self.replaceLine('tau_t', replace_3, run_path+'/mdp/md.mdp')
       self.replaceLine('tau_t', replace_3, run_path+'/mdp/md_pull.mdp') 
+      self.replaceLine('tau_t', replace_3, run_path+'/mdp/md_pull_5.mdp') 
       self.replaceLine('tau_t', replace_3, run_path+'/mdp/md_md.mdp') 
 
       self.replaceLine('ref_t', replace_4, run_path+'/mdp/nvt.mdp')
       self.replaceLine('ref_t', replace_4, run_path+'/mdp/npt.mdp')
       self.replaceLine('ref_t', replace_4, run_path+'/mdp/md.mdp')
       self.replaceLine('ref_t', replace_4, run_path+'/mdp/md_pull.mdp') 
+      self.replaceLine('ref_t', replace_4, run_path+'/mdp/md_pull_5.mdp') 
       self.replaceLine('ref_t', replace_4, run_path+'/mdp/md_md.mdp') 
 
       #Find group, merge group, create group to index file
@@ -887,6 +891,7 @@ class GromacsRun(object):
 
         mergeGroup += ' | \\"' + resname +'\\"'
       self.CallCommand(run_path, 'echo -e \"'+mergeGroup +'\\nq\\n\" | '+ GroLeft+'make_ndx'+GroRight+' -f solv_ions.gro -n index.ndx') 
+      print 'echo -e \"'+mergeGroup +'\\nq\\n\" | '+ GroLeft+'make_ndx'+GroRight+' -f solv_ions.gro -n index.ndx'
       #Change water to water_and_ions in index.ndx
       #replaceLine('[ Water ]', '[ Water_and_ions ]\n', indexfile)
 
@@ -946,16 +951,16 @@ class GromacsRun(object):
             groCmd += GroLeft+'mdrun'+GroRight+ ' '+GroOption+ ' -px pullx_'+str(k)+'.xvg -pf pullf_'+str(k)+'.xvg -deffnm md_1_'+str(k)+' -v \n'
             groCmd += 'python2.7 parse_pull.py -x pullx_'+str(k)+'.xvg -f pullf_'+str(k)+'.xvg -o pullfx_'+str(k)+'.xvg\n'
         
-      elif int(Method) == 2:
-        if os.path.isfile(run_path+'/md_2.gro') is False:
-          groCmd += GroLeft+'grompp'+GroRight+ ' -maxwarn 20 -f mdp/md_md.mdp -c md.gro -t md.cpt -p topol.top -n index.ndx -o md_2.tpr \n'
-          groCmd += GroLeft+'mdrun'+GroRight+ ' '+GroOption+ ' -deffnm md_2 -v \n'
+      # elif int(Method) == 2:
+      #   if os.path.isfile(run_path+'/md_2.gro') is False:
+      #     groCmd += GroLeft+'grompp'+GroRight+ ' -maxwarn 20 -f mdp/md_md.mdp -c md.gro -t md.cpt -p topol.top -n index.ndx -o md_2.tpr \n'
+      #     groCmd += GroLeft+'mdrun'+GroRight+ ' '+GroOption+ ' -deffnm md_2 -v \n'
 
-        groCmd += 'export OMP_NUM_THREADS=4\n'
-        groCmd += 'echo -e \"Receptor\\n'+ligandCurrent+'\\n\" | g_mmpbsa -f md_2.trr -b 100 -dt 20 -s md_2.tpr -n index.ndx -pdie 2 -decomp \n'
-        groCmd += 'echo -e \"Receptor\\n'+ligandCurrent+'\\n\" | g_mmpbsa -f md_2.trr -b 100 -dt 20 -s md_2.tpr -n index.ndx -i mdp/polar.mdp -nomme -pbsa -decomp \n'
-        groCmd += 'echo -e \"Receptor\\n'+ligandCurrent+'\\n\" | g_mmpbsa -f md_2.trr -b 100 -dt 20 -s md_2.tpr -n index.ndx -i mdp/apolar_sasa.mdp -nomme -pbsa -decomp -apol sasa.xvg -apcon sasa_contrib.dat \n'
-        groCmd += 'python2.7 MmPbSaStat.py -m energy_MM.xvg -p polar.xvg -a sasa.xvg \n'
+      #   groCmd += 'export OMP_NUM_THREADS=4\n'
+      #   groCmd += 'echo -e \"Receptor\\n'+ligandCurrent+'\\n\" | g_mmpbsa -f md_2.trr -b 100 -dt 20 -s md_2.tpr -n index.ndx -pdie 2 -decomp \n'
+      #   groCmd += 'echo -e \"Receptor\\n'+ligandCurrent+'\\n\" | g_mmpbsa -f md_2.trr -b 100 -dt 20 -s md_2.tpr -n index.ndx -i mdp/polar.mdp -nomme -pbsa -decomp \n'
+      #   groCmd += 'echo -e \"Receptor\\n'+ligandCurrent+'\\n\" | g_mmpbsa -f md_2.trr -b 100 -dt 20 -s md_2.tpr -n index.ndx -i mdp/apolar_sasa.mdp -nomme -pbsa -decomp -apol sasa.xvg -apcon sasa_contrib.dat \n'
+      #   groCmd += 'python2.7 MmPbSaStat.py -m energy_MM.xvg -p polar.xvg -a sasa.xvg \n'
 
       self.CallCommand(run_path, groCmd)
 

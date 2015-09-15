@@ -1,12 +1,40 @@
 Need software
-0. Python version >= 2.7
-1. Prody with Numpy and matlibplot
-2. Gromacs version >= 4.6
-3. Avogadro and Avogadro lib for python
-4. Open babel
-5. g_mmpbsa
-http://rashmikumari.github.io/g_mmpbsa/Download-and-Installation.html
+1. Python version >= 2.7
+sudo apt-get install python python-setuptools python-dev python-augeas python-opengl python-imaging python-pyrex python-pyside.qtopengl python-qt4 python-qt4-gl python-lxml
 
-Request
-0. Name of ligand file must have only 3 character, ec: A01, B02 v.v.v.
-1. 
+2. Gromacs version >= 4.6
+sudo apt-get install gromacs
+
+3. Openbabel
+sudo apt-get install openbabel
+or 
+sudo pip insatall openbabel
+
+4. Avogadro for python
+sudo apt-get install avogadro
+
+5. Cython
+sudo apt-get install cython
+or
+sudo pip install cython
+
+
+How to install labpi in Ubuntu
+1. Install pip
+sudo apt-get install python-pip
+2. Install Labpi
+sudo pip install labpi
+
+
+*** If you get error while installing, maybe it lacks some below packages
+sudo apt-get installgcc swig dialog
+
+pip install hg+http://bitbucket.org/pygame/pygame
+
+sudo apt-get install -y python-pip build-essential libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf-dev libportmidi-dev libswscale-dev libavformat-dev libavcodec-dev zlib1g-dev
+
+sudo apt-get install libsdl2-2.0-0 libsdl2-image-2.0-0 libsdl2-mixer-2.0-0 libsdl2-ttf-2.0-0
+
+sudo apt-get install xmlsec1 openssl libxmlsec1 libxmlsec1-dev
+
+sudo apt-get install build-essential autoconf libtool pkg-config  idle-python2.7 qt4-dev-tools qt4-designer libqtgui4 libqtcore4 libqt4-xml libqt4-test libqt4-script libqt4-network libqt4-dbus libgle3

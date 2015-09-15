@@ -36,6 +36,7 @@ labpi/config/apolar_sav.mdp
 labpi/config/ions.mdp
 labpi/config/md.mdp
 labpi/config/md.mdp~
+labpi/config/md_md.mdp
 labpi/config/md_md.mdp~
 labpi/config/md_pull.mdp
 labpi/config/md_pull.mdp~

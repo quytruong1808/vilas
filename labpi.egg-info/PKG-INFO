@@ -1,24 +1,33 @@
 Metadata-Version: 1.1
 Name: labpi
-Version: 1.0.41
+Version: 1.1.2
 Summary: Auto tools for Steered Molecule Simulation in Gromacs
 Home-page: https://github.com/quytruong/labpi
 Author: quytruong
 Author-email: support@comobiophys.com
 License: MIT
 Description: Need software
-        0. Python version >= 2.7
-        1. Prody with Numpy and matlibplot
+        1. Python version >= 2.7
+        sudo apt-get install python python-setuptools python-dev python-augeas
+        
         2. Gromacs version >= 4.6
-        3. Avogadro and Avogadro lib for python
-        4. Open babel
-        5. g_mmpbsa
-        http://rashmikumari.github.io/g_mmpbsa/Download-and-Installation.html
+        sudo apt-get install gromacs
         
-        Request
-        0. Name of ligand file must have only 3 character, ec: A01, B02 v.v.v.
-        1. 
+        3. Openbabel
+        sudo apt-get install openbabel
         
+        4. Avogadro for python
+        sudo apt-get install avogadro
+        
+        5. Cython
+        sudo apt-get install cython
+        
+        6. Another package
+        sudo apt-get installgcc swig dialog
+        
+        sudo apt-get install xmlsec1 openssl python-lxml libxmlsec1 libxmlsec1-dev
+        
+        sudo apt-get install build-essential autoconf libtool pkg-config python-opengl python-imaging python-pyrex python-pyside.qtopengl idle-python2.7 qt4-dev-tools qt4-designer libqtgui4 libqtcore4 libqt4-xml libqt4-test libqt4-script libqt4-network libqt4-dbus python-qt4 python-qt4-gl libgle3 python-dev
 Keywords: gromacs,tools,steered,labpi
 Platform: UNKNOWN
 Classifier: Development Status :: 3 - Alpha
