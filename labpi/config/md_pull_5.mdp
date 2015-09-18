@@ -47,6 +47,7 @@ pbc		= xyz		; 3-D PBC
 ; Dispersion correction
 DispCorr	= EnerPres	; account for cut-off vdW scheme
 ; Velocity generation
+; Velocity generation
 gen_vel		= no		; Velocity generation is off 
 cutoff-scheme = Verlet
 ; Pull code
@@ -55,8 +56,10 @@ pull-geometry   = distance  ; simple distance increase
 pull-dim        = N N Y
 pull-start      = yes       ; define initial COM distance > 0
 pull-ngroups    = 2
+pull-nstxout	= 10
+pull-nstfout	= 10
 pull-coord1-groups   = 1 2
 pull-group1-name     = Receptor
 pull-group2-name     = Chain_CF 
-pull-coord2-rate      = 0.005      ; 0.005 nm per ps = 5 nm per ns
-pull-coord2-k         = 1000      ; kJ mol^-1 nm^-2
+pull-coord1-rate      = 0.004      ; 0.004 nm per ps = 4 nm per ns
+pull-coord1-k         = 600      ; kJ mol^-1 nm^-2

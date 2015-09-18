@@ -1,7 +1,0 @@
-5 total tunnels
--1 by assign
-5 by murtagh
-c 7 2.98848795867941
-1 
-c 3 2.884696161026451
-23 

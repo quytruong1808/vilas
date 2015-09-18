@@ -36,7 +36,7 @@ sudo apt-get install freeglut3-dev
 ** Missing pygame:
 sudo apt-get install python-pygame
 or
-pip install hg+http://bitbucket.org/pygame/pygame
+sudo pip install hg+http://bitbucket.org/pygame/pygame
 
 ** Missing some package
 sudo apt-get installgcc swig dialog

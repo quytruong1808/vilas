@@ -9,7 +9,7 @@ smd-nst  = 5000
 smd-vel = 0.004
 smd-k  = 600
 
-config_auto  = False
+config_auto  = True
 path  = 
 /Documents/labpi-result
 caver = False

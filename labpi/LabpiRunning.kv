@@ -24,18 +24,18 @@
 	        size: self.size
 
     FloatLayout:
-        Button:
-            background_color: 1, 1, 1, 0
-            size_hint: None, None
-            size: 50, 50
-            pos: root.width-100, 30
-            on_press: root.stopApp()
-            Image:
-                source: root.root_path+'/img/cross.png'
-                size: 50, 50
-                center_x: self.parent.center_x
-                center_y: self.parent.center_y
-                allow_stretch: True
+        # Button:
+        #     background_color: 1, 1, 1, 0
+        #     size_hint: None, None
+        #     size: 50, 50
+        #     pos: root.width-100, 30
+        #     on_press: exit()
+        #     Image:
+        #         source: root.root_path+'/img/cross.png'
+        #         size: 50, 50
+        #         center_x: self.parent.center_x
+        #         center_y: self.parent.center_y
+        #         allow_stretch: True
 
         BoxLayout:
             size_hint: None, None
@@ -96,7 +96,7 @@
 
                 Label:
                     id: check_file
-                    text: 'run_123'
+                    text: ''
                     color: 0,0,0,1
                     disabled_color: 0,0,0,1
                     font_size: '16sp'

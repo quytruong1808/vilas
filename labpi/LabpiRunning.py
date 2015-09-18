@@ -9,8 +9,12 @@ from kivy.clock import Clock
 #from python libs
 import os
 import os.path
+import signal
 from subprocess import call
 import threading
+import ctypes
+import time
+from multiprocessing import Process
 
 # import core labpi
 from LabpiRun import GromacsRun
@@ -60,9 +64,9 @@ class RunningScreen(Screen):
         call('mkdir '+self.dataController.getdata('path ')+'/output/receptor', shell=True)
         call('mkdir '+self.dataController.getdata('path ')+'/output/ligand', shell=True)
         
-        self.thread = GromacsThread(target= self.gromacsRun.main)
-        self.thread.daemon = True
+        self.thread = Process(target= self.gromacsRun.main)
         self.thread.start()
+        #Todo: run nohup
 
         #Check log
         self.progressUnit = 1000/5.5/len(Variable.parsepdb.Ligands)
@@ -122,7 +126,7 @@ class RunningScreen(Screen):
                 self.mdImg.source = self.root_path+'/img/tick_normal.png'
             # self.mdImg.reload()
 
-            # TODO: check percent 
+            # TODO: check percent import signal
             smd_log = 0
             for x in range(0, int(repeat_times)):
                 smd_path_x = run_path + '/md_1_'+str(x)+'.gro'
@@ -149,24 +153,35 @@ class RunningScreen(Screen):
 
 
         
-    def stopApp(self):
-        self.thread.stop()
-        App.get_running_app().stop()
+    # def stopApp(self):
+        # if(self.dataController.getdata('nohup ') == 'True'):
+        #     self.thread.stop()
+        # else:
+        #self.thread.terminate()
+        # pid = self.thread.pid
+        # os.kill(pid, signal.SIGKILL) #or signal.SIGKILL 
+        # print pid
+        # print self.thread.is_alive()
+        # time.sleep(1)
+        # App().stop() 
+        # App.get_running_app().stop()
 
 
-class GromacsThread(threading.Thread):
 
-    def stop(self):
-        self.__stop = True
 
-    def _bootstrap(self):
-        if threading._trace_hook is not None:
-            raise ValueError('Cannot run thread with tracing!')
-        self.__stop = False
-        sys.settrace(self.__trace)
-        super()._bootstrap()
+# class GromacsThread(threading.Thread):
 
-    def __trace(self, frame, event, arg):
-        if self.__stop:
-            raise StopThread()
-        return self.__trace
+#     def stop(self):
+#         self.__stop = True
+
+#     def _bootstrap(self):
+#         if threading._trace_hook is not None:
+#             raise ValueError('Cannot run thread with tracing!')
+#         self.__stop = False
+#         sys.settrace(self.__trace)
+#         super()._bootstrap()
+
+#     def __trace(self, frame, event, arg):
+#         if self.__stop:
+#             raise StopThread()
+#         return self.__trace

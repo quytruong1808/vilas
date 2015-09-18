@@ -137,7 +137,7 @@ class GromacsRun(object):
     global run_caver
     if self.dataController.getdata('caver ') == 'True':
       run_caver = 'y'
-      call('cp -r '+root_path+'/caver '+self.dataController.getdata('path '), shell=True)
+      call('tar xfz '+root_path+'/caver.tar.gz -C '+self.dataController.getdata('path '), shell=True)
     else:
       run_caver = 'n'
 
@@ -359,8 +359,8 @@ class GromacsRun(object):
       k_pull = self.dataController.getdata('smd-k ')
       if(GroVersion >= 5):
         mdp_pull_file = '/md_pull_5.mdp'
-        self.replaceLine('pull-coord2-rate', 'pull-coord2-rate      = '+str(vel_pull)+'\n', mdpFolder+mdp_pull_file)
-        self.replaceLine('pull-coord2-k', 'pull-coord2-k         = '+str(k_pull)+'\n', mdpFolder+mdp_pull_file)
+        self.replaceLine('pull-coord1-rate', 'pull-coord1-rate      = '+str(vel_pull)+'\n', mdpFolder+mdp_pull_file)
+        self.replaceLine('pull-coord1-k', 'pull-coord1-k         = '+str(k_pull)+'\n', mdpFolder+mdp_pull_file)
       else:
         mdp_pull_file = '/md_pull.mdp'
         self.replaceLine('pull_rate1', 'pull_rate1      = '+str(vel_pull)+'\n', mdpFolder+mdp_pull_file)
@@ -506,7 +506,7 @@ class GromacsRun(object):
     call('rm -r '+main_path+'/caver/input/*', shell=True)
     call('cp '+str(filepdb)+' '+main_path+'/caver/input', shell=True)
     coord_ligand = str(ligandCenter[0]) + ' ' + str(ligandCenter[1]) + ' ' + str(ligandCenter[2]) + '\n'
-    replaceLine('starting_point_coordinates','starting_point_coordinates '+coord_ligand,main_path+'/caver/config.txt')
+    self.replaceLine('starting_point_coordinates','starting_point_coordinates '+coord_ligand,main_path+'/caver/config.txt')
     call('cd '+main_path+'/caver; sh caver.sh', shell=True)
 
     outputFile = []
@@ -800,7 +800,7 @@ class GromacsRun(object):
         replace_4 += ' 300'     
 
       replace_1 += '\n'
-      replace_2 += ' non-Protein\n'
+      replace_2 += ' Water_and_ions\n'
       replace_3 += '\n'
       replace_4 += '\n'
        
@@ -947,9 +947,10 @@ class GromacsRun(object):
             self.replaceLine('pull_group1', 'pull_group1     = '+ligandCurrent+'\n', run_path+'/mdp/md_pull_repeat.mdp')
           
           for k in range(0,int(repeat_times)):
-            groCmd += GroLeft+'grompp'+GroRight+ ' -maxwarn 20 -f mdp/md_pull_repeat.mdp -c md.gro -t md.cpt -p topol.top -n index.ndx -o md_1_'+str(k)+'.tpr \n'
-            groCmd += GroLeft+'mdrun'+GroRight+ ' '+GroOption+ ' -px pullx_'+str(k)+'.xvg -pf pullf_'+str(k)+'.xvg -deffnm md_1_'+str(k)+' -v \n'
-            groCmd += 'python2.7 parse_pull.py -x pullx_'+str(k)+'.xvg -f pullf_'+str(k)+'.xvg -o pullfx_'+str(k)+'.xvg\n'
+            if os.path.isfile(run_path+'/md_1_'+str(k)+'.gro') is False:
+              groCmd += GroLeft+'grompp'+GroRight+ ' -maxwarn 20 -f mdp/md_pull_repeat.mdp -c md.gro -t md.cpt -p topol.top -n index.ndx -o md_1_'+str(k)+'.tpr \n'
+              groCmd += GroLeft+'mdrun'+GroRight+ ' '+GroOption+ ' -px pullx_'+str(k)+'.xvg -pf pullf_'+str(k)+'.xvg -deffnm md_1_'+str(k)+' -v \n'
+              groCmd += 'python2.7 parse_pull.py -x pullx_'+str(k)+'.xvg -f pullf_'+str(k)+'.xvg -o pullfx_'+str(k)+'.xvg\n'
         
       # elif int(Method) == 2:
       #   if os.path.isfile(run_path+'/md_2.gro') is False:

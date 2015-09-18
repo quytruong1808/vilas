@@ -59,9 +59,9 @@ f = open(oFile,'w')
 first_x = 0.0
 for x in range(0, len(array_1)):
   x_array = array_1[x].split("\t")
-  f_array = array_2[x].split("\t")
+  f_array = array_2[x*10].split("\t")
   #x_variable = math.sqrt(float(x_array[4])**2 + float(x_array[5])**2 + float(x_array[6])**2) 
-  x_variable = float(x_array[2])
+  x_variable = float(x_array[len(x_array)-1])
   if x == 0:
     first_x = x_variable
   newline = x_array[0] + '\t' + str(x_variable - first_x) + '\t' + f_array[1]
