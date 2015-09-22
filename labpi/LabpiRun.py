@@ -17,6 +17,7 @@ from parsePdb import Variable
 from Utils import PdbFile
 from Utils import DataController
 from Utils import CheckPoint
+from GromacsMD import GromacsMD
 
 
 AminoAcid = ["ALA", "ARG", "ASN", "ASP", "CYS", "GLU", "GLN", "GLY", "HIS", "ILE", "LEU", "LYS", "MET", "PHE", "PRO", "SER", "THR", "TRP", "TYR", "VAL", "SEC", "PYL", "ASX", "GLX", "XLE", "XAA"]
@@ -625,20 +626,21 @@ class GromacsRun(object):
     global GroLeft, GroRight
     runfolders = check_output('ls '+main_path+'/run/', shell = True).splitlines()
     for x in range(0,len(runfolders)):
-
+      run_path = main_path+'/run/'+runfolders[x]
       topolfile = main_path+'/run/'+runfolders[x]+'/topol.top'
       ligandCurrent = runfolders[x].split('_')[1] #A01
+
       try:
-        ligandFolders = check_output('cd '+main_path+'/run/'+runfolders[x]+'; ls -d *.acpype', shell = True).splitlines()
+        ligandFolders = check_output('cd '+run_path+'; ls -d *.acpype', shell = True).splitlines()
       except subprocess.CalledProcessError as e:
         ligandFolders = []
-      proteinfiles = check_output('cd '+main_path+'/run/'+runfolders[x]+'; ls protein*', shell = True).splitlines()
+      proteinfiles = check_output('cd '+run_path+'; ls protein*', shell = True).splitlines()
 
       #*****************************************************************************************************#
       #Add force field to protein
       #for y in range(0, len(proteinfiles)):
       #proteinname = proteinfiles[0].split(".")[0]
-      self.CallCommand(main_path+'/run/'+runfolders[x],GroLeft+'pdb2gmx'+GroRight+' -ff '+ForceField+' -f protein.pdb -o protein.gro -water spce -missing -ignh')
+      self.CallCommand(run_path,GroLeft+'pdb2gmx'+GroRight+' -ff '+ForceField+' -f protein.pdb -o protein.gro -water spce -missing -ignh')
 
       #if ligand is protein
       # if os.path.isfile('run/'+runfolders[x]+'/'+ligandCurrent+'.pdb') is True:
@@ -647,14 +649,14 @@ class GromacsRun(object):
       #*****************************************************************************************************#
       #Merge *.gro file
       #Read file protein.gro
-      proteingro = open(main_path+'/run/'+runfolders[x]+'/protein.gro', 'r')
+      proteingro = open(run_path+'/protein.gro', 'r')
       proteinData = proteingro.readlines()
       proteingro.close()
       
       for y in range(0, len(ligandFolders)):
         #Read file *.gro
         ligandName = ligandFolders[y].split('.')[0]
-        gro = open(main_path+'/run/'+runfolders[x]+'/'+ligandFolders[y]+'/'+ligandName+'_GMX.gro', 'r')
+        gro = open(run_path+'/'+ligandFolders[y]+'/'+ligandName+'_GMX.gro', 'r')
         ligandData = gro.readlines()
         gro.close()
 
@@ -664,7 +666,7 @@ class GromacsRun(object):
           proteinData.insert(len(proteinData)-1, line)
 
       #save to system.gro
-      f = open(main_path+'/run/'+runfolders[x]+'/system.gro', "w")
+      f = open(run_path+'/system.gro', "w")
       for item in proteinData:
         f.write(item)
       f.close()
@@ -675,7 +677,7 @@ class GromacsRun(object):
       for y in range(0, len(ligandFolders)):
         #Read file *.itp
         ligandName = ligandFolders[y].split('.')[0]
-        itp = open(main_path+'/run/'+runfolders[x]+'/'+ligandFolders[y]+'/'+ligandName+'_GMX.itp', 'r')
+        itp = open(run_path+'/'+ligandFolders[y]+'/'+ligandName+'_GMX.itp', 'r')
         itpline = itp.readlines()
         atomtypes.extend( itpline[self.substring('[ atomtypes ]',itpline)[0]: self.substring('[ moleculetype ]',itpline)[0]] )
      
@@ -684,7 +686,7 @@ class GromacsRun(object):
         atomtopologys = itpline[self.substring('[ moleculetype ]',itpline)[0]:]
         itp.close()
    
-        f = open(main_path+'/run/'+runfolders[x]+'/'+ligandName+'.itp', "w")
+        f = open(run_path+'/'+ligandName+'.itp', "w")
         for item in atomtopologys:
           f.write(item)
         f.close()
@@ -697,7 +699,7 @@ class GromacsRun(object):
         self.addLine(ligandName+'                 1\n', topolfile)
 
       #save atomtypes to ligand_atomtypes.itp
-      f = open(main_path+'/run/'+runfolders[x]+'/ligand_atomtypes.itp', "w")
+      f = open(run_path+'/ligand_atomtypes.itp', "w")
       for item in atomtypes:
         f.write(item)
       f.close()
@@ -707,15 +709,15 @@ class GromacsRun(object):
 
       #*****************************************************************************************************#
       #setup Box
-      if os.path.isfile(main_path+'/run/'+runfolders[x]+'/'+ligandCurrent+'.acpype/'+ligandCurrent+'.pdb') is True:
-        ligand = parsePDB(main_path+'/run/'+runfolders[x]+'/'+ligandCurrent+'.acpype/'+ligandCurrent+'.pdb')
+      if os.path.isfile(run_path+'/'+ligandCurrent+'.acpype/'+ligandCurrent+'.pdb') is True:
+        ligand = parsePDB(run_path+'/'+ligandCurrent+'.acpype/'+ligandCurrent+'.pdb')
       else:
-        ligand = parsePDB(main_path+'/run/'+runfolders[x]+'/'+ligandCurrent+'.pdb')
+        ligand = parsePDB(run_path+'/'+ligandCurrent+'.pdb')
       ligandCenter = calcCenter(ligand)
 
       #check if user want to use caver
       if run_caver == 'y':
-        vectorPull = self.setupCaver(ligandCenter, main_path+'/run/'+runfolders[x]+'/protein.pdb')
+        vectorPull = self.setupCaver(ligandCenter, run_path+'/protein.pdb')
         if vectorPull is None:
           vectorPull = ligandCenter - ReceptorCenter
       else:
@@ -723,46 +725,43 @@ class GromacsRun(object):
       self.Log('ligandCenter',str(ligandCenter))
       self.Log('ReceptorCenter',str(ReceptorCenter))
 
-      call('cp '+root_path+'/source/rotate.py '+main_path+'/run/'+runfolders[x]+'/', shell = True)
-      self.CallCommand(main_path+'/run/'+runfolders[x]+'/', 'python2.7 rotate.py -i system.gro -o rotate_system.gro -v '+str(vectorPull[0])+','+str(vectorPull[1])+','+str(vectorPull[2]))
+      call('cp '+root_path+'/source/rotate.py '+run_path+'/', shell = True)
+      self.CallCommand(run_path+'/', 'python2.7 rotate.py -i system.gro -o rotate_system.gro -v '+str(vectorPull[0])+','+str(vectorPull[1])+','+str(vectorPull[2]))
       
       #*****************************************************************************************************#
       #set Boxsize
       #read distance 
-      pullspeed = float(self.searchLine('pull_rate1', main_path+'/run/'+runfolders[x]+'/mdp/md_pull.mdp').split("=")[1].split(';')[0])
-      pulltime = float(self.searchLine('nsteps', main_path+'/run/'+runfolders[x]+'/mdp/md_pull.mdp').split("=")[1].split(';')[0])*float(self.searchLine('dt', main_path+'/run/'+runfolders[x]+'/mdp/md_pull.mdp').split("=")[1].split(';')[0])
+      pullspeed = float(self.searchLine('pull_rate1', run_path+'/mdp/md_pull.mdp').split("=")[1].split(';')[0])
+      pulltime = float(self.searchLine('nsteps', run_path+'/mdp/md_pull.mdp').split("=")[1].split(';')[0])*float(self.searchLine('dt', main_path+'/run/'+runfolders[x]+'/mdp/md_pull.mdp').split("=")[1].split(';')[0])
       distance = pullspeed*pulltime
 
       #Calc ratio of receptor/ligand
-      if os.path.isfile(main_path+'/run/'+runfolders[x]+'/'+ligandCurrent+'.acpype/'+ligandCurrent+'.pdb') is True:
-        ligand = parsePDB(main_path+'/run/'+runfolders[x]+'/'+ligandCurrent+'.acpype/'+ligandCurrent+'.pdb')
+      if os.path.isfile(run_path+'/'+ligandCurrent+'.acpype/'+ligandCurrent+'.pdb') is True:
+        ligand = parsePDB(run_path+'/'+ligandCurrent+'.acpype/'+ligandCurrent+'.pdb')
       else:
-        ligand = parsePDB(main_path+'/run/'+runfolders[x]+'/'+ligandCurrent+'.pdb')
+        ligand = parsePDB(run_path+'/'+ligandCurrent+'.pdb')
       ligandNumAtom = ligand.numAtoms()
 
       self.Log('number atom', str(ReceptorNumAtom) + ' ' + str(ligandNumAtom))
       ratio = float(float(ReceptorNumAtom)/float(ligandNumAtom))
       ligandMax = self.getMaxCoord(2, ligand, vectorPull)
-      receptor = Avogadro.MoleculeFile.readMolecule(main_path+'/run/'+runfolders[x]+'/protein.gro')
-      self.setbox(main_path+'/run/'+runfolders[x]+'/', 'rotate_system.gro', 'newbox.gro', receptor.numResidues, distance, ratio, ligandMax[2]/10)
+      receptor = Avogadro.MoleculeFile.readMolecule(run_path+'/protein.gro')
+      self.setbox(run_path+'/', 'rotate_system.gro', 'newbox.gro', receptor.numResidues, distance, ratio, ligandMax[2]/10)
       
-      #Add solv
-      if GroVersion >=5:
-        self.CallCommand(main_path+'/run/'+runfolders[x],GroLeft+'solvate'+GroRight+' -cp newbox.gro -cs spc216.gro -p topol.top -o solv.gro')
-      else:
-        self.CallCommand(main_path+'/run/'+runfolders[x],GroLeft+'genbox'+GroRight+' -cp newbox.gro -cs spc216.gro -p topol.top -o solv.gro')
-      
-  def runGromacs(self):
-    runfolders = check_output('ls '+main_path+'/run/', shell = True).splitlines()
-    for x in range(0,len(runfolders)):
-      # Check point to show log
-      CheckPoint.point = runfolders[x]
 
-      run_path = main_path+'/run/'+runfolders[x]
+      #*******************************************************************************
+      #Add solv
+      if os.path.isfile(run_path+'/solv.gro') is False: 
+        if GroVersion >=5:
+          self.CallCommand(run_path, GroLeft+'solvate'+GroRight+' -cp newbox.gro -cs spc216.gro -p topol.top -o solv.gro')
+        else:
+          self.CallCommand(run_path, GroLeft+'genbox'+GroRight+' -cp newbox.gro -cs spc216.gro -p topol.top -o solv.gro')
+      
       #Add ions to solv 
       #self.CallCommand('run/'+runfolders[x], 'cp solv.gro solv_ions.gro')
-      self.CallCommand(run_path, GroLeft+'grompp'+GroRight+' -maxwarn 10 -f mdp/ions.mdp -c solv.gro -p topol.top -o ions.tpr')
-      self.CallCommand(run_path, 'echo -e \"SOL\"|' +GroLeft+'genion'+GroRight+' -s ions.tpr -o solv_ions.gro -p topol.top -pname NA -nname CL -neutral -conc 0.1')
+      if os.path.isfile(run_path+'/solv_ions.gro') is False: 
+        self.CallCommand(run_path, GroLeft+'grompp'+GroRight+' -maxwarn 10 -f mdp/ions.mdp -c solv.gro -p topol.top -o ions.tpr')
+        self.CallCommand(run_path, 'echo -e \"SOL\"|' +GroLeft+'genion'+GroRight+' -s ions.tpr -o solv_ions.gro -p topol.top -pname NA -nname CL -neutral -conc 0.1')
 
       #Create index file for first time => check double name
       self.CallCommand(run_path, 'echo -e \"q\\n\" | '+ GroLeft+'make_ndx'+GroRight+' -f solv_ions.gro -o index.ndx') 
@@ -833,6 +832,7 @@ class GromacsRun(object):
       self.replaceLine('ref_t', replace_4, run_path+'/mdp/md_pull_5.mdp') 
       self.replaceLine('ref_t', replace_4, run_path+'/mdp/md_md.mdp') 
 
+
       #Find group, merge group, create group to index file
       #*********************************************************************************
       #create group receptor
@@ -869,8 +869,7 @@ class GromacsRun(object):
           AtomEnd = system.residues[int(contents[0].split('-')[1])].atoms[len(system.residues[int(contents[0].split('-')[1])].atoms)-1]+1
           mergeGroup += 'a '+ str(AtomStart)+'-'+str(AtomEnd) +'\\n'
           nameOfLigand = 'a_'+ str(AtomStart)+'-'+str(AtomEnd)
-
-
+      
       #Add group to index and Create posre
       topolfile = run_path+'/topol.top'
       indexfile = run_path+'/index.ndx'
@@ -878,7 +877,6 @@ class GromacsRun(object):
         ligandFolders = check_output('cd '+run_path+'; ls -d *.acpype', shell = True).splitlines()
       except subprocess.CalledProcessError as e:
         ligandFolders = []
-      ligandCurrent = runfolders[x].split('_')[1] #A01
 
       #ex: Protein_A01_FDA group
       mergeGroup += '\\"protein\\"'
@@ -902,68 +900,6 @@ class GromacsRun(object):
         self.replaceLine(nameOfLigand, '[ '+ligandCurrent+' ]\n', indexfile)
       #*********************************************************************************
 
-      groCmd = ''
-      #Run em
-      if os.path.isfile(run_path+'/em.gro') is False: 
-        groCmd += GroLeft+'grompp'+GroRight+' -maxwarn 20 -f mdp/minim.mdp -c solv_ions.gro -p topol.top -o em.tpr \n'
-        groCmd += GroLeft+'mdrun'+GroRight+' '+GroOption+' -v -deffnm em \n'
-      
-      #Run nvt
-      if os.path.isfile(run_path+'/nvt.gro') is False: 
-        groCmd += GroLeft+'grompp'+GroRight+' -maxwarn 20 -f mdp/nvt.mdp -c em.gro -p topol.top -n index.ndx -o nvt.tpr \n'
-        groCmd += GroLeft+'mdrun'+GroRight+ ' '+GroOption+ ' -deffnm nvt -v \n'
-
-      #Run npt
-      if os.path.isfile(run_path+'/npt.gro') is False: 
-        groCmd += GroLeft+'grompp'+GroRight+' -maxwarn 20 -f mdp/npt.mdp -c nvt.gro -t nvt.cpt -p topol.top -n index.ndx -o npt.tpr \n'
-        groCmd += GroLeft+'mdrun'+GroRight+ ' '+GroOption+ ' -deffnm npt -v \n'
-
-      #Run md
-      if os.path.isfile(run_path+'/md.gro') is False:
-        groCmd += GroLeft+'grompp'+GroRight+ ' -maxwarn 20 -f mdp/md.mdp -c npt.gro -t npt.cpt -p topol.top -n index.ndx -o md.tpr \n'
-        groCmd += GroLeft+'mdrun'+GroRight+ ' '+GroOption+ ' -deffnm md -v \n'
-      
-      if int(Method) == 1:
-        if (int(repeat_times) == 1 or int(repeat_times) == 0 ):
-          if(GroVersion >= 5):
-            self.replaceLine('pull-group2-name', 'pull-group2-name     = '+ligandCurrent+'\n', run_path+'/mdp/md_pull_5.mdp')
-            groCmd += GroLeft+'grompp'+GroRight+ ' -maxwarn 20 -f mdp/md_pull_5.mdp -c md.gro -t md.cpt -p topol.top -n index.ndx -o md_1.tpr \n'
-          else:
-            self.replaceLine('pull_group1', 'pull_group1     = '+ligandCurrent+'\n', run_path+'/mdp/md_pull.mdp')
-            groCmd += GroLeft+'grompp'+GroRight+ ' -maxwarn 20 -f mdp/md_pull.mdp -c md.gro -t md.cpt -p topol.top -n index.ndx -o md_1.tpr \n'
-          
-          groCmd += GroLeft+'mdrun'+GroRight+ ' '+GroOption+ ' -px pullx.xvg -pf pullf.xvg -deffnm md_1 -v \n'
-        else:
-          # Repeat the steered for times
-          if(GroVersion >= 5):
-            self.CallCommand(run_path, 'cp mdp/md_pull_5.mdp mdp/md_pull_repeat.mdp')
-            self.replaceLine('continuation', 'continuation  = no   ; Restarting after NPT\n', run_path+'/mdp/md_pull_repeat.mdp')
-            self.replaceLine('gen_vel','gen_vel   = yes\ngen_temp = 300\ngen_seed = -1\n', run_path+'/mdp/md_pull_repeat.mdp')
-            self.replaceLine('pull-group2-name', 'pull-group2-name     = '+ligandCurrent+'\n', run_path+'/mdp/md_pull_repeat.mdp')
-          else:
-            self.CallCommand(run_path, 'cp mdp/md_pull.mdp mdp/md_pull_repeat.mdp')
-            self.replaceLine('continuation', 'continuation  = no   ; Restarting after NPT\n', run_path+'/mdp/md_pull_repeat.mdp')
-            self.replaceLine('gen_vel','gen_vel   = yes\ngen_temp = 300\ngen_seed = -1\n', run_path+'/mdp/md_pull_repeat.mdp')
-            self.replaceLine('pull_group1', 'pull_group1     = '+ligandCurrent+'\n', run_path+'/mdp/md_pull_repeat.mdp')
-          
-          for k in range(0,int(repeat_times)):
-            if os.path.isfile(run_path+'/md_1_'+str(k)+'.gro') is False:
-              groCmd += GroLeft+'grompp'+GroRight+ ' -maxwarn 20 -f mdp/md_pull_repeat.mdp -c md.gro -t md.cpt -p topol.top -n index.ndx -o md_1_'+str(k)+'.tpr \n'
-              groCmd += GroLeft+'mdrun'+GroRight+ ' '+GroOption+ ' -px pullx_'+str(k)+'.xvg -pf pullf_'+str(k)+'.xvg -deffnm md_1_'+str(k)+' -v \n'
-              groCmd += 'python2.7 parse_pull.py -x pullx_'+str(k)+'.xvg -f pullf_'+str(k)+'.xvg -o pullfx_'+str(k)+'.xvg\n'
-        
-      # elif int(Method) == 2:
-      #   if os.path.isfile(run_path+'/md_2.gro') is False:
-      #     groCmd += GroLeft+'grompp'+GroRight+ ' -maxwarn 20 -f mdp/md_md.mdp -c md.gro -t md.cpt -p topol.top -n index.ndx -o md_2.tpr \n'
-      #     groCmd += GroLeft+'mdrun'+GroRight+ ' '+GroOption+ ' -deffnm md_2 -v \n'
-
-      #   groCmd += 'export OMP_NUM_THREADS=4\n'
-      #   groCmd += 'echo -e \"Receptor\\n'+ligandCurrent+'\\n\" | g_mmpbsa -f md_2.trr -b 100 -dt 20 -s md_2.tpr -n index.ndx -pdie 2 -decomp \n'
-      #   groCmd += 'echo -e \"Receptor\\n'+ligandCurrent+'\\n\" | g_mmpbsa -f md_2.trr -b 100 -dt 20 -s md_2.tpr -n index.ndx -i mdp/polar.mdp -nomme -pbsa -decomp \n'
-      #   groCmd += 'echo -e \"Receptor\\n'+ligandCurrent+'\\n\" | g_mmpbsa -f md_2.trr -b 100 -dt 20 -s md_2.tpr -n index.ndx -i mdp/apolar_sasa.mdp -nomme -pbsa -decomp -apol sasa.xvg -apcon sasa_contrib.dat \n'
-      #   groCmd += 'python2.7 MmPbSaStat.py -m energy_MM.xvg -p polar.xvg -a sasa.xvg \n'
-
-      self.CallCommand(run_path, groCmd)
 
   #**********************************************************************#
   #**************************** Main Fuction ****************************#                                                                                                                  
@@ -980,8 +916,12 @@ class GromacsRun(object):
     self.PrepareCluster()
     self.EditMdpFile()
     self.SetupSystem()
-    self.runGromacs()
 
+    gromacsMD = GromacsMD()
+    if (run_nohup == 'n'):
+      gromacsMD.mdrun()
+    else:
+      call('nohup python2.7 '+root_path+'/GromacsMD.py &', shell = True, executable='/bin/bash')
 
 
 

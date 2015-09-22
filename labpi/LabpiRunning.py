@@ -66,7 +66,6 @@ class RunningScreen(Screen):
         
         self.thread = Process(target= self.gromacsRun.main)
         self.thread.start()
-        #Todo: run nohup
 
         #Check log
         self.progressUnit = 1000/5.5/len(Variable.parsepdb.Ligands)
