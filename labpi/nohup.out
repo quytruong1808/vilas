@@ -1009,3 +1009,962 @@ Traceback (most recent call last):
   File "parse_pull.py", line 32, in <module>
     fp = open(xFile)
 IOError: [Errno 2] No such file or directory: 'pullx_2.xvg'
+GROMACS:    gmx grompp, VERSION 5.0.4
+
+GROMACS is written by:
+Emile Apol         Rossen Apostolov   Herman J.C. Berendsen Par Bjelkmar       
+Aldert van Buuren  Rudi van Drunen    Anton Feenstra     Sebastian Fritsch  
+Gerrit Groenhof    Christoph Junghans Peter Kasson       Carsten Kutzner    
+Per Larsson        Justin A. Lemkul   Magnus Lundborg    Pieter Meulenhoff  
+Erik Marklund      Teemu Murtola      Szilard Pall       Sander Pronk       
+Roland Schulz      Alexey Shvetsov    Michael Shirts     Alfons Sijbers     
+Peter Tieleman     Christian Wennberg Maarten Wolf       
+and the project leaders:
+Mark Abraham, Berk Hess, Erik Lindahl, and David van der Spoel
+
+Copyright (c) 1991-2000, University of Groningen, The Netherlands.
+Copyright (c) 2001-2014, The GROMACS development team at
+Uppsala University, Stockholm University and
+the Royal Institute of Technology, Sweden.
+check out http://www.gromacs.org for more information.
+
+GROMACS is free software; you can redistribute it and/or modify it
+under the terms of the GNU Lesser General Public License
+as published by the Free Software Foundation; either version 2.1
+of the License, or (at your option) any later version.
+
+GROMACS:      gmx grompp, VERSION 5.0.4
+Executable:   /home/superuser/.gromacs-5.0.4/bin/gmx
+Library dir:  /home/superuser/.gromacs-5.0.4/share/gromacs/top
+Command line:
+  gmx grompp -maxwarn 20 -f mdp/minim.mdp -c solv_ions.gro -p topol.top -o em.tpr
+
+Ignoring obsolete mdp entry 'title'
+
+Back Off! I just backed up mdout.mdp to ./#mdout.mdp.10#
+
+NOTE 1 [file mdp/minim.mdp]:
+  With Verlet lists the optimal nstlist is >= 10, with GPUs >= 20. Note
+  that with the Verlet scheme, nstlist has no effect on the accuracy of
+  your simulation.
+
+Setting the LD random seed to 4247707435
+Generated 2211 of the 2211 non-bonded parameter combinations
+Generating 1-4 interactions: fudge = 0.5
+Generated 2211 of the 2211 1-4 parameter combinations
+Excluding 3 bonded neighbours molecule type 'Protein_chain_A'
+Excluding 3 bonded neighbours molecule type 'Protein_chain_B'
+
+NOTE 2 [file topol.top, line 46]:
+  System has non-zero total charge: -1.000000
+  Total charge should normally be an integer. See
+  http://www.gromacs.org/Documentation/Floating_Point_Arithmetic
+  for discussion on how close it should be to an integer.
+  
+
+
+
+-------------------------------------------------------
+Program gmx, VERSION 5.0.4
+Source code file: /home/superuser/.gromacs-5.0.4/src/gromacs/gmxpreprocess/grompp.c, line: 603
+
+Fatal error:
+number of coordinates in coordinate file (solv_ions.gro, 74767)
+             does not match topology (topol.top, 3405)
+For more information and tips for troubleshooting, please check the GROMACS
+website at http://www.gromacs.org/Documentation/Errors
+-------------------------------------------------------
+
+GROMACS:    gmx mdrun, VERSION 5.0.4
+
+GROMACS is written by:
+Emile Apol         Rossen Apostolov   Herman J.C. Berendsen Par Bjelkmar       
+Aldert van Buuren  Rudi van Drunen    Anton Feenstra     Sebastian Fritsch  
+Gerrit Groenhof    Christoph Junghans Peter Kasson       Carsten Kutzner    
+Per Larsson        Justin A. Lemkul   Magnus Lundborg    Pieter Meulenhoff  
+Erik Marklund      Teemu Murtola      Szilard Pall       Sander Pronk       
+Roland Schulz      Alexey Shvetsov    Michael Shirts     Alfons Sijbers     
+Peter Tieleman     Christian Wennberg Maarten Wolf       
+and the project leaders:
+Mark Abraham, Berk Hess, Erik Lindahl, and David van der Spoel
+
+Copyright (c) 1991-2000, University of Groningen, The Netherlands.
+Copyright (c) 2001-2014, The GROMACS development team at
+Uppsala University, Stockholm University and
+the Royal Institute of Technology, Sweden.
+check out http://www.gromacs.org for more information.
+
+GROMACS is free software; you can redistribute it and/or modify it
+under the terms of the GNU Lesser General Public License
+as published by the Free Software Foundation; either version 2.1
+of the License, or (at your option) any later version.
+
+GROMACS:      gmx mdrun, VERSION 5.0.4
+Executable:   /home/superuser/.gromacs-5.0.4/bin/gmx
+Library dir:  /home/superuser/.gromacs-5.0.4/share/gromacs/top
+Command line:
+  gmx mdrun -nt 4 -v -deffnm em
+
+
+Back Off! I just backed up em.log to ./#em.log.3#
+
+NOTE: Error occurred during GPU detection:
+      no CUDA-capable device is detected
+      Can not use GPU acceleration, will fall back to CPU kernels.
+
+Reading file em.tpr, VERSION 5.0.4 (single precision)
+Using 1 MPI thread
+Using 4 OpenMP threads 
+
+No GPUs detected
+
+
+Back Off! I just backed up em.trr to ./#em.trr.3#
+
+Back Off! I just backed up em.edr to ./#em.edr.3#
+
+Steepest Descents:
+   Tolerance (Fmax)   =  1.00000e+03
+   Number of steps    =        50000
+Step=    0, Dmax= 1.0e-02 nm, Epot= -7.45427e+05 Fmax= 2.28696e+05, atom= 1501
+Step=    1, Dmax= 1.0e-02 nm, Epot= -8.11276e+05 Fmax= 8.89796e+04, atom= 47725
+Step=    2, Dmax= 1.2e-02 nm, Epot= -8.73369e+05 Fmax= 3.63904e+04, atom= 74761
+Step=    3, Dmax= 1.4e-02 nm, Epot= -9.29419e+05 Fmax= 1.54133e+04, atom= 48322
+Step=    4, Dmax= 1.7e-02 nm, Epot= -9.78243e+05 Fmax= 6.83761e+03, atom= 32818
+Step=    5, Dmax= 2.1e-02 nm, Epot= -1.02480e+06 Fmax= 1.65783e+04, atom= 47677
+Step=    6, Dmax= 2.5e-02 nm, Epot= -1.03764e+06 Fmax= 1.57827e+04, atom= 47677
+Step=    7, Dmax= 3.0e-02 nm, Epot= -1.05008e+06 Fmax= 2.19812e+04, atom= 3008
+Step=    8, Dmax= 3.6e-02 nm, Epot= -1.05910e+06 Fmax= 3.19805e+04, atom= 3008
+Step=    9, Dmax= 4.3e-02 nm, Epot= -1.06644e+06 Fmax= 3.25998e+04, atom= 3008
+Step=   10, Dmax= 5.2e-02 nm, Epot= -1.07280e+06 Fmax= 4.44832e+04, atom= 3008
+Step=   11, Dmax= 6.2e-02 nm, Epot= -1.07858e+06 Fmax= 4.68282e+04, atom= 3008
+Step=   12, Dmax= 7.4e-02 nm, Epot= -1.08276e+06 Fmax= 6.13157e+04, atom= 3008
+Step=   13, Dmax= 8.9e-02 nm, Epot= -1.08698e+06 Fmax= 6.48273e+04, atom= 3008
+Step=   14, Dmax= 1.1e-01 nm, Epot= -1.08883e+06 Fmax= 5.61552e+04, atom= 3403
+Step=   15, Dmax= 1.3e-01 nm, Epot= -1.08285e+06 Fmax= 7.33158e+04, atom= 3405Step=   16, Dmax= 6.4e-02 nm, Epot= -1.09999e+06 Fmax= 2.25099e+04, atom= 3403
+Step=   17, Dmax= 7.7e-02 nm, Epot= -1.09157e+06 Fmax= 7.72303e+04, atom= 3403Step=   18, Dmax= 3.9e-02 nm, Epot= -1.10405e+06 Fmax= 2.53020e+04, atom= 3403
+Step=   19, Dmax= 4.6e-02 nm, Epot= -1.10473e+06 Fmax= 3.76141e+04, atom= 3403
+Step=   20, Dmax= 5.5e-02 nm, Epot= -1.10656e+06 Fmax= 4.14932e+04, atom= 3388
+Step=   21, Dmax= 6.7e-02 nm, Epot= -1.10301e+06 Fmax= 5.59143e+04, atom= 3388Step=   22, Dmax= 3.3e-02 nm, Epot= -1.11749e+06 Fmax= 8.39568e+03, atom= 3388
+Step=   23, Dmax= 4.0e-02 nm, Epot= -1.11712e+06 Fmax= 5.27263e+04, atom= 3388Step=   24, Dmax= 2.0e-02 nm, Epot= -1.12142e+06 Fmax= 2.17253e+04, atom= 3388
+Step=   25, Dmax= 2.4e-02 nm, Epot= -1.12500e+06 Fmax= 1.44238e+04, atom= 3388
+Step=   26, Dmax= 2.9e-02 nm, Epot= -1.12660e+06 Fmax= 2.92772e+04, atom= 3388
+Step=   27, Dmax= 3.5e-02 nm, Epot= -1.13031e+06 Fmax= 2.26444e+04, atom= 3388
+Step=   28, Dmax= 4.1e-02 nm, Epot= -1.12954e+06 Fmax= 3.97495e+04, atom= 3388Step=   29, Dmax= 2.1e-02 nm, Epot= -1.13388e+06 Fmax= 8.65696e+03, atom= 3388
+Step=   30, Dmax= 2.5e-02 nm, Epot= -1.13622e+06 Fmax= 2.87375e+04, atom= 3388
+Step=   31, Dmax= 3.0e-02 nm, Epot= -1.14020e+06 Fmax= 1.65074e+04, atom= 3388
+Step=   32, Dmax= 3.6e-02 nm, Epot= -1.13944e+06 Fmax= 3.72848e+04, atom= 3388Step=   33, Dmax= 1.8e-02 nm, Epot= -1.14265e+06 Fmax= 1.04364e+04, atom= 3388
+Step=   34, Dmax= 2.1e-02 nm, Epot= -1.14454e+06 Fmax= 2.22747e+04, atom= 3388
+Step=   35, Dmax= 2.6e-02 nm, Epot= -1.14718e+06 Fmax= 1.66018e+04, atom= 3388
+Step=   36, Dmax= 3.1e-02 nm, Epot= -1.14752e+06 Fmax= 3.02839e+04, atom= 3388
+Step=   37, Dmax= 3.7e-02 nm, Epot= -1.15026e+06 Fmax= 2.54249e+04, atom= 3388
+Step=   38, Dmax= 4.5e-02 nm, Epot= -1.14846e+06 Fmax= 4.14123e+04, atom= 3388Step=   39, Dmax= 2.2e-02 nm, Epot= -1.15377e+06 Fmax= 8.16925e+03, atom= 3388
+Step=   40, Dmax= 2.7e-02 nm, Epot= -1.15447e+06 Fmax= 3.20253e+04, atom= 3388
+Step=   41, Dmax= 3.2e-02 nm, Epot= -1.15871e+06 Fmax= 1.65787e+04, atom= 3388
+Step=   42, Dmax= 3.8e-02 nm, Epot= -1.15589e+06 Fmax= 4.15159e+04, atom= 2548Step=   43, Dmax= 1.9e-02 nm, Epot= -1.16065e+06 Fmax= 1.26742e+04, atom= 2548
+Step=   44, Dmax= 2.3e-02 nm, Epot= -1.16158e+06 Fmax= 2.19863e+04, atom= 2548
+Step=   45, Dmax= 2.8e-02 nm, Epot= -1.16343e+06 Fmax= 2.03978e+04, atom= 2548
+Step=   46, Dmax= 3.3e-02 nm, Epot= -1.16353e+06 Fmax= 2.95928e+04, atom= 2548
+Step=   47, Dmax= 4.0e-02 nm, Epot= -1.16482e+06 Fmax= 3.09505e+04, atom= 2548
+Step=   48, Dmax= 4.8e-02 nm, Epot= -1.16380e+06 Fmax= 4.05593e+04, atom= 2548Step=   49, Dmax= 2.4e-02 nm, Epot= -1.16915e+06 Fmax= 5.10165e+03, atom= 2548
+Step=   50, Dmax= 2.9e-02 nm, Epot= -1.16965e+06 Fmax= 4.00942e+04, atom= 2548
+Step=   51, Dmax= 3.4e-02 nm, Epot= -1.17549e+06 Fmax= 1.25030e+04, atom= 2548
+Step=   52, Dmax= 4.1e-02 nm, Epot= -1.17056e+06 Fmax= 5.10738e+04, atom= 2548Step=   53, Dmax= 2.1e-02 nm, Epot= -1.17642e+06 Fmax= 1.94028e+04, atom= 2548
+Step=   54, Dmax= 2.5e-02 nm, Epot= -1.17774e+06 Fmax= 1.80512e+04, atom= 2548
+Step=   55, Dmax= 3.0e-02 nm, Epot= -1.17790e+06 Fmax= 2.75847e+04, atom= 2548
+Step=   56, Dmax= 3.6e-02 nm, Epot= -1.17925e+06 Fmax= 2.62137e+04, atom= 2548
+Step=   57, Dmax= 4.3e-02 nm, Epot= -1.17809e+06 Fmax= 3.88125e+04, atom= 2548Step=   58, Dmax= 2.1e-02 nm, Epot= -1.18208e+06 Fmax= 6.46233e+03, atom= 2548
+Step=   59, Dmax= 2.6e-02 nm, Epot= -1.18248e+06 Fmax= 3.17506e+04, atom= 2548
+Step=   60, Dmax= 3.1e-02 nm, Epot= -1.18568e+06 Fmax= 1.55181e+04, atom= 2548
+Step=   61, Dmax= 3.7e-02 nm, Epot= -1.18336e+06 Fmax= 4.01014e+04, atom= 2548Step=   62, Dmax= 1.9e-02 nm, Epot= -1.18690e+06 Fmax= 1.23271e+04, atom= 2548
+Step=   63, Dmax= 2.2e-02 nm, Epot= -1.18736e+06 Fmax= 2.19698e+04, atom= 2548
+Step=   64, Dmax= 2.7e-02 nm, Epot= -1.18871e+06 Fmax= 1.82589e+04, atom= 2548
+Step=   65, Dmax= 3.2e-02 nm, Epot= -1.18826e+06 Fmax= 3.07566e+04, atom= 2548Step=   66, Dmax= 1.6e-02 nm, Epot= -1.19026e+06 Fmax= 6.30915e+03, atom= 2548
+Step=   67, Dmax= 1.9e-02 nm, Epot= -1.19120e+06 Fmax= 2.21647e+04, atom= 2548
+Step=   68, Dmax= 2.3e-02 nm, Epot= -1.19288e+06 Fmax= 1.32282e+04, atom= 2548
+Step=   69, Dmax= 2.8e-02 nm, Epot= -1.19256e+06 Fmax= 2.83089e+04, atom= 2548Step=   70, Dmax= 1.4e-02 nm, Epot= -1.19394e+06 Fmax= 7.56126e+03, atom= 2548
+Step=   71, Dmax= 1.7e-02 nm, Epot= -1.19473e+06 Fmax= 1.83321e+04, atom= 2548
+Step=   72, Dmax= 2.0e-02 nm, Epot= -1.19598e+06 Fmax= 1.17460e+04, atom= 2548
+Step=   73, Dmax= 2.4e-02 nm, Epot= -1.19604e+06 Fmax= 2.51906e+04, atom= 2548
+Step=   74, Dmax= 2.9e-02 nm, Epot= -1.19755e+06 Fmax= 1.81227e+04, atom= 2548
+Step=   75, Dmax= 3.4e-02 nm, Epot= -1.19652e+06 Fmax= 3.45592e+04, atom= 2548Step=   76, Dmax= 1.7e-02 nm, Epot= -1.19889e+06 Fmax= 8.27447e+03, atom= 2548
+Step=   77, Dmax= 2.1e-02 nm, Epot= -1.19929e+06 Fmax= 2.25338e+04, atom= 2548
+Step=   78, Dmax= 2.5e-02 nm, Epot= -1.20073e+06 Fmax= 1.54598e+04, atom= 2548
+Step=   79, Dmax= 3.0e-02 nm, Epot= -1.20026e+06 Fmax= 2.92365e+04, atom= 2548Step=   80, Dmax= 1.5e-02 nm, Epot= -1.20179e+06 Fmax= 6.92278e+03, atom= 2548
+Step=   81, Dmax= 1.8e-02 nm, Epot= -1.20234e+06 Fmax= 2.09546e+04, atom= 2548
+Step=   82, Dmax= 2.1e-02 nm, Epot= -1.20371e+06 Fmax= 1.14243e+04, atom= 2548
+Step=   83, Dmax= 2.6e-02 nm, Epot= -1.20337e+06 Fmax= 2.82800e+04, atom= 2548Step=   84, Dmax= 1.3e-02 nm, Epot= -1.20451e+06 Fmax= 8.43943e+03, atom= 2548
+Step=   85, Dmax= 1.5e-02 nm, Epot= -1.20518e+06 Fmax= 1.46069e+04, atom= 2548
+Step=   86, Dmax= 1.8e-02 nm, Epot= -1.20598e+06 Fmax= 1.39203e+04, atom= 2548
+Step=   87, Dmax= 2.2e-02 nm, Epot= -1.20639e+06 Fmax= 1.94970e+04, atom= 2548
+Step=   88, Dmax= 2.7e-02 nm, Epot= -1.20696e+06 Fmax= 2.13641e+04, atom= 2548
+Step=   89, Dmax= 3.2e-02 nm, Epot= -1.20709e+06 Fmax= 2.67804e+04, atom= 2548
+Step=   90, Dmax= 3.8e-02 nm, Epot= -1.20717e+06 Fmax= 3.15681e+04, atom= 2548
+Step=   91, Dmax= 4.6e-02 nm, Epot= -1.20684e+06 Fmax= 3.73294e+04, atom= 2548Step=   92, Dmax= 2.3e-02 nm, Epot= -1.20990e+06 Fmax= 3.22312e+03, atom= 2548
+Step=   93, Dmax= 2.8e-02 nm, Epot= -1.21041e+06 Fmax= 4.07855e+04, atom= 2548
+Step=   94, Dmax= 3.3e-02 nm, Epot= -1.21438e+06 Fmax= 1.03153e+04, atom= 2548
+Step=   95, Dmax= 4.0e-02 nm, Epot= -1.21075e+06 Fmax= 5.06060e+04, atom= 2548Step=   96, Dmax= 2.0e-02 nm, Epot= -1.21462e+06 Fmax= 2.05045e+04, atom= 2548
+Step=   97, Dmax= 2.4e-02 nm, Epot= -1.21550e+06 Fmax= 1.56641e+04, atom= 2548
+Step=   98, Dmax= 2.9e-02 nm, Epot= -1.21515e+06 Fmax= 2.83362e+04, atom= 2548Step=   99, Dmax= 1.4e-02 nm, Epot= -1.21637e+06 Fmax= 6.37612e+03, atom= 2548
+Step=  100, Dmax= 1.7e-02 nm, Epot= -1.21685e+06 Fmax= 1.92672e+04, atom= 2548
+Step=  101, Dmax= 2.1e-02 nm, Epot= -1.21778e+06 Fmax= 1.24251e+04, atom= 2548
+Step=  102, Dmax= 2.5e-02 nm, Epot= -1.21766e+06 Fmax= 2.48327e+04, atom= 2548Step=  103, Dmax= 1.2e-02 nm, Epot= -1.21844e+06 Fmax= 6.22182e+03, atom= 2548
+Step=  104, Dmax= 1.5e-02 nm, Epot= -1.21896e+06 Fmax= 1.69901e+04, atom= 2548
+Step=  105, Dmax= 1.8e-02 nm, Epot= -1.21976e+06 Fmax= 9.96728e+03, atom= 2548
+Step=  106, Dmax= 2.1e-02 nm, Epot= -1.21979e+06 Fmax= 2.31315e+04, atom= 2548
+Step=  107, Dmax= 2.6e-02 nm, Epot= -1.22081e+06 Fmax= 1.56960e+04, atom= 2548
+Step=  108, Dmax= 3.1e-02 nm, Epot= -1.22014e+06 Fmax= 3.15440e+04, atom= 2548/bin/bash: line 1: 11456 Terminated              gmx mdrun -nt 4 -v -deffnm em
+GROMACS:    gmx grompp, VERSION 5.0.4
+
+GROMACS is written by:
+Emile Apol         Rossen Apostolov   Herman J.C. Berendsen Par Bjelkmar       
+Aldert van Buuren  Rudi van Drunen    Anton Feenstra     Sebastian Fritsch  
+Gerrit Groenhof    Christoph Junghans Peter Kasson       Carsten Kutzner    
+Per Larsson        Justin A. Lemkul   Magnus Lundborg    Pieter Meulenhoff  
+Erik Marklund      Teemu Murtola      Szilard Pall       Sander Pronk       
+Roland Schulz      Alexey Shvetsov    Michael Shirts     Alfons Sijbers     
+Peter Tieleman     Christian Wennberg Maarten Wolf       
+and the project leaders:
+Mark Abraham, Berk Hess, Erik Lindahl, and David van der Spoel
+
+Copyright (c) 1991-2000, University of Groningen, The Netherlands.
+Copyright (c) 2001-2014, The GROMACS development team at
+Uppsala University, Stockholm University and
+the Royal Institute of Technology, Sweden.
+check out http://www.gromacs.org for more information.
+
+GROMACS is free software; you can redistribute it and/or modify it
+under the terms of the GNU Lesser General Public License
+as published by the Free Software Foundation; either version 2.1
+of the License, or (at your option) any later version.
+
+GROMACS:      gmx grompp, VERSION 5.0.4
+Executable:   /home/superuser/.gromacs-5.0.4/bin/gmx
+Library dir:  /home/superuser/.gromacs-5.0.4/share/gromacs/top
+Command line:
+  gmx grompp -maxwarn 20 -f mdp/nvt.mdp -c em.gro -p topol.top -n index.ndx -o nvt.tpr
+
+Ignoring obsolete mdp entry 'title'
+
+Back Off! I just backed up mdout.mdp to ./#mdout.mdp.11#
+
+NOTE 1 [file mdp/nvt.mdp]:
+  With Verlet lists the optimal nstlist is >= 10, with GPUs >= 20. Note
+  that with the Verlet scheme, nstlist has no effect on the accuracy of
+  your simulation.
+
+Setting the LD random seed to 3080171752
+Generated 2211 of the 2211 non-bonded parameter combinations
+Generating 1-4 interactions: fudge = 0.5
+Generated 2211 of the 2211 1-4 parameter combinations
+Excluding 3 bonded neighbours molecule type 'Protein_chain_A'
+Excluding 3 bonded neighbours molecule type 'Protein_chain_B'
+
+NOTE 2 [file topol.top, line 46]:
+  System has non-zero total charge: -1.000000
+  Total charge should normally be an integer. See
+  http://www.gromacs.org/Documentation/Floating_Point_Arithmetic
+  for discussion on how close it should be to an integer.
+  
+
+
+
+-------------------------------------------------------
+Program gmx, VERSION 5.0.4
+Source code file: /home/superuser/.gromacs-5.0.4/src/gromacs/fileio/futil.cpp, line: 545
+
+File input/output error:
+em.gro
+For more information and tips for troubleshooting, please check the GROMACS
+website at http://www.gromacs.org/Documentation/Errors
+-------------------------------------------------------
+
+turning all bonds into constraints...
+turning all bonds into constraints...
+GROMACS:    gmx mdrun, VERSION 5.0.4
+
+GROMACS is written by:
+Emile Apol         Rossen Apostolov   Herman J.C. Berendsen Par Bjelkmar       
+Aldert van Buuren  Rudi van Drunen    Anton Feenstra     Sebastian Fritsch  
+Gerrit Groenhof    Christoph Junghans Peter Kasson       Carsten Kutzner    
+Per Larsson        Justin A. Lemkul   Magnus Lundborg    Pieter Meulenhoff  
+Erik Marklund      Teemu Murtola      Szilard Pall       Sander Pronk       
+Roland Schulz      Alexey Shvetsov    Michael Shirts     Alfons Sijbers     
+Peter Tieleman     Christian Wennberg Maarten Wolf       
+and the project leaders:
+Mark Abraham, Berk Hess, Erik Lindahl, and David van der Spoel
+
+Copyright (c) 1991-2000, University of Groningen, The Netherlands.
+Copyright (c) 2001-2014, The GROMACS development team at
+Uppsala University, Stockholm University and
+the Royal Institute of Technology, Sweden.
+check out http://www.gromacs.org for more information.
+
+GROMACS is free software; you can redistribute it and/or modify it
+under the terms of the GNU Lesser General Public License
+as published by the Free Software Foundation; either version 2.1
+of the License, or (at your option) any later version.
+
+GROMACS:      gmx mdrun, VERSION 5.0.4
+Executable:   /home/superuser/.gromacs-5.0.4/bin/gmx
+Library dir:  /home/superuser/.gromacs-5.0.4/share/gromacs/top
+Command line:
+  gmx mdrun -nt 4 -deffnm nvt -v
+
+
+Back Off! I just backed up nvt.log to ./#nvt.log.1#
+
+NOTE: Error occurred during GPU detection:
+      no CUDA-capable device is detected
+      Can not use GPU acceleration, will fall back to CPU kernels.
+
+
+-------------------------------------------------------
+Program gmx, VERSION 5.0.4
+Source code file: /home/superuser/.gromacs-5.0.4/src/gromacs/fileio/gmxfio.c, line: 513
+
+Can not open file:
+nvt.tpr
+For more information and tips for troubleshooting, please check the GROMACS
+website at http://www.gromacs.org/Documentation/Errors
+-------------------------------------------------------
+
+GROMACS:    gmx grompp, VERSION 5.0.4
+
+GROMACS is written by:
+Emile Apol         Rossen Apostolov   Herman J.C. Berendsen Par Bjelkmar       
+Aldert van Buuren  Rudi van Drunen    Anton Feenstra     Sebastian Fritsch  
+Gerrit Groenhof    Christoph Junghans Peter Kasson       Carsten Kutzner    
+Per Larsson        Justin A. Lemkul   Magnus Lundborg    Pieter Meulenhoff  
+Erik Marklund      Teemu Murtola      Szilard Pall       Sander Pronk       
+Roland Schulz      Alexey Shvetsov    Michael Shirts     Alfons Sijbers     
+Peter Tieleman     Christian Wennberg Maarten Wolf       
+and the project leaders:
+Mark Abraham, Berk Hess, Erik Lindahl, and David van der Spoel
+
+Copyright (c) 1991-2000, University of Groningen, The Netherlands.
+Copyright (c) 2001-2014, The GROMACS development team at
+Uppsala University, Stockholm University and
+the Royal Institute of Technology, Sweden.
+check out http://www.gromacs.org for more information.
+
+GROMACS is free software; you can redistribute it and/or modify it
+under the terms of the GNU Lesser General Public License
+as published by the Free Software Foundation; either version 2.1
+of the License, or (at your option) any later version.
+
+GROMACS:      gmx grompp, VERSION 5.0.4
+Executable:   /home/superuser/.gromacs-5.0.4/bin/gmx
+Library dir:  /home/superuser/.gromacs-5.0.4/share/gromacs/top
+Command line:
+  gmx grompp -maxwarn 20 -f mdp/npt.mdp -c nvt.gro -t nvt.cpt -p topol.top -n index.ndx -o npt.tpr
+
+Ignoring obsolete mdp entry 'title'
+
+Back Off! I just backed up mdout.mdp to ./#mdout.mdp.12#
+
+NOTE 1 [file mdp/npt.mdp]:
+  With Verlet lists the optimal nstlist is >= 10, with GPUs >= 20. Note
+  that with the Verlet scheme, nstlist has no effect on the accuracy of
+  your simulation.
+
+Setting the LD random seed to 2216296001
+Generated 2211 of the 2211 non-bonded parameter combinations
+Generating 1-4 interactions: fudge = 0.5
+Generated 2211 of the 2211 1-4 parameter combinations
+Excluding 3 bonded neighbours molecule type 'Protein_chain_A'
+Excluding 3 bonded neighbours molecule type 'Protein_chain_B'
+
+NOTE 2 [file topol.top, line 46]:
+  System has non-zero total charge: -1.000000
+  Total charge should normally be an integer. See
+  http://www.gromacs.org/Documentation/Floating_Point_Arithmetic
+  for discussion on how close it should be to an integer.
+  
+
+
+
+-------------------------------------------------------
+Program gmx, VERSION 5.0.4
+Source code file: /home/superuser/.gromacs-5.0.4/src/gromacs/fileio/futil.cpp, line: 545
+
+File input/output error:
+nvt.gro
+For more information and tips for troubleshooting, please check the GROMACS
+website at http://www.gromacs.org/Documentation/Errors
+-------------------------------------------------------
+
+turning all bonds into constraints...
+turning all bonds into constraints...
+GROMACS:    gmx mdrun, VERSION 5.0.4
+
+GROMACS is written by:
+Emile Apol         Rossen Apostolov   Herman J.C. Berendsen Par Bjelkmar       
+Aldert van Buuren  Rudi van Drunen    Anton Feenstra     Sebastian Fritsch  
+Gerrit Groenhof    Christoph Junghans Peter Kasson       Carsten Kutzner    
+Per Larsson        Justin A. Lemkul   Magnus Lundborg    Pieter Meulenhoff  
+Erik Marklund      Teemu Murtola      Szilard Pall       Sander Pronk       
+Roland Schulz      Alexey Shvetsov    Michael Shirts     Alfons Sijbers     
+Peter Tieleman     Christian Wennberg Maarten Wolf       
+and the project leaders:
+Mark Abraham, Berk Hess, Erik Lindahl, and David van der Spoel
+
+Copyright (c) 1991-2000, University of Groningen, The Netherlands.
+Copyright (c) 2001-2014, The GROMACS development team at
+Uppsala University, Stockholm University and
+the Royal Institute of Technology, Sweden.
+check out http://www.gromacs.org for more information.
+
+GROMACS is free software; you can redistribute it and/or modify it
+under the terms of the GNU Lesser General Public License
+as published by the Free Software Foundation; either version 2.1
+of the License, or (at your option) any later version.
+
+GROMACS:      gmx mdrun, VERSION 5.0.4
+Executable:   /home/superuser/.gromacs-5.0.4/bin/gmx
+Library dir:  /home/superuser/.gromacs-5.0.4/share/gromacs/top
+Command line:
+  gmx mdrun -nt 4 -deffnm npt -v
+
+
+Back Off! I just backed up npt.log to ./#npt.log.1#
+
+NOTE: Error occurred during GPU detection:
+      no CUDA-capable device is detected
+      Can not use GPU acceleration, will fall back to CPU kernels.
+
+
+-------------------------------------------------------
+Program gmx, VERSION 5.0.4
+Source code file: /home/superuser/.gromacs-5.0.4/src/gromacs/fileio/gmxfio.c, line: 513
+
+Can not open file:
+npt.tpr
+For more information and tips for troubleshooting, please check the GROMACS
+website at http://www.gromacs.org/Documentation/Errors
+-------------------------------------------------------
+
+GROMACS:    gmx grompp, VERSION 5.0.4
+
+GROMACS is written by:
+Emile Apol         Rossen Apostolov   Herman J.C. Berendsen Par Bjelkmar       
+Aldert van Buuren  Rudi van Drunen    Anton Feenstra     Sebastian Fritsch  
+Gerrit Groenhof    Christoph Junghans Peter Kasson       Carsten Kutzner    
+Per Larsson        Justin A. Lemkul   Magnus Lundborg    Pieter Meulenhoff  
+Erik Marklund      Teemu Murtola      Szilard Pall       Sander Pronk       
+Roland Schulz      Alexey Shvetsov    Michael Shirts     Alfons Sijbers     
+Peter Tieleman     Christian Wennberg Maarten Wolf       
+and the project leaders:
+Mark Abraham, Berk Hess, Erik Lindahl, and David van der Spoel
+
+Copyright (c) 1991-2000, University of Groningen, The Netherlands.
+Copyright (c) 2001-2014, The GROMACS development team at
+Uppsala University, Stockholm University and
+the Royal Institute of Technology, Sweden.
+check out http://www.gromacs.org for more information.
+
+GROMACS is free software; you can redistribute it and/or modify it
+under the terms of the GNU Lesser General Public License
+as published by the Free Software Foundation; either version 2.1
+of the License, or (at your option) any later version.
+
+GROMACS:      gmx grompp, VERSION 5.0.4
+Executable:   /home/superuser/.gromacs-5.0.4/bin/gmx
+Library dir:  /home/superuser/.gromacs-5.0.4/share/gromacs/top
+Command line:
+  gmx grompp -maxwarn 20 -f mdp/md.mdp -c npt.gro -t npt.cpt -p topol.top -n index.ndx -o md.tpr
+
+Ignoring obsolete mdp entry 'title'
+Replacing old mdp entry 'nstxtcout' by 'nstxout-compressed'
+
+Back Off! I just backed up mdout.mdp to ./#mdout.mdp.13#
+
+NOTE 1 [file mdp/md.mdp]:
+  With Verlet lists the optimal nstlist is >= 10, with GPUs >= 20. Note
+  that with the Verlet scheme, nstlist has no effect on the accuracy of
+  your simulation.
+
+
+WARNING 1 [file mdp/md.mdp]:
+  Removing the rotation around the center of mass in a periodic system,
+  this can lead to artifacts. Only use this on a single (cluster of)
+  molecules. This cluster should not cross periodic boundaries.
+
+Setting the LD random seed to 2393154260
+Generated 2211 of the 2211 non-bonded parameter combinations
+Generating 1-4 interactions: fudge = 0.5
+Generated 2211 of the 2211 1-4 parameter combinations
+Excluding 3 bonded neighbours molecule type 'Protein_chain_A'
+Excluding 3 bonded neighbours molecule type 'Protein_chain_B'
+
+NOTE 2 [file topol.top, line 46]:
+  System has non-zero total charge: -1.000000
+  Total charge should normally be an integer. See
+  http://www.gromacs.org/Documentation/Floating_Point_Arithmetic
+  for discussion on how close it should be to an integer.
+  
+
+
+
+-------------------------------------------------------
+Program gmx, VERSION 5.0.4
+Source code file: /home/superuser/.gromacs-5.0.4/src/gromacs/fileio/futil.cpp, line: 545
+
+File input/output error:
+npt.gro
+For more information and tips for troubleshooting, please check the GROMACS
+website at http://www.gromacs.org/Documentation/Errors
+-------------------------------------------------------
+
+turning all bonds into constraints...
+turning all bonds into constraints...
+GROMACS:    gmx mdrun, VERSION 5.0.4
+
+GROMACS is written by:
+Emile Apol         Rossen Apostolov   Herman J.C. Berendsen Par Bjelkmar       
+Aldert van Buuren  Rudi van Drunen    Anton Feenstra     Sebastian Fritsch  
+Gerrit Groenhof    Christoph Junghans Peter Kasson       Carsten Kutzner    
+Per Larsson        Justin A. Lemkul   Magnus Lundborg    Pieter Meulenhoff  
+Erik Marklund      Teemu Murtola      Szilard Pall       Sander Pronk       
+Roland Schulz      Alexey Shvetsov    Michael Shirts     Alfons Sijbers     
+Peter Tieleman     Christian Wennberg Maarten Wolf       
+and the project leaders:
+Mark Abraham, Berk Hess, Erik Lindahl, and David van der Spoel
+
+Copyright (c) 1991-2000, University of Groningen, The Netherlands.
+Copyright (c) 2001-2014, The GROMACS development team at
+Uppsala University, Stockholm University and
+the Royal Institute of Technology, Sweden.
+check out http://www.gromacs.org for more information.
+
+GROMACS is free software; you can redistribute it and/or modify it
+under the terms of the GNU Lesser General Public License
+as published by the Free Software Foundation; either version 2.1
+of the License, or (at your option) any later version.
+
+GROMACS:      gmx mdrun, VERSION 5.0.4
+Executable:   /home/superuser/.gromacs-5.0.4/bin/gmx
+Library dir:  /home/superuser/.gromacs-5.0.4/share/gromacs/top
+Command line:
+  gmx mdrun -nt 4 -deffnm md -v
+
+
+Back Off! I just backed up md.log to ./#md.log.1#
+
+NOTE: Error occurred during GPU detection:
+      no CUDA-capable device is detected
+      Can not use GPU acceleration, will fall back to CPU kernels.
+
+
+-------------------------------------------------------
+Program gmx, VERSION 5.0.4
+Source code file: /home/superuser/.gromacs-5.0.4/src/gromacs/fileio/gmxfio.c, line: 513
+
+Can not open file:
+md.tpr
+For more information and tips for troubleshooting, please check the GROMACS
+website at http://www.gromacs.org/Documentation/Errors
+-------------------------------------------------------
+
+GROMACS:    gmx grompp, VERSION 5.0.4
+
+GROMACS is written by:
+Emile Apol         Rossen Apostolov   Herman J.C. Berendsen Par Bjelkmar       
+Aldert van Buuren  Rudi van Drunen    Anton Feenstra     Sebastian Fritsch  
+Gerrit Groenhof    Christoph Junghans Peter Kasson       Carsten Kutzner    
+Per Larsson        Justin A. Lemkul   Magnus Lundborg    Pieter Meulenhoff  
+Erik Marklund      Teemu Murtola      Szilard Pall       Sander Pronk       
+Roland Schulz      Alexey Shvetsov    Michael Shirts     Alfons Sijbers     
+Peter Tieleman     Christian Wennberg Maarten Wolf       
+and the project leaders:
+Mark Abraham, Berk Hess, Erik Lindahl, and David van der Spoel
+
+Copyright (c) 1991-2000, University of Groningen, The Netherlands.
+Copyright (c) 2001-2014, The GROMACS development team at
+Uppsala University, Stockholm University and
+the Royal Institute of Technology, Sweden.
+check out http://www.gromacs.org for more information.
+
+GROMACS is free software; you can redistribute it and/or modify it
+under the terms of the GNU Lesser General Public License
+as published by the Free Software Foundation; either version 2.1
+of the License, or (at your option) any later version.
+
+GROMACS:      gmx grompp, VERSION 5.0.4
+Executable:   /home/superuser/.gromacs-5.0.4/bin/gmx
+Library dir:  /home/superuser/.gromacs-5.0.4/share/gromacs/top
+Command line:
+  gmx grompp -maxwarn 20 -f mdp/md_pull_repeat.mdp -c md.gro -t md.cpt -p topol.top -n index.ndx -o md_st_0.tpr
+
+Ignoring obsolete mdp entry 'title'
+Replacing old mdp entry 'nstxtcout' by 'nstxout-compressed'
+
+Back Off! I just backed up mdout.mdp to ./#mdout.mdp.14#
+
+NOTE 1 [file mdp/md_pull_repeat.mdp]:
+  With Verlet lists the optimal nstlist is >= 10, with GPUs >= 20. Note
+  that with the Verlet scheme, nstlist has no effect on the accuracy of
+  your simulation.
+
+
+WARNING 1 [file mdp/md_pull_repeat.mdp]:
+  Removing the rotation around the center of mass in a periodic system,
+  this can lead to artifacts. Only use this on a single (cluster of)
+  molecules. This cluster should not cross periodic boundaries.
+
+
+WARNING 2 [file mdp/md_pull_repeat.mdp]:
+  You are generating velocities so I am assuming you are equilibrating a
+  system. You are using Parrinello-Rahman pressure coupling, but this can
+  be unstable for equilibration. If your system crashes, try equilibrating
+  first with Berendsen pressure coupling. If you are not equilibrating the
+  system, you can probably ignore this warning.
+
+Setting the LD random seed to 3784388634
+Generated 2211 of the 2211 non-bonded parameter combinations
+Generating 1-4 interactions: fudge = 0.5
+Generated 2211 of the 2211 1-4 parameter combinations
+Excluding 3 bonded neighbours molecule type 'Protein_chain_A'
+Excluding 3 bonded neighbours molecule type 'Protein_chain_B'
+
+NOTE 2 [file topol.top, line 46]:
+  System has non-zero total charge: -1.000000
+  Total charge should normally be an integer. See
+  http://www.gromacs.org/Documentation/Floating_Point_Arithmetic
+  for discussion on how close it should be to an integer.
+  
+
+
+
+-------------------------------------------------------
+Program gmx, VERSION 5.0.4
+Source code file: /home/superuser/.gromacs-5.0.4/src/gromacs/fileio/futil.cpp, line: 545
+
+File input/output error:
+md.gro
+For more information and tips for troubleshooting, please check the GROMACS
+website at http://www.gromacs.org/Documentation/Errors
+-------------------------------------------------------
+
+turning all bonds into constraints...
+turning all bonds into constraints...
+GROMACS:    gmx mdrun, VERSION 5.0.4
+
+GROMACS is written by:
+Emile Apol         Rossen Apostolov   Herman J.C. Berendsen Par Bjelkmar       
+Aldert van Buuren  Rudi van Drunen    Anton Feenstra     Sebastian Fritsch  
+Gerrit Groenhof    Christoph Junghans Peter Kasson       Carsten Kutzner    
+Per Larsson        Justin A. Lemkul   Magnus Lundborg    Pieter Meulenhoff  
+Erik Marklund      Teemu Murtola      Szilard Pall       Sander Pronk       
+Roland Schulz      Alexey Shvetsov    Michael Shirts     Alfons Sijbers     
+Peter Tieleman     Christian Wennberg Maarten Wolf       
+and the project leaders:
+Mark Abraham, Berk Hess, Erik Lindahl, and David van der Spoel
+
+Copyright (c) 1991-2000, University of Groningen, The Netherlands.
+Copyright (c) 2001-2014, The GROMACS development team at
+Uppsala University, Stockholm University and
+the Royal Institute of Technology, Sweden.
+check out http://www.gromacs.org for more information.
+
+GROMACS is free software; you can redistribute it and/or modify it
+under the terms of the GNU Lesser General Public License
+as published by the Free Software Foundation; either version 2.1
+of the License, or (at your option) any later version.
+
+GROMACS:      gmx mdrun, VERSION 5.0.4
+Executable:   /home/superuser/.gromacs-5.0.4/bin/gmx
+Library dir:  /home/superuser/.gromacs-5.0.4/share/gromacs/top
+Command line:
+  gmx mdrun -nt 4 -px pullx_0.xvg -pf pullf_0.xvg -deffnm md_st_0 -v
+
+
+Back Off! I just backed up md_st_0.log to ./#md_st_0.log.1#
+
+NOTE: Error occurred during GPU detection:
+      no CUDA-capable device is detected
+      Can not use GPU acceleration, will fall back to CPU kernels.
+
+
+-------------------------------------------------------
+Program gmx, VERSION 5.0.4
+Source code file: /home/superuser/.gromacs-5.0.4/src/gromacs/fileio/gmxfio.c, line: 513
+
+Can not open file:
+md_st_0.tpr
+For more information and tips for troubleshooting, please check the GROMACS
+website at http://www.gromacs.org/Documentation/Errors
+-------------------------------------------------------
+
+Traceback (most recent call last):
+  File "parse_pull.py", line 32, in <module>
+    fp = open(xFile)
+IOError: [Errno 2] No such file or directory: 'pullx_0.xvg'
+GROMACS:    gmx grompp, VERSION 5.0.4
+
+GROMACS is written by:
+Emile Apol         Rossen Apostolov   Herman J.C. Berendsen Par Bjelkmar       
+Aldert van Buuren  Rudi van Drunen    Anton Feenstra     Sebastian Fritsch  
+Gerrit Groenhof    Christoph Junghans Peter Kasson       Carsten Kutzner    
+Per Larsson        Justin A. Lemkul   Magnus Lundborg    Pieter Meulenhoff  
+Erik Marklund      Teemu Murtola      Szilard Pall       Sander Pronk       
+Roland Schulz      Alexey Shvetsov    Michael Shirts     Alfons Sijbers     
+Peter Tieleman     Christian Wennberg Maarten Wolf       
+and the project leaders:
+Mark Abraham, Berk Hess, Erik Lindahl, and David van der Spoel
+
+Copyright (c) 1991-2000, University of Groningen, The Netherlands.
+Copyright (c) 2001-2014, The GROMACS development team at
+Uppsala University, Stockholm University and
+the Royal Institute of Technology, Sweden.
+check out http://www.gromacs.org for more information.
+
+GROMACS is free software; you can redistribute it and/or modify it
+under the terms of the GNU Lesser General Public License
+as published by the Free Software Foundation; either version 2.1
+of the License, or (at your option) any later version.
+
+GROMACS:      gmx grompp, VERSION 5.0.4
+Executable:   /home/superuser/.gromacs-5.0.4/bin/gmx
+Library dir:  /home/superuser/.gromacs-5.0.4/share/gromacs/top
+Command line:
+  gmx grompp -maxwarn 20 -f mdp/md_pull_repeat.mdp -c md.gro -t md.cpt -p topol.top -n index.ndx -o md_st_1.tpr
+
+Ignoring obsolete mdp entry 'title'
+Replacing old mdp entry 'nstxtcout' by 'nstxout-compressed'
+
+Back Off! I just backed up mdout.mdp to ./#mdout.mdp.15#
+
+NOTE 1 [file mdp/md_pull_repeat.mdp]:
+  With Verlet lists the optimal nstlist is >= 10, with GPUs >= 20. Note
+  that with the Verlet scheme, nstlist has no effect on the accuracy of
+  your simulation.
+
+
+WARNING 1 [file mdp/md_pull_repeat.mdp]:
+  Removing the rotation around the center of mass in a periodic system,
+  this can lead to artifacts. Only use this on a single (cluster of)
+  molecules. This cluster should not cross periodic boundaries.
+
+
+WARNING 2 [file mdp/md_pull_repeat.mdp]:
+  You are generating velocities so I am assuming you are equilibrating a
+  system. You are using Parrinello-Rahman pressure coupling, but this can
+  be unstable for equilibration. If your system crashes, try equilibrating
+  first with Berendsen pressure coupling. If you are not equilibrating the
+  system, you can probably ignore this warning.
+
+Setting the LD random seed to 1232074047
+Generated 2211 of the 2211 non-bonded parameter combinations
+Generating 1-4 interactions: fudge = 0.5
+Generated 2211 of the 2211 1-4 parameter combinations
+Excluding 3 bonded neighbours molecule type 'Protein_chain_A'
+Excluding 3 bonded neighbours molecule type 'Protein_chain_B'
+
+NOTE 2 [file topol.top, line 46]:
+  System has non-zero total charge: -1.000000
+  Total charge should normally be an integer. See
+  http://www.gromacs.org/Documentation/Floating_Point_Arithmetic
+  for discussion on how close it should be to an integer.
+  
+
+
+
+-------------------------------------------------------
+Program gmx, VERSION 5.0.4
+Source code file: /home/superuser/.gromacs-5.0.4/src/gromacs/fileio/futil.cpp, line: 545
+
+File input/output error:
+md.gro
+For more information and tips for troubleshooting, please check the GROMACS
+website at http://www.gromacs.org/Documentation/Errors
+-------------------------------------------------------
+
+turning all bonds into constraints...
+turning all bonds into constraints...
+GROMACS:    gmx mdrun, VERSION 5.0.4
+
+GROMACS is written by:
+Emile Apol         Rossen Apostolov   Herman J.C. Berendsen Par Bjelkmar       
+Aldert van Buuren  Rudi van Drunen    Anton Feenstra     Sebastian Fritsch  
+Gerrit Groenhof    Christoph Junghans Peter Kasson       Carsten Kutzner    
+Per Larsson        Justin A. Lemkul   Magnus Lundborg    Pieter Meulenhoff  
+Erik Marklund      Teemu Murtola      Szilard Pall       Sander Pronk       
+Roland Schulz      Alexey Shvetsov    Michael Shirts     Alfons Sijbers     
+Peter Tieleman     Christian Wennberg Maarten Wolf       
+and the project leaders:
+Mark Abraham, Berk Hess, Erik Lindahl, and David van der Spoel
+
+Copyright (c) 1991-2000, University of Groningen, The Netherlands.
+Copyright (c) 2001-2014, The GROMACS development team at
+Uppsala University, Stockholm University and
+the Royal Institute of Technology, Sweden.
+check out http://www.gromacs.org for more information.
+
+GROMACS is free software; you can redistribute it and/or modify it
+under the terms of the GNU Lesser General Public License
+as published by the Free Software Foundation; either version 2.1
+of the License, or (at your option) any later version.
+
+GROMACS:      gmx mdrun, VERSION 5.0.4
+Executable:   /home/superuser/.gromacs-5.0.4/bin/gmx
+Library dir:  /home/superuser/.gromacs-5.0.4/share/gromacs/top
+Command line:
+  gmx mdrun -nt 4 -px pullx_1.xvg -pf pullf_1.xvg -deffnm md_st_1 -v
+
+
+Back Off! I just backed up md_st_1.log to ./#md_st_1.log.1#
+
+NOTE: Error occurred during GPU detection:
+      no CUDA-capable device is detected
+      Can not use GPU acceleration, will fall back to CPU kernels.
+
+
+-------------------------------------------------------
+Program gmx, VERSION 5.0.4
+Source code file: /home/superuser/.gromacs-5.0.4/src/gromacs/fileio/gmxfio.c, line: 513
+
+Can not open file:
+md_st_1.tpr
+For more information and tips for troubleshooting, please check the GROMACS
+website at http://www.gromacs.org/Documentation/Errors
+-------------------------------------------------------
+
+Traceback (most recent call last):
+  File "parse_pull.py", line 32, in <module>
+    fp = open(xFile)
+IOError: [Errno 2] No such file or directory: 'pullx_1.xvg'
+GROMACS:    gmx grompp, VERSION 5.0.4
+
+GROMACS is written by:
+Emile Apol         Rossen Apostolov   Herman J.C. Berendsen Par Bjelkmar       
+Aldert van Buuren  Rudi van Drunen    Anton Feenstra     Sebastian Fritsch  
+Gerrit Groenhof    Christoph Junghans Peter Kasson       Carsten Kutzner    
+Per Larsson        Justin A. Lemkul   Magnus Lundborg    Pieter Meulenhoff  
+Erik Marklund      Teemu Murtola      Szilard Pall       Sander Pronk       
+Roland Schulz      Alexey Shvetsov    Michael Shirts     Alfons Sijbers     
+Peter Tieleman     Christian Wennberg Maarten Wolf       
+and the project leaders:
+Mark Abraham, Berk Hess, Erik Lindahl, and David van der Spoel
+
+Copyright (c) 1991-2000, University of Groningen, The Netherlands.
+Copyright (c) 2001-2014, The GROMACS development team at
+Uppsala University, Stockholm University and
+the Royal Institute of Technology, Sweden.
+check out http://www.gromacs.org for more information.
+
+GROMACS is free software; you can redistribute it and/or modify it
+under the terms of the GNU Lesser General Public License
+as published by the Free Software Foundation; either version 2.1
+of the License, or (at your option) any later version.
+
+GROMACS:      gmx grompp, VERSION 5.0.4
+Executable:   /home/superuser/.gromacs-5.0.4/bin/gmx
+Library dir:  /home/superuser/.gromacs-5.0.4/share/gromacs/top
+Command line:
+  gmx grompp -maxwarn 20 -f mdp/md_pull_repeat.mdp -c md.gro -t md.cpt -p topol.top -n index.ndx -o md_st_2.tpr
+
+Ignoring obsolete mdp entry 'title'
+Replacing old mdp entry 'nstxtcout' by 'nstxout-compressed'
+
+Back Off! I just backed up mdout.mdp to ./#mdout.mdp.16#
+
+NOTE 1 [file mdp/md_pull_repeat.mdp]:
+  With Verlet lists the optimal nstlist is >= 10, with GPUs >= 20. Note
+  that with the Verlet scheme, nstlist has no effect on the accuracy of
+  your simulation.
+
+
+WARNING 1 [file mdp/md_pull_repeat.mdp]:
+  Removing the rotation around the center of mass in a periodic system,
+  this can lead to artifacts. Only use this on a single (cluster of)
+  molecules. This cluster should not cross periodic boundaries.
+
+
+WARNING 2 [file mdp/md_pull_repeat.mdp]:
+  You are generating velocities so I am assuming you are equilibrating a
+  system. You are using Parrinello-Rahman pressure coupling, but this can
+  be unstable for equilibration. If your system crashes, try equilibrating
+  first with Berendsen pressure coupling. If you are not equilibrating the
+  system, you can probably ignore this warning.
+
+Setting the LD random seed to 3129369994
+Generated 2211 of the 2211 non-bonded parameter combinations
+Generating 1-4 interactions: fudge = 0.5
+Generated 2211 of the 2211 1-4 parameter combinations
+Excluding 3 bonded neighbours molecule type 'Protein_chain_A'
+Excluding 3 bonded neighbours molecule type 'Protein_chain_B'
+
+NOTE 2 [file topol.top, line 46]:
+  System has non-zero total charge: -1.000000
+  Total charge should normally be an integer. See
+  http://www.gromacs.org/Documentation/Floating_Point_Arithmetic
+  for discussion on how close it should be to an integer.
+  
+
+
+
+-------------------------------------------------------
+Program gmx, VERSION 5.0.4
+Source code file: /home/superuser/.gromacs-5.0.4/src/gromacs/fileio/futil.cpp, line: 545
+
+File input/output error:
+md.gro
+For more information and tips for troubleshooting, please check the GROMACS
+website at http://www.gromacs.org/Documentation/Errors
+-------------------------------------------------------
+
+turning all bonds into constraints...
+turning all bonds into constraints...
+GROMACS:    gmx mdrun, VERSION 5.0.4
+
+GROMACS is written by:
+Emile Apol         Rossen Apostolov   Herman J.C. Berendsen Par Bjelkmar       
+Aldert van Buuren  Rudi van Drunen    Anton Feenstra     Sebastian Fritsch  
+Gerrit Groenhof    Christoph Junghans Peter Kasson       Carsten Kutzner    
+Per Larsson        Justin A. Lemkul   Magnus Lundborg    Pieter Meulenhoff  
+Erik Marklund      Teemu Murtola      Szilard Pall       Sander Pronk       
+Roland Schulz      Alexey Shvetsov    Michael Shirts     Alfons Sijbers     
+Peter Tieleman     Christian Wennberg Maarten Wolf       
+and the project leaders:
+Mark Abraham, Berk Hess, Erik Lindahl, and David van der Spoel
+
+Copyright (c) 1991-2000, University of Groningen, The Netherlands.
+Copyright (c) 2001-2014, The GROMACS development team at
+Uppsala University, Stockholm University and
+the Royal Institute of Technology, Sweden.
+check out http://www.gromacs.org for more information.
+
+GROMACS is free software; you can redistribute it and/or modify it
+under the terms of the GNU Lesser General Public License
+as published by the Free Software Foundation; either version 2.1
+of the License, or (at your option) any later version.
+
+GROMACS:      gmx mdrun, VERSION 5.0.4
+Executable:   /home/superuser/.gromacs-5.0.4/bin/gmx
+Library dir:  /home/superuser/.gromacs-5.0.4/share/gromacs/top
+Command line:
+  gmx mdrun -nt 4 -px pullx_2.xvg -pf pullf_2.xvg -deffnm md_st_2 -v
+
+
+Back Off! I just backed up md_st_2.log to ./#md_st_2.log.1#
+
+NOTE: Error occurred during GPU detection:
+      no CUDA-capable device is detected
+      Can not use GPU acceleration, will fall back to CPU kernels.
+
+
+-------------------------------------------------------
+Program gmx, VERSION 5.0.4
+Source code file: /home/superuser/.gromacs-5.0.4/src/gromacs/fileio/gmxfio.c, line: 513
+
+Can not open file:
+md_st_2.tpr
+For more information and tips for troubleshooting, please check the GROMACS
+website at http://www.gromacs.org/Documentation/Errors
+-------------------------------------------------------
+
+Traceback (most recent call last):
+  File "parse_pull.py", line 32, in <module>
+    fp = open(xFile)
+IOError: [Errno 2] No such file or directory: 'pullx_2.xvg'

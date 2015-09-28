@@ -26,6 +26,16 @@ class DataController(object):
     username = check_output('echo $USER',shell=True).split('\n')[0]
     root_path = '/home/'+username
 
+    def __init__(self, *args, **kwargs):
+        super(DataController, self).__init__(*args, **kwargs)
+        setting_path = self.root_path + '/.labpi_setting.txt'
+        if os.path.isfile(setting_path) == True:
+            if self.getdata('config_auto ') == 'True':
+                self.root_path = self.main_path
+        pass
+
+
+
     def getdata(self, name):
         f = open(self.root_path+'/.labpi_setting.txt', "r")
         contents = f.readlines()
@@ -52,10 +62,10 @@ class DataController(object):
 
     def checkExist(self):
         #Check root path
-        setting_path = self.root_path + '/.labpi_setting.txt'
+        setting_path = '/home/'+self.username + '/.labpi_setting.txt'
         if os.path.isfile(setting_path) == False:
-            call('cp '+self.main_path+'/data/setting.txt '+setting_path, shell=True)
-            run_path = self.root_path + '/Documents/labpi-result'
+            call('cp '+self.main_path+'/data/labpi_setting.txt '+setting_path, shell=True)
+            run_path = '/home/'+self.username + '/Documents/labpi-result'
             self.setdata('path ', run_path)
             
 class CheckPoint(object):

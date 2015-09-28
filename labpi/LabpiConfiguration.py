@@ -60,6 +60,12 @@ class ConfigurationScreen(Screen):
         self.versionButton.bind(on_release=dropdown.open)
         dropdown.bind(on_select=self.gromacs_version_check)
 
+        #Check number of cores
+        command_cores = check_output("nproc", shell=True, executable='/bin/bash').splitlines()
+        if(len(command_cores) > 0):
+            self.dataController.setdata('maximum_cores ', command_cores[0])
+            self.maximumCoresText.text = command_cores[0]
+
     def __init__(self, *args, **kwargs):
         super(ConfigurationScreen, self).__init__(*args, **kwargs)        
 

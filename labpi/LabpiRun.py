@@ -127,12 +127,15 @@ class GromacsRun(object):
     GroRight = mdrun_array[1]
 
     # Set number of core or gpu
-    global GroOption 
-    check_gpu = check_output(gromacs_version.split(' VERSION ')[0]+" -version", shell=True, executable='/bin/bash').splitlines()
-    if( [s for s in check_gpu if "GPU support:" in s][0].split(":")[1].replace(' ','') == 'enable'):
-      GroOption = '-gpu_id 0'
+    global GroOption
+    number_cores = self.dataController.getdata('maximum_cores ')
+    if int(number_cores) > 0:
+      GroOption = ' -nt '+number_cores
     else:
       GroOption = ''
+    check_gpu = check_output(gromacs_version.split(' VERSION ')[0]+" -version", shell=True, executable='/bin/bash').splitlines()
+    if( [s for s in check_gpu if "GPU support:" in s][0].split(":")[1].replace(' ','') == 'enable'):
+      GroOption += ' -gpu_id 0'
 
     # Caver tools
     global run_caver
