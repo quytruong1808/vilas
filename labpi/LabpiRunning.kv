@@ -4,6 +4,29 @@
 #:import la kivy.adapters.listadapter
 #:import os os
 
+<RemoveDialog>:
+    title: 'Warning!'
+    size_hint: None, None 
+    size: 450, 250
+    BoxLayout:
+        size: root.size
+        pos: root.pos
+        orientation: "vertical"
+
+        Label:
+            text:'I find some old datas in your folder /run \n \n  Do you want to remove all of them \n before running new job?'
+
+        BoxLayout:
+            size_hint_y: None
+            height: 30
+            Button:
+                text: "No, continue jobs"
+                on_release: root.cancel()
+
+            Button:
+                text: "Yes! remove its"
+                on_release: root.remove()
+
 # Screen
 <RunningScreen>:
     progressBar: progress_bar

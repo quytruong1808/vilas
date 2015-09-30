@@ -22,9 +22,11 @@ class GromacsMD(object):
     for x in range(0,len(runfolders)):
       # Check point to show log
       CheckPoint.point = runfolders[x]
+
       run_path = main_path+'/run/'+runfolders[x]
       ligandCurrent = runfolders[x].split('_')[1] #A01
 
+      print self.GroLeft+'mdrun'+self.GroRight+' '+self.GroOption
       groCmd = ''
       #Run em
       if os.path.isfile(run_path+'/em.gro') is False: 
@@ -93,24 +95,24 @@ class GromacsMD(object):
     gromacs_version = self.dataController.getdata('gromacs_version ')
     version_array = gromacs_version.split(' VERSION ')[1].split('.')
     mdrun_array = gromacs_version.split(' VERSION ')[0].split('mdrun')
-
+    print version_array
     if int(version_array[0]) == 5:
       self.GroLeft = 'gmx '
       self.GroVersion = 5
     else:
       self.GroLeft = mdrun_array[0]
       self.GroVersion = 4
-    GroRight = mdrun_array[1]
+    self.GroRight = mdrun_array[1]
 
     # Set number of core or gpu
     number_cores = self.dataController.getdata('maximum_cores ')
     if int(number_cores) > 0:
-      self.GroOption = ' -nt '+number_cores
+      self.GroOption = ' -ntomp '+number_cores
     else:
       self.GroOption = ''
 
     check_gpu = check_output(gromacs_version.split(' VERSION ')[0]+" -version", shell=True, executable='/bin/bash').splitlines()
-    if( [s for s in check_gpu if "GPU support:" in s][0].split(":")[1].replace(' ','') == 'enable'):
+    if( [s for s in check_gpu if "GPU support:" in s][0].split(":")[1].replace(' ','') == 'enabled'):
       self.GroOption += ' -gpu_id 0'
 
     #Repeat times 

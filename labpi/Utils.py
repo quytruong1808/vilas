@@ -71,5 +71,3 @@ class DataController(object):
 class CheckPoint(object):
     point = ''
     step = ''
-
-    pass

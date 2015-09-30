@@ -16,7 +16,6 @@ import subprocess
 from parsePdb import Variable
 from Utils import PdbFile
 from Utils import DataController
-from Utils import CheckPoint
 from GromacsMD import GromacsMD
 
 
@@ -628,10 +627,14 @@ class GromacsRun(object):
   def SetupSystem(self):
     global GroLeft, GroRight
     runfolders = check_output('ls '+main_path+'/run/', shell = True).splitlines()
-    for x in range(0,len(runfolders)):
+    for x in range(0,len(runfolders)): 
       run_path = main_path+'/run/'+runfolders[x]
       topolfile = main_path+'/run/'+runfolders[x]+'/topol.top'
       ligandCurrent = runfolders[x].split('_')[1] #A01
+
+      # Check if file solv_ions.gro is exist
+      if os.path.isfile(run_path+'/solv_ions.gro') is True: 
+        continue
 
       try:
         ligandFolders = check_output('cd '+run_path+'; ls -d *.acpype', shell = True).splitlines()
@@ -922,6 +925,7 @@ class GromacsRun(object):
 
     gromacsMD = GromacsMD()
     if (run_nohup == 'n'):
+      gromacsMD.setupOptions()
       gromacsMD.mdrun()
     else:
       call('nohup python2.7 '+root_path+'/GromacsMD.py &', shell = True, executable='/bin/bash')

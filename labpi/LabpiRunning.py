@@ -5,12 +5,14 @@ from kivy.lang import Builder
 from kivy.uix.boxlayout import BoxLayout
 from kivy.app import App
 from kivy.clock import Clock
+from kivy.uix.popup import Popup
 
 #from python libs
 import os
 import os.path
 import signal
 from subprocess import call
+from subprocess import check_output
 import threading
 import ctypes
 import time
@@ -64,15 +66,23 @@ class RunningScreen(Screen):
         call('mkdir '+self.dataController.getdata('path ')+'/output/receptor', shell=True)
         call('mkdir '+self.dataController.getdata('path ')+'/output/ligand', shell=True)
         
-        self.thread = Process(target= self.gromacsRun.main)
-        self.thread.start()
+        runfolders = check_output('ls '+self.dataController.getdata('path ')+'/run/', shell = True).splitlines()
+        if len(runfolders) > 0:
+            popup = RemoveDialog()
+            popup.open()
+        else:
+            self.thread = Process(target= self.gromacsRun.main)
+            self.thread.start()
+
 
         #Check log
         self.progressUnit = 1000/5.5/len(Variable.parsepdb.Ligands)
         self.progressPoint = 0
         Clock.schedule_interval(self.check_log, 5)
 
+
     def check_log(self, dt):
+        print 'check '+CheckPoint.point
         if CheckPoint.point != '':
             run_path = str(self.dataController.getdata('path ')) + '/run/' + str(CheckPoint.point)
             repeat_times = int(self.dataController.getdata('repeat_times '))
@@ -184,3 +194,24 @@ class RunningScreen(Screen):
 #         if self.__stop:
 #             raise StopThread()
 #         return self.__trace
+
+
+class RemoveDialog(Popup):
+
+    gromacsRun = GromacsRun()
+    thread = ObjectProperty(None)
+    dataController = DataController()
+
+    def cancel(self):
+        self.dismiss()
+        self.thread = Process(target= self.gromacsRun.main)
+        self.thread.start()
+        pass
+    def remove(self):
+        self.dismiss()
+        call('rm -r '+self.dataController.getdata('path ')+'/run/*', shell=True)
+        self.thread = Process(target= self.gromacsRun.main)
+        self.thread.start()
+        pass
+
+    pass
