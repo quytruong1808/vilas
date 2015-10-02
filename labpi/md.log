@@ -1,6 +1,6 @@
-Log file opened on Tue Sep 22 13:57:45 2015
-Host: superuser  pid: 4348  rank ID: 0  number of ranks:  1
-GROMACS:    gmx mdrun, VERSION 5.0.4
+Log file opened on Thu Oct  1 10:22:35 2015
+Host: QuyTruong-PC  pid: 4582  rank ID: 0  number of ranks:  1
+GROMACS:    gmx mdrun, VERSION 5.0.2
 
 GROMACS is written by:
 Emile Apol         Rossen Apostolov   Herman J.C. Berendsen Par Bjelkmar       
@@ -24,41 +24,37 @@ under the terms of the GNU Lesser General Public License
 as published by the Free Software Foundation; either version 2.1
 of the License, or (at your option) any later version.
 
-GROMACS:      gmx mdrun, VERSION 5.0.4
-Executable:   /home/superuser/.gromacs-5.0.4/bin/gmx
-Library dir:  /home/superuser/.gromacs-5.0.4/share/gromacs/top
+GROMACS:      gmx mdrun, VERSION 5.0.2
+Executable:   /usr/bin/gmx
+Library dir:  /usr/share/gromacs/top
 Command line:
   mdrun
 
-Gromacs version:    VERSION 5.0.4
+Gromacs version:    VERSION 5.0.2
 Precision:          single
 Memory model:       64 bit
 MPI library:        thread_mpi
 OpenMP support:     enabled
-GPU support:        enabled
+GPU support:        disabled
 invsqrt routine:    gmx_software_invsqrt(x)
-SIMD instructions:  AVX_256
-FFT library:        fftw-3.3.3-sse2
+SIMD instructions:  SSE2
+FFT library:        fftw-3.3.4-sse2-avx
 RDTSCP usage:       enabled
-C++11 compilation:  disabled
+C++11 compilation:  enabled
 TNG support:        enabled
 Tracing support:    disabled
-Built on:           Thứ ba, 26 Tháng năm năm 2015 08:57:17 ICT
-Built by:           superuser@superuser [CMAKE]
-Build OS/arch:      Linux 3.13.0-46-generic x86_64
+Built on:           Fri Oct 24 17:49:05 UTC 2014
+Built by:           buildd@roseapple [CMAKE]
+Build OS/arch:      Linux 3.2.0-61-generic x86_64
 Build CPU vendor:   GenuineIntel
-Build CPU brand:    Intel(R) Core(TM) i5-3330 CPU @ 3.00GHz
-Build CPU family:   6   Model: 58   Stepping: 9
-Build CPU features: aes apic avx clfsh cmov cx8 cx16 f16c htt lahf_lm mmx msr nonstop_tsc pcid pclmuldq pdcm popcnt pse rdrnd rdtscp sse2 sse3 sse4.1 sse4.2 ssse3 tdt x2apic
-C compiler:         /usr/bin/cc GNU 4.8.2
-C compiler flags:    -mavx    -Wno-maybe-uninitialized -Wextra -Wno-missing-field-initializers -Wno-sign-compare -Wpointer-arith -Wall -Wno-unused -Wunused-value -Wunused-parameter  -O3 -DNDEBUG -fomit-frame-pointer -funroll-all-loops -fexcess-precision=fast  -Wno-array-bounds 
-C++ compiler:       /usr/bin/c++ GNU 4.8.2
-C++ compiler flags:  -mavx    -Wextra -Wno-missing-field-initializers -Wpointer-arith -Wall -Wno-unused-function  -O3 -DNDEBUG -fomit-frame-pointer -funroll-all-loops -fexcess-precision=fast  -Wno-array-bounds 
-Boost version:      1.54.0 (external)
-CUDA compiler:      /usr/local/cuda-6.5/bin/nvcc nvcc: NVIDIA (R) Cuda compiler driver;Copyright (c) 2005-2014 NVIDIA Corporation;Built on Thu_Jul_17_21:41:27_CDT_2014;Cuda compilation tools, release 6.5, V6.5.12
-CUDA compiler flags:-gencode;arch=compute_20,code=sm_20;-gencode;arch=compute_20,code=sm_21;-gencode;arch=compute_30,code=sm_30;-gencode;arch=compute_35,code=sm_35;-gencode;arch=compute_35,code=compute_35;-use_fast_math;-Xcompiler;-fPIC ; ;-mavx;-Wextra;-Wno-missing-field-initializers;-Wpointer-arith;-Wall;-Wno-unused-function;-O3;-DNDEBUG;-fomit-frame-pointer;-funroll-all-loops;-fexcess-precision=fast;-Wno-array-bounds;
-CUDA driver:        6.50
-CUDA runtime:       0.0
+Build CPU brand:    Intel(R) Xeon(R) CPU           E5530  @ 2.40GHz
+Build CPU family:   6   Model: 26   Stepping: 5
+Build CPU features: apic clfsh cmov cx8 cx16 htt lahf_lm mmx msr nonstop_tsc pdcm popcnt pse rdtscp sse2 sse3 sse4.1 sse4.2 ssse3
+C compiler:         /usr/bin/x86_64-linux-gnu-gcc GNU 4.9.1
+C compiler flags:    -msse2   -g -O2 -fstack-protector-strong -Wformat -Werror=format-security -D_FORTIFY_SOURCE=2  -Wno-maybe-uninitialized -Wextra -Wno-missing-field-initializers -Wno-sign-compare -Wpointer-arith -Wall -Wno-unused -Wunused-value -Wunused-parameter  -O3 -DNDEBUG -fomit-frame-pointer -funroll-all-loops -fexcess-precision=fast  -Wno-array-bounds 
+C++ compiler:       /usr/bin/x86_64-linux-gnu-g++ GNU 4.9.1
+C++ compiler flags:  -msse2   -std=c++0x -g -O2 -fstack-protector-strong -Wformat -Werror=format-security -D_FORTIFY_SOURCE=2  -Wextra -Wno-missing-field-initializers -Wpointer-arith -Wall -Wno-unused-function  -O3 -DNDEBUG -fomit-frame-pointer -funroll-all-loops -fexcess-precision=fast  -Wno-array-bounds 
+Boost version:      1.55.0 (external)
 
 
 
@@ -92,14 +88,9 @@ Comp. Phys. Comm. 91 (1995) pp. 43-56
 -------- -------- --- Thank You --- -------- --------
 
 
-NOTE: Error occurred during GPU detection:
-      no CUDA-capable device is detected
-      Can not use GPU acceleration, will fall back to CPU kernels.
-
-
 -------------------------------------------------------
-Program mdrun, VERSION 5.0.4
-Source code file: /home/superuser/.gromacs-5.0.4/src/gromacs/fileio/gmxfio.c, line: 513
+Program mdrun, VERSION 5.0.2
+Source code file: /build/buildd/gromacs-5.0.2/src/gromacs/fileio/gmxfio.c, line: 513
 
 Can not open file:
 topol.tpr

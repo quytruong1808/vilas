@@ -13,6 +13,8 @@ sudo pip insatall openbabel
 4. Avogadro for python
 sudo apt-get install avogadro
 
+5. Pymol
+sudo apt-get install pymol
 
 
 How to install labpi in Ubuntu
@@ -29,7 +31,7 @@ sudo apt-get install cython
 or
 sudo pip install cython
 
-** Error with missing openGL:
+** Missing openGL:
 sudo apt-get install build-essential
 sudo apt-get install freeglut3-dev
 

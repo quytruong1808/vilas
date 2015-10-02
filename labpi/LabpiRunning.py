@@ -21,7 +21,6 @@ from multiprocessing import Process
 # import core labpi
 from LabpiRun import GromacsRun
 from Utils import DataController
-from Utils import CheckPoint
 from parsePdb import Variable
 
 Builder.load_file(os.path.dirname(__file__)+"/LabpiRunning.kv")
@@ -78,21 +77,21 @@ class RunningScreen(Screen):
         #Check log
         self.progressUnit = 1000/5.5/len(Variable.parsepdb.Ligands)
         self.progressPoint = 0
+        self.dataController.setdata('status', '')
         Clock.schedule_interval(self.check_log, 5)
 
 
     def check_log(self, dt):
-        print 'check '+CheckPoint.point
-        if CheckPoint.point != '':
-            run_path = str(self.dataController.getdata('path ')) + '/run/' + str(CheckPoint.point)
+        if self.dataController.getdata('status') != '':
+            run_path = str(self.dataController.getdata('path ')) + '/run/' + str(self.dataController.getdata('status'))
             repeat_times = int(self.dataController.getdata('repeat_times '))
 
             if self.checkPOINT == '':
-                self.checkPOINT = str(CheckPoint.point)
-            elif self.checkPOINT != str(CheckPoint.point): 
+                self.checkPOINT = str(self.dataController.getdata('status'))
+            elif self.checkPOINT != str(self.dataController.getdata('status')): 
                 self.checkEM = checkNVT = checkNPT = checkMD = checkSMD = True
                 self.lastSMD = 0
-                self.checkPOINT = str(CheckPoint.point)
+                self.checkPOINT = str(self.dataController.getdata('status'))
 
 
             em_path = run_path + '/em.gro' 
@@ -158,7 +157,7 @@ class RunningScreen(Screen):
             # self.smdImg.reload()
 
             self.progressBar.value = self.progressPoint
-            self.checkFile.text = str(CheckPoint.point)
+            self.checkFile.text = str(self.dataController.getdata('status'))
 
 
         

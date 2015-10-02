@@ -9,14 +9,15 @@ smd-nst  = 5000
 smd-vel = 0.004
 smd-k  = 600
 
-config_auto  = True
+config_auto  = False
 path  = 
 /Documents/labpi-result
 caver = False
 ligand_auto = True
 repeat_times  = 3
 nohup  = False
-maximum_cores  = 99
+maximum_cores  = 2
 gpu_auto  = True
-gromacs_version  = 
+gromacs_version  = gmx    VERSION 5.1
+status = 
 

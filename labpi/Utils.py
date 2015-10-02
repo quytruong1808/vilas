@@ -31,26 +31,53 @@ class DataController(object):
         setting_path = self.root_path + '/.labpi_setting.txt'
         if os.path.isfile(setting_path) == True:
             if self.getdata('config_auto ') == 'True':
-                self.root_path = self.main_path
+                self.root_path = self.main_path + '/data'
         pass
-
-
 
     def getdata(self, name):
         f = open(self.root_path+'/.labpi_setting.txt', "r")
         contents = f.readlines()
         f.close()
         if len(self.substring(name,contents)) > 0:
-            return contents[self.substring(name,contents)[0]].split(' = ')[1].split('\n')[0]
+            content = contents[self.substring(name,contents)[0]].split(' = ')[1].split('\n')[0]
+            if content.replace(' ','') == '':
+                if(name == 'path ' or name == 'path'):
+                    return '/home/'+self.username + '/Documents/labpi-result';
+            return content
         else: 
+            self.initdata(name, '')
             return ''
 
     def setdata(self, name, value):
+        if(name == 'config_auto ' or name == 'config_auto'):
+            self.root_path = '/home/'+self.username
+
+        print name + ' ' + value
         f = open(self.root_path+'/.labpi_setting.txt', "r")
         contents = f.readlines()
         f.close()
 
-        contents[self.substring(name,contents)[0]] = name + ' = ' + value + '\n'
+        if len(self.substring(name,contents)) > 0:
+            print self.root_path+'/.labpi_setting.txt'
+            contents[self.substring(name,contents)[0]] = name + ' = ' + value + '\n'
+            f = open(self.root_path+'/.labpi_setting.txt', "w")
+            contents = "".join(contents)
+            f.write(contents)
+            f.close()
+        else:
+            self.initdata(name, value)
+        
+
+    def initdata(self, name, value):
+        f = open(self.root_path+'/.labpi_setting.txt', "r")
+        contents = f.readlines()
+        f.close()
+
+        # If exist
+        if len(self.substring(name,contents)) > 0:
+            return
+
+        contents.append(name + ' = ' + value + '\n')
 
         f = open(self.root_path+'/.labpi_setting.txt', "w")
         contents = "".join(contents)
@@ -64,7 +91,7 @@ class DataController(object):
         #Check root path
         setting_path = '/home/'+self.username + '/.labpi_setting.txt'
         if os.path.isfile(setting_path) == False:
-            call('cp '+self.main_path+'/data/labpi_setting.txt '+setting_path, shell=True)
+            call('cp '+self.main_path+'/data/.labpi_setting.txt '+setting_path, shell=True)
             run_path = '/home/'+self.username + '/Documents/labpi-result'
             self.setdata('path ', run_path)
             

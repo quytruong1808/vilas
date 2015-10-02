@@ -10,6 +10,8 @@ from kivy.uix.popup import Popup
 
 #python tools
 import os
+from multiprocessing import Process
+import thread
 
 #ListView
 from kivy.uix.listview import ListView
@@ -21,39 +23,47 @@ from parsePdb import Variable
 from Utils import PdbFile
 from Utils import Chain
 
-
 #Kivy file
 Builder.load_file(os.path.dirname(__file__)+"/LabpiLoad.kv")
 
 # global Variable
 ItemId = 0
+loadPymol = False;
 
 class LoadScreen(Screen):
     root_path = os.path.dirname(__file__)
 
     boxlist_1 = ObjectProperty(None)
     boxlist_2 = ObjectProperty(None)
+    list_adapter_receptor = ObjectProperty(None)
+    list_adapter_ligand = ObjectProperty(None)
+    pymol = ObjectProperty(None)
 
     def __init__(self, *args, **kwargs):
         super(LoadScreen, self).__init__(*args, **kwargs)
 
         list_item_args_converter = lambda row_index, obj: {'root_path': obj.root_path, 'item_id': obj.item_id, 'text': obj.text, 'pdbFile': obj.pdbFile, 'remove_item': obj.remove_item, 'list_id': obj.list_id}
 
-        list_adapter_receptor = LoadAdapter(data=[], 
+        self.list_adapter_receptor = LoadAdapter(data=[], 
                             args_converter=list_item_args_converter,
                             template='LoadListItem')
-        pdb_list_1 = ListView(adapter=list_adapter_receptor, 
+        pdb_list_1 = ListView(adapter=self.list_adapter_receptor, 
                             divider_height= 1,
                             id='pdb_list_1')
         self.boxlist_1.add_widget(pdb_list_1)
 
-        list_adapter_ligand = LoadAdapter(data=[], 
+        self.list_adapter_ligand = LoadAdapter(data=[], 
                             args_converter=list_item_args_converter,
                             template='LoadListItem')
-        pdb_list_2 = ListView(adapter=list_adapter_ligand, 
+        pdb_list_2 = ListView(adapter=self.list_adapter_ligand, 
                             divider_height= 1,
                             id='pdb_list_2')
         self.boxlist_2.add_widget(pdb_list_2)
+
+    def setupView(self, pym):
+        self.pymol = pym
+        self.list_adapter_receptor.setdata(pym)
+        self.list_adapter_ligand.setdata(pym)
 
     def show_load_receptor(self):
         # self._popup.dismiss()
@@ -76,12 +86,17 @@ class LoadScreen(Screen):
         # Add item to listview
         widget = self.findWidget(self.boxlist_1, 'pdb_list_1')
         if(not widget is None):
-            global ItemId
-            dataItem = []
+            global ItemId, loadPymol
+            dataItem = []                
 
             for fl in file_path:
                 filename = os.path.basename(fl)
-                if(os.path.splitext(filename)[1].split('.')[1]=='pdb'):     
+                if(os.path.splitext(filename)[1].split('.')[1]=='pdb'):   
+                    global loadPymol  
+                    if loadPymol == False:
+                        loadPymol = True
+                        thread.start_new_thread( self.pymol.finish_launching, ())
+
                     ItemId += 1
                     #Add pdb file and chains to variable
                     chains = ParsePdb().listChain(fl)
@@ -90,6 +105,12 @@ class LoadScreen(Screen):
 
                     dataItem.append(DataItem(root_path=self.root_path, item_id=ItemId, text=filename, pdbFile=pdbFile , remove_item=self.remove_item, list_id = 'pdb_list_1'))
                 
+                    #load pymol
+                    thread.start_new_thread( self.pymol.cmd.load, (fl,) )
+                    for chain in chains:
+                        thread.start_new_thread( self.pymol.cmd.show_as, ('cartoon', str(chain.chain_view),) )
+                        thread.start_new_thread( self.pymol.cmd.cartoon, ('automatic', str(chain.chain_view),) )
+
             # print parsepdb.Receptors
             widget.adapter.data.extend(dataItem)
             widget._trigger_reset_populate()
@@ -97,6 +118,12 @@ class LoadScreen(Screen):
             print len(Variable.parsepdb.Receptors)
 
         self.dismiss_popup()
+
+        # pymol.cmd.load('2UXN.pdb')
+        # pymol.cmd.show_as('cartoon', 'chain A')
+        # pymol.cmd.cartoon('automatic', 'chain A')
+
+        # pymol.cmd.show_as('sticks', 'resn FDA')
 
     def load_ligand(self, path, file_path):
         # Add item to listview
@@ -151,6 +178,10 @@ class LoadScreen(Screen):
 #--------------------------------------------------------#
 # ListView class
 class LoadAdapter(ListAdapter):
+    pymol = ObjectProperty(None)
+
+    def setdata(self, pym):
+        self.pymol = pym
 
     def create_view(self, index):
         item = self.get_data_item(index)
@@ -207,7 +238,9 @@ class LoadAdapter(ListAdapter):
         chain_id = int(checkbox.id.split('-_-')[2])
 
         if(list_id == 'pdb_list_1'):
-            Variable.parsepdb.Receptors[index].chains[chain_id].is_selected = value   
+            chain = Variable.parsepdb.Receptors[index].chains[chain_id]
+            chain.is_selected = value   
+            thread.start_new_thread( self.pymol.cmd.hide, (str(chain.chain_view),) )
         else:
             Variable.parsepdb.Ligands[index].chains[chain_id].is_selected = value
         

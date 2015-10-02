@@ -19,6 +19,11 @@ from LabpiRunning import RunningScreen
 from Utils import DataController
 from parsePdb import Variable
 
+# pymol
+import pymol
+from multiprocessing import Process
+
+
 # Builder.load_file("LabpiLoad.py").
 
 #--------------------------------------------------------#
@@ -38,7 +43,9 @@ class ScreenManagement(ScreenManager):
                 popup.open()
                 return
 
-        if(screen == 'receptor'):
+        if(screen == 'load'):
+            self.get_screen(screen).setupView(pymol)
+        elif(screen == 'receptor'):
             self.get_screen(screen).setupView()
         elif (screen == 'running'):
             self.get_screen(screen).setupView()
@@ -57,14 +64,19 @@ class LabpiApp(App):
         sm.add_widget(ConfigurationScreen(name='configuration'))
         sm.add_widget(RunningScreen(name='running'))
         sm.add_widget(SettingScreen(name='setting'))
+
+        sm.get_screen('load').setupView(pymol)
         return sm
 
 def main():
+
     #Check settings file exist?
     dataController = DataController()
     dataController.checkExist()
 
     LabpiApp().run()
+
+
 
 if __name__ == '__main__':
     main()

@@ -114,16 +114,23 @@ class GromacsRun(object):
     # Get version of gromacs
     global GroLeft, GroRight, GroVersion
     gromacs_version = self.dataController.getdata('gromacs_version ')
+    print gromacs_version
     version_array = gromacs_version.split(' VERSION ')[1].split('.')
-    mdrun_array = gromacs_version.split(' VERSION ')[0].split('mdrun')
 
     if int(version_array[0]) == 5:
-      GroLeft = 'gmx '
+      if int(version_array[1]) > 0:
+        GroLeft = gromacs_version.split(' VERSION ')[0]
+        GroRight = ''
+      else:
+        mdrun_array = gromacs_version.split(' VERSION ')[0].split('mdrun')
+        GroLeft = 'gmx '
+        GroRight = mdrun_array[1]
       GroVersion = 5
     else:
+      mdrun_array = gromacs_version.split(' VERSION ')[0].split('mdrun')
       GroLeft = mdrun_array[0]
+      GroRight = mdrun_array[1]
       GroVersion = 4
-    GroRight = mdrun_array[1]
 
     # Set number of core or gpu
     global GroOption

@@ -8,6 +8,7 @@ from kivy.uix.dropdown import DropDown
 from kivy.uix.button import Button
 
 from subprocess import check_output
+import subprocess
 import os
 
 
@@ -40,23 +41,61 @@ class ConfigurationScreen(Screen):
 
 
     def setupView(self):
-        #Check gromacs version 
-        command_version = check_output("compgen -ac | grep mdrun", shell=True, executable='/bin/bash').splitlines()
         dropdown = DropDown()
-        for x in range(0, len(command_version)):
-            versions = check_output(str(command_version[x])+" -version", shell=True, executable='/bin/bash').splitlines()
-            version = [s for s in versions if "Gromacs version" in s][0].split(":")[1]
-            btn = Button(text=str(command_version[x]) + version, size_hint_y=None, height=35)
-            btn.bind(on_release=lambda btn: dropdown.select(btn.text))
-            # then add the button inside the dropdown
-            dropdown.add_widget(btn)
-            print str(command_version[x]) + version
-            #Set first gromacs found
-            if x == 0 and self.dataController.getdata('gromacs_version ') == '':
-                self.versionButton.text = str(command_version[x]) + version
-                self.dataController.setdata('gromacs_version ', str(command_version[x] + version))
-            if self.dataController.getdata('gromacs_version ') == str(command_version[x]) + version:
-                self.versionButton.text = str(command_version[x]) + version
+
+        #Check gromacs version 
+        try:
+            command_version = check_output("compgen -ac | grep mdrun", shell=True, executable='/bin/bash').splitlines()
+            for x in range(0, len(command_version)):
+                print command_version[x]
+                try:
+                    versions = check_output(str(command_version[x])+" -version", shell=True, executable='/bin/bash').splitlines()
+                    if not any("Gromacs version" in s for s in versions):
+                        continue
+                    version = [s for s in versions if "Gromacs version" in s][0].split(":")[1]
+                    btn = Button(text=str(command_version[x]) + version, size_hint_y=None, height=35)
+                    btn.bind(on_release=lambda btn: dropdown.select(btn.text))
+                    # then add the button inside the dropdown
+                    dropdown.add_widget(btn)
+                    #Set first gromacs found
+                    if x == 0 and self.dataController.getdata('gromacs_version ') == '':
+                        self.versionButton.text = str(command_version[x]) + version
+                        self.dataController.setdata('gromacs_version ', str(command_version[x] + version))
+                    if self.dataController.getdata('gromacs_version ') == str(command_version[x]) + version:
+                        self.versionButton.text = str(command_version[x]) + version
+                except subprocess.CalledProcessError as e:
+                    print e
+        except subprocess.CalledProcessError as e:
+            print e
+
+        try:
+            gmx_version = check_output("compgen -ac | grep gmx", shell=True, executable='/bin/bash').splitlines()
+            for x in range(0, len(gmx_version)):
+                print gmx_version[x]
+                try:
+                    versions = check_output(str(gmx_version[x])+" -version", shell=True, executable='/bin/bash').splitlines()
+                    if not any("GROMACS version" in s for s in versions):
+                        continue
+                    version = [s for s in versions if "GROMACS version" in s][0].split(":")[1]
+                    numVers = version.split('VERSION')[1].replace(' ','').split('.')
+                    # If version >= 5.1
+                    if int(numVers[0]) == 5 and int(numVers[1])>0:
+                        btn = Button(text=str(gmx_version[x]) + version, size_hint_y=None, height=35)
+                        btn.bind(on_release=lambda btn: dropdown.select(btn.text))
+                        # then add the button inside the dropdown
+                        dropdown.add_widget(btn)
+
+                        #Set first gromacs found
+                        if self.dataController.getdata('gromacs_version ') == '':
+                            self.versionButton.text = str(gmx_version[x]) + version
+                            self.dataController.setdata('gromacs_version ', str(gmx_version[x] + version))
+                        if self.dataController.getdata('gromacs_version ') == str(gmx_version[x]) + version:
+                            self.versionButton.text = str(gmx_version[x]) + version
+                except subprocess.CalledProcessError as e:
+                    print e
+        except subprocess.CalledProcessError as e:
+            print e
+        
         self.versionButton.bind(on_release=dropdown.open)
         dropdown.bind(on_select=self.gromacs_version_check)
 

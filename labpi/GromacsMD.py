@@ -21,7 +21,7 @@ class GromacsMD(object):
 
     for x in range(0,len(runfolders)):
       # Check point to show log
-      CheckPoint.point = runfolders[x]
+      self.dataController.setdata('status', runfolders[x])
 
       run_path = main_path+'/run/'+runfolders[x]
       ligandCurrent = runfolders[x].split('_')[1] #A01
@@ -94,15 +94,25 @@ class GromacsMD(object):
   def setupOptions(self):
     gromacs_version = self.dataController.getdata('gromacs_version ')
     version_array = gromacs_version.split(' VERSION ')[1].split('.')
-    mdrun_array = gromacs_version.split(' VERSION ')[0].split('mdrun')
     print version_array
+    # If version >= 5
     if int(version_array[0]) == 5:
-      self.GroLeft = 'gmx '
+      # If version >= 5.1
+      if int(version_array[1]) > 0:
+        self.GroLeft = gromacs_version.split(' VERSION ')[0]
+        self.GroRight = ''
+      else: 
+        # Check gmx
+        self.GroLeft = 'gmx '
+        self.GroRight = mdrun_array[1]
+
       self.GroVersion = 5
+    # If version = 4
     else:
+      mdrun_array = gromacs_version.split(' VERSION ')[0].split('mdrun')
       self.GroLeft = mdrun_array[0]
+      self.GroRight = mdrun_array[1]
       self.GroVersion = 4
-    self.GroRight = mdrun_array[1]
 
     # Set number of core or gpu
     number_cores = self.dataController.getdata('maximum_cores ')
