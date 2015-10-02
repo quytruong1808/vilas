@@ -44,7 +44,7 @@ class ScreenManagement(ScreenManager):
                 return
 
         if(screen == 'load'):
-            self.get_screen(screen).setupView(pymol)
+            self.get_screen(screen).setupView()
         elif(screen == 'receptor'):
             self.get_screen(screen).setupView()
         elif (screen == 'running'):
@@ -65,7 +65,8 @@ class LabpiApp(App):
         sm.add_widget(RunningScreen(name='running'))
         sm.add_widget(SettingScreen(name='setting'))
 
-        sm.get_screen('load').setupView(pymol)
+        sm.get_screen('load').set_pymol(pymol)
+        sm.get_screen('receptor').set_pymol(pymol)
         return sm
 
 def main():

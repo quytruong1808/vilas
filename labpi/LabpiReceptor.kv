@@ -50,7 +50,7 @@
     chainName: chain_name
     chainBox: chain_box
     resdiueFrom: resdiue_from
-    resdiueTo: resdiue_to
+    # resdiueTo: resdiue_to
 
     padding: 0, 5, 10, 5
     BoxLayout:
@@ -81,13 +81,13 @@
                 text_size: self.width, None
                 halign: 'left'
                 size_hint_x: root.width * 1/10
-            Label:
-                text: ' from '
-                color: 0,0,0,1
-                font_size: '14sp'
-                text_size: self.width, None
-                halign: 'center'
-                size_hint_x: root.width * 1/10
+            # Label:
+            #     text: ' from '
+            #     color: 0,0,0,1
+            #     font_size: '14sp'
+            #     text_size: self.width, None
+            #     halign: 'center'
+            #     size_hint_x: root.width * 1/10
             TextInput:
                 id: resdiue_from
                 text: ''
@@ -96,25 +96,25 @@
                 text_size: self.width, None
                 halign: 'left'
                 valign: 'center'
-                size_hint_x: root.width * 2/10
+                size_hint_x: root.width * 15/100
                 padding_y: 5
-            Label:
-                text: ' to '
-                color: 0,0,0,1
-                font_size: '14sp'
-                text_size: self.width, None
-                halign: 'center'
-                size_hint_x: root.width * 1/10
-            TextInput:
-                id: resdiue_to
-                text: ''
-                color: 0,0,0,1
-                font_size: '14sp'
-                text_size: self.width, None
-                halign: 'left'
-                valign: 'center'
-                size_hint_x: root.width * 2/10
-                padding_y: 5
+            # Label:
+            #     text: ' to '
+            #     color: 0,0,0,1
+            #     font_size: '14sp'
+            #     text_size: self.width, None
+            #     halign: 'center'
+            #     size_hint_x: root.width * 1/10
+            # TextInput:
+            #     id: resdiue_to
+            #     text: ''
+            #     color: 0,0,0,1
+            #     font_size: '14sp'
+            #     text_size: self.width, None
+            #     halign: 'left'
+            #     valign: 'center'
+            #     size_hint_x: root.width * 2/10
+            #     padding_y: 5
             BoxLayout:
                 size_hint_x: root.width * 2/10
 
