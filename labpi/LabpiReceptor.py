@@ -60,7 +60,6 @@ class ReceptorScreen(Screen):
                     number_chain += 1
                     pymol_thread = Thread(target = self.pymol_spectrum, args = (chain, chainname, str(chain.resindices[0])+'-'+str(chain.resindices[1]), ))
                     pymol_thread.start()
-                    pymol_thread.join()
 
             filename = os.path.basename(pdbFile.file_path)
             data.append(DataItem(root_path=self.root_path, item_id=ItemId, text=filename, pdbFile=pdbFile , list_id = 'receptor_lv', number_chain = number_chain))
@@ -75,7 +74,6 @@ class ReceptorScreen(Screen):
                 print str(chain.chain_view)
                 pymol_thread = Thread(target = self.pymol_hide, args = (chain, chainname, ))
                 pymol_thread.start()
-                pymol_thread.join()
 
         self.recetor_lv.adapter.data = data
         self.recetor_lv._trigger_reset_populate()
@@ -200,7 +198,6 @@ class ReceptorAdapter(ListAdapter):
             # Spectrum in pymol
             pymol_thread = Thread(target = self.pymol_spectrum, args = (chain, chainname, value, ))
             pymol_thread.start()
-            pymol_thread.join()
     
     def pymol_spectrum(self, chain, chainname, value):
         self.pymol.cmd.color('gray', str(chain.chain_view) + ' & ' + chainname) 

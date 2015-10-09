@@ -26,6 +26,28 @@
             Button:
                 text: "Yes! remove its"
                 on_release: root.remove()
+<FinishDialog>:
+    title: 'Notification!'
+    size_hint: None, None 
+    size: 400, 250
+    BoxLayout:
+        size: root.size
+        pos: root.pos
+        orientation: "vertical"
+
+        Label:
+            text:'Your job is running in background. \n \n  Now, you can close the interface. '
+
+        BoxLayout:
+            size_hint_y: None
+            height: 30
+            Button:
+                text: "Cancel"
+                on_release: root.cancel()
+
+        #     Button:
+        #         text: "Yes! close its"
+        #         on_release: root.remove()
 
 # Screen
 <RunningScreen>:
@@ -37,15 +59,12 @@
     mdImg: md_img 
     smdImg: smd_img
     smdLog: smd_log
+    progressText: progress_text
+    progressLayout: progress_layout
+    # progressImage: progress_image
 
-    canvas.before:
-	    Color:
-	        rgba: 0.92, 0.92, 0.92, 1
-	    Rectangle:
-	        # self here refers to the widget i.e BoxLayout
-	        pos: self.pos
-	        size: self.size
-
+    AsyncImage:
+        source: root.root_path + '/img/background.png'
     FloatLayout:
         # Button:
         #     background_color: 1, 1, 1, 0
@@ -66,10 +85,21 @@
             pos: root.width /20, root.height * 8/10
             canvas.before:
                 Color:
+                    rgba: 0.3, 0.3, 0.3, 1
+                Rectangle:
+                    pos: self.width/8 + root.width/20-5, self.center_y-5-5
+                    size: self.width*3/4+10, 8+10
+
+        BoxLayout:
+            size_hint: None, None
+            size: root.width * 9/10, root.height * 2/10
+            pos: root.width /20, root.height * 8/10
+            canvas.before:
+                Color:
                     rgba: 0.62, 0.62, 0.62, 1
                 Rectangle:
                     pos: self.width/8 + root.width/20, self.center_y-5
-                    size: self.width*3/4, 10
+                    size: self.width*3/4, 8
         BoxLayout:
             size_hint: None, None
             size: root.width * 9/10, root.height * 2/10
@@ -120,8 +150,8 @@
                 Label:
                     id: check_file
                     text: ''
-                    color: 0,0,0,1
-                    disabled_color: 0,0,0,1
+                    color: 0.9,0.9,0.9,1
+                    disabled_color: 0.9,0.9,0.9,1
                     font_size: '16sp'
                     text_size: self.width, None
                     halign: 'left'
@@ -136,13 +166,13 @@
                 padding: 10, 0, 20, 0
                 canvas.before:
                     Color:
-                        rgba: 1,1,1,1
+                        rgba: 0.95,0.95,0.95, 1
                     Rectangle:
                         pos: self.pos
                         size: self.size
                 canvas.after:
                     Color:
-                        rgb: 0.9, 0.9, 0.9
+                        rgb: 0.7, 0.7, 0.7, 1
                     Line:
                         rectangle: self.x,self.y,self.width,self.height
                 Image:
@@ -172,13 +202,13 @@
                 padding: 10, 0, 20, 0
                 canvas.before:
                     Color:
-                        rgba: 1,1,1,1
+                        rgba: 0.95,0.95,0.95, 1
                     Rectangle:
                         pos: self.pos
                         size: self.size
                 canvas.after:
                     Color:
-                        rgb: 0.9, 0.9, 0.9
+                        rgb: 0.7, 0.7, 0.7, 1
                     Line:
                         rectangle: self.x,self.y,self.width,self.height
                 Image:
@@ -208,13 +238,13 @@
                 padding: 10, 0, 20, 0
                 canvas.before:
                     Color:
-                        rgba: 1,1,1,1
+                        rgba: 0.95,0.95,0.95, 1
                     Rectangle:
                         pos: self.pos
                         size: self.size
                 canvas.after:
                     Color:
-                        rgb: 0.9, 0.9, 0.9
+                        rgb: 0.7, 0.7, 0.7, 1
                     Line:
                         rectangle: self.x,self.y,self.width,self.height
                 Image:
@@ -244,13 +274,13 @@
                 padding: 10, 0, 20, 0
                 canvas.before:
                     Color:
-                        rgba: 1,1,1,1
+                        rgba: 0.95,0.95,0.95, 1
                     Rectangle:
                         pos: self.pos
                         size: self.size
                 canvas.after:
                     Color:
-                        rgb: 0.9, 0.9, 0.9
+                        rgb: 0.7, 0.7, 0.7, 1
                     Line:
                         rectangle: self.x,self.y,self.width,self.height
                 Image:
@@ -280,13 +310,13 @@
                 padding: 10, 0, 20, 0
                 canvas.before:
                     Color:
-                        rgba: 1,1,1,1
+                        rgba: 0.95,0.95,0.95, 1
                     Rectangle:
                         pos: self.pos
                         size: self.size
                 canvas.after:
                     Color:
-                        rgb: 0.9, 0.9, 0.9
+                        rgb: 0.7, 0.7, 0.7, 1
                     Line:
                         rectangle: self.x,self.y,self.width,self.height
                 Image:
@@ -325,4 +355,28 @@
 
             BoxLayout:
                 
+        BoxLayout:
+            id: progress_layout
+            size_hint: None, None
+            size: root.width * 6/10, root.height * 1/10
+            pos: root.width *2/10, root.height * 0.5/10
+            orientation: "horizontal"
+
+            # Image:
+            #     id: progress_image
+            #     source: root.root_path +'/img/spin.png'
+            #     size_hint: None, None
+            #     size: 90, 90
                 
+
+            Label:
+                id: progress_text
+                color: 0.9,0.9,0.9,1
+                disabled_color: 0.9,0.9,0.9,1
+                font_size: '16sp'
+                text_size: self.width, None
+                halign: 'left'
+                valign: 'middle'
+                size_hint_x: 1
+                text: 'Labpi is preparing for simulation ...'
+

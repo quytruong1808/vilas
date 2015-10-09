@@ -89,14 +89,8 @@
 <LoadScreen>:
     boxlist_1: box_list_1    
     boxlist_2: box_list_2
-
-    canvas.before:
-        Color:
-            rgba: 0.92, 0.92, 0.92, 1
-        Rectangle:
-            # self here refers to the widget i.e BoxLayout
-            pos: self.pos
-            size: self.size
+    AsyncImage:
+        source: root.root_path + '/img/background.png'
 
     FloatLayout:
         Button:
@@ -131,10 +125,23 @@
             pos: root.width /20, root.height * 8/10
             canvas.before:
                 Color:
+                    rgba: 0.3, 0.3, 0.3, 1
+                Rectangle:
+                    pos: self.width/8 + root.width/20-5, self.center_y-5-5
+                    size: self.width*3/4+10, 8+10
+
+        BoxLayout:
+            size_hint: None, None
+            size: root.width * 9/10, root.height * 2/10
+            pos: root.width /20, root.height * 8/10
+            canvas.before:
+                Color:
                     rgba: 0.62, 0.62, 0.62, 1
                 Rectangle:
                     pos: self.width/8 + root.width/20, self.center_y-5
-                    size: self.width*3/4, 10
+                    size: self.width*3/4, 8
+
+
         BoxLayout:
             size_hint: None, None
             size: root.width * 9/10, root.height * 2/10
@@ -185,18 +192,23 @@
                     size_hint: None, None
                     size: box_load_1.width, 30
                     on_release: root.show_load_receptor()
+                    canvas.after:
+                        Color:
+                            rgb: 0.4, 0.4, 0.4, 1
+                        Line:
+                            rectangle: self.x,self.y,self.width,self.height
                 BoxLayout:
                     id: box_list_1
                     size: box_load_1.width, box_load_1.height-40
                     canvas.before:
                         Color:
-                            rgba: 1,1,1, 1
+                            rgba: 0.95,0.95,0.95, 1
                         Rectangle:
                             pos: self.pos
                             size: self.size
                     canvas.after:
                         Color:
-                            rgb: 0.9, 0.9, 0.9, 1
+                            rgb: 0.7, 0.7, 0.7, 1
                         Line:
                             rectangle: self.x,self.y,self.width,self.height
                     # ListView:
@@ -215,17 +227,22 @@
                     size_hint: None, None
                     size: box_load_2.width, 30
                     on_release: root.show_load_ligand()
+                    canvas.after:
+                        Color:
+                            rgb: 0.4, 0.4, 0.4, 1
+                        Line:
+                            rectangle: self.x,self.y,self.width,self.height
                 BoxLayout:
                     id: box_list_2
                     size: box_load_1.width, box_load_1.height-40
                     canvas.before:
                         Color:
-                            rgba: 1,1,1, 1
+                            rgba: 0.95,0.95,0.95, 1
                         Rectangle:
                             pos: self.pos
                             size: self.size
                     canvas.after:
                         Color:
-                            rgb: 0.9, 0.9, 0.9, 1
+                            rgb: 0.7, 0.7, 0.7, 1
                         Line:
                             rectangle: self.x,self.y,self.width,self.height

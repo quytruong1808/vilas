@@ -67,6 +67,7 @@ class LabpiApp(App):
 
         sm.get_screen('load').set_pymol(pymol)
         sm.get_screen('receptor').set_pymol(pymol)
+        sm.get_screen('running').set_pymol(pymol)
         return sm
 
 def main():

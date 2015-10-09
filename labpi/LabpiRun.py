@@ -28,6 +28,7 @@ GroOption = ''
 GroVersion = ''
 AvogadroAuto = ''
 run_caver = ''
+run_icst = ''
 run_nohup = ''
 repeat_times = '0'
 Method = '1'
@@ -150,6 +151,13 @@ class GromacsRun(object):
       call('tar xfz '+root_path+'/caver.tar.gz -C '+self.dataController.getdata('path '), shell=True)
     else:
       run_caver = 'n'
+
+    # ICST tools
+    global run_icst
+    if self.dataController.getdata('icst ') == 'True':
+      run_icst = 'y'
+    else: 
+      run_icst = 'n'      
 
     #Repeat times 
     global repeat_times
@@ -728,15 +736,18 @@ class GromacsRun(object):
         ligand = parsePDB(run_path+'/'+ligandCurrent+'.pdb')
       ligandCenter = calcCenter(ligand)
 
-      #check if user want to use caver
+      #Check the vector for pulling
       if run_caver == 'y':
         vectorPull = self.setupCaver(ligandCenter, run_path+'/protein.pdb')
         if vectorPull is None:
           vectorPull = ligandCenter - ReceptorCenter
+      elif run_icst == 'y':
+        call('cp '+root_path+'/source/icst '+run_path, shell=True)
       else:
         vectorPull = ligandCenter - ReceptorCenter
-      self.Log('ligandCenter',str(ligandCenter))
-      self.Log('ReceptorCenter',str(ReceptorCenter))
+
+      # self.Log('ligandCenter',str(ligandCenter))
+      # self.Log('ReceptorCenter',str(ReceptorCenter))
 
       call('cp '+root_path+'/source/rotate.py '+run_path+'/', shell = True)
       self.CallCommand(run_path+'/', 'python2.7 rotate.py -i system.gro -o rotate_system.gro -v '+str(vectorPull[0])+','+str(vectorPull[1])+','+str(vectorPull[2]))

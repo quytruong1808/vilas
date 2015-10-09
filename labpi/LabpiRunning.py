@@ -6,6 +6,10 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.app import App
 from kivy.clock import Clock
 from kivy.uix.popup import Popup
+from kivy.animation import Animation
+from kivy.graphics import Rotate
+from kivy.uix.image import Image
+from kivy.graphics.context_instructions import PopMatrix, PushMatrix
 
 #from python libs
 import os
@@ -13,6 +17,7 @@ import os.path
 import signal
 from subprocess import call
 from subprocess import check_output
+import thread
 import threading
 import ctypes
 import time
@@ -29,6 +34,7 @@ class RunningScreen(Screen):
     root_path = os.path.dirname(__file__)
     dataController = DataController()
 
+    pymol = ObjectProperty(None)
     progressBar = ObjectProperty(None)
     checkFile = ObjectProperty(None)
     emImg = ObjectProperty(None)
@@ -37,6 +43,9 @@ class RunningScreen(Screen):
     mdImg = ObjectProperty(None)
     smdImg = ObjectProperty(None)
     smdLog = ObjectProperty(None)
+    progressText = ObjectProperty(None)
+    progressLayout = ObjectProperty(None)
+    progressImage = ObjectProperty(None)
 
     progressUnit = 0
     progressPoint = 0
@@ -48,6 +57,8 @@ class RunningScreen(Screen):
     checkMD = False
     checkSMD = False
     lastSMD = 0
+    angle = 0
+    firstFinish = True
 
     #Create thread to run background
     gromacsRun = GromacsRun()
@@ -55,7 +66,14 @@ class RunningScreen(Screen):
 
     def __init__(self, *args, **kwargs):
         super(RunningScreen, self).__init__(*args, **kwargs)
+
+        # init progress image
+        self.progressImage = ProgressImage()
+        self.progressLayout.add_widget(self.progressImage)
         pass
+
+    def set_pymol(self, pym):
+        self.pymol = pym
 
     def setupView(self):
         #Check if folder is exits
@@ -73,16 +91,34 @@ class RunningScreen(Screen):
             self.thread = Process(target= self.gromacsRun.main)
             self.thread.start()
 
-
         #Check log
         self.progressUnit = 1000/5.5/len(Variable.parsepdb.Ligands)
         self.progressPoint = 0
         self.dataController.setdata('status', '')
         Clock.schedule_interval(self.check_log, 5)
+        Clock.schedule_interval(self.spin_progress, 0.05)
+        Clock.schedule_interval(self.pymol_log, 300)
 
+        #close pymol
+        thread.start_new_thread( self.pymol.cmd.quit, ())
+
+    def spin_progress(self, dt):
+        if(self.angle == 360):
+            self.angle = 0
+        self.angle += 10
+        self.progressImage.rot.angle = self.angle
+        self.progressImage.rot.origin = self.progressImage.center
+        self.progressImage.rot.axis = (0, 0, 1)
+        # self.progressImage.canvas.add(Rotate(angle=(self.angle), origin=(self.progressImage.center)))
 
     def check_log(self, dt):
         if self.dataController.getdata('status') != '':
+            # Check run nohup finish app
+            if(self.dataController.getdata('nohup ') == 'True' and self.firstFinish == True):
+                self.firstFinish = False
+                popup = FinishDialog()
+                popup.open()
+
             run_path = str(self.dataController.getdata('path ')) + '/run/' + str(self.dataController.getdata('status'))
             repeat_times = int(self.dataController.getdata('repeat_times '))
 
@@ -100,8 +136,10 @@ class RunningScreen(Screen):
                 if self.checkEM == False: 
                     self.checkEM = True
                     self.progressPoint += self.progressUnit*0.5
+                    self.progressText.text = 'Labpi is running at NVT step'
             else:
                 self.emImg.source = self.root_path+'/img/tick_normal.png'
+                self.progressText.text = 'Labpi is running at Energy minimization step'
             # self.emImg.reload()
 
             nvt_path = run_path + '/nvt.gro' 
@@ -110,6 +148,7 @@ class RunningScreen(Screen):
                 if self.checkNVT == False: 
                     self.checkNVT = True
                     self.progressPoint += self.progressUnit*0.5
+                    self.progressText.text = 'Labpi is running at NPT step'
             else:
                 self.nvtImg.source = self.root_path+'/img/tick_normal.png'
             # self.nvtImg.reload()
@@ -120,6 +159,7 @@ class RunningScreen(Screen):
                 if self.checkNPT == False: 
                     self.checkNPT = True
                     self.progressPoint += self.progressUnit*0.5
+                    self.progressText.text = 'Labpi is running at MD step'
             else:
                 self.nptImg.source = self.root_path+'/img/tick_normal.png'
             # self.nptImg.reload()
@@ -130,6 +170,7 @@ class RunningScreen(Screen):
                 if self.checkMD == False: 
                     self.checkMD = True
                     self.progressPoint += self.progressUnit
+                    self.progressText.text = 'Labpi is running at SMD step'
             else:
                 self.mdImg.source = self.root_path+'/img/tick_normal.png'
             # self.mdImg.reload()
@@ -159,40 +200,28 @@ class RunningScreen(Screen):
             self.progressBar.value = self.progressPoint
             self.checkFile.text = str(self.dataController.getdata('status'))
 
+    def pymol_log(self, dt):
+        pymol_thread = Thread(target = self.pymol_show, args = (chain, chainname, ))
+        pymol_thread.start()
 
-        
-    # def stopApp(self):
-        # if(self.dataController.getdata('nohup ') == 'True'):
-        #     self.thread.stop()
-        # else:
-        #self.thread.terminate()
-        # pid = self.thread.pid
-        # os.kill(pid, signal.SIGKILL) #or signal.SIGKILL 
-        # print pid
-        # print self.thread.is_alive()
-        # time.sleep(1)
-        # App().stop() 
-        # App.get_running_app().stop()
+class ProgressImage(Image):
+    root_path = os.path.dirname(__file__)
 
+    def __init__(self, **kwargs):
+        super(ProgressImage, self).__init__(**kwargs)
+        # self.x = x -- not necessary, x is a property and will be handled by super()
+        self.source = self.root_path +'/img/spin.png'
+        self.size_hint = (None, None)
+        self.size = (60, 60)
 
-
-
-# class GromacsThread(threading.Thread):
-
-#     def stop(self):
-#         self.__stop = True
-
-#     def _bootstrap(self):
-#         if threading._trace_hook is not None:
-#             raise ValueError('Cannot run thread with tracing!')
-#         self.__stop = False
-#         sys.settrace(self.__trace)
-#         super()._bootstrap()
-
-#     def __trace(self, frame, event, arg):
-#         if self.__stop:
-#             raise StopThread()
-#         return self.__trace
+        with self.canvas.before:
+            PushMatrix()
+            self.rot = Rotate()
+            self.rot.angle = 0
+            self.rot.origin = self.center
+            self.rot.axis = (0, 0, 1)
+        with self.canvas.after:
+            PopMatrix()
 
 
 class RemoveDialog(Popup):
@@ -214,3 +243,23 @@ class RemoveDialog(Popup):
         pass
 
     pass
+
+class FinishDialog(Popup):
+
+    gromacsRun = GromacsRun()
+    thread = ObjectProperty(None)
+    dataController = DataController()
+
+    def cancel(self):
+        self.dismiss()
+        pass
+    # def remove(self):
+    #     self.dismiss()
+    #     App().stop() 
+    #     # App.get_running_app().stop()
+    #     pass
+
+    pass
+
+
+        

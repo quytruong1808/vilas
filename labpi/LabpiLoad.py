@@ -52,7 +52,6 @@ class LoadScreen(Screen):
                 if chain.is_selected == True:
                     pymol_thread = Thread(target = self.pymol_show, args = (chain, chainname, ))
                     pymol_thread.start()
-                    pymol_thread.join()
 
         ligands = Variable.parsepdb.Ligands
         for ligand in ligands:
@@ -64,7 +63,6 @@ class LoadScreen(Screen):
                 if chain.is_selected == True:
                     pymol_thread = Thread(target = self.pymol_show, args = (chain, chainname, ))
                     pymol_thread.start()
-                    pymol_thread.join()
 
     def pymol_show(self, chain, chainname):
         self.pymol.cmd.show('cartoon', str(chain.chain_view) + ' & ' + chainname)
@@ -137,7 +135,6 @@ class LoadScreen(Screen):
                     #load pymol
                     pymol_thread = Thread(target = self.load_pymol, args = (chains, fl, ))
                     pymol_thread.start()
-                    pymol_thread.join()
 
             widget.adapter.data.extend(dataItem)
             widget._trigger_reset_populate()
@@ -188,7 +185,6 @@ class LoadScreen(Screen):
                      #load pymol
                     pymol_thread = Thread(target = self.load_pymol, args = (chains, fl, ))
                     pymol_thread.start()
-                    pymol_thread.join()
             # print parsepdb.Receptors
             widget.adapter.data.extend(dataItem)
             widget._trigger_reset_populate()

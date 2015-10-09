@@ -11,13 +11,8 @@
     smdK: smd_k
 
 
-    canvas.before:
-        Color:
-            rgba: 0.92, 0.92, 0.92, 1
-        Rectangle:
-            # self here refers to the widget i.e BoxLayout
-            pos: self.pos
-            size: self.size
+    AsyncImage:
+        source: root.root_path + '/img/background.png'
 
     Button:
         background_color: 1, 1, 1, 0
@@ -38,7 +33,7 @@
         pos: root.width/2-50, root.height * 9/10 + 15
         text: 'Setings'
         font_size: '40sp'
-        color: 0.4,0.4,0.4,1
+        color: 0.8,0.8,0.8,1
 
     BoxLayout:
         size_hint: None, None
@@ -53,7 +48,7 @@
             size: self.parent.width, self.parent.height
             canvas.after:
                 Color:
-                    rgb: 0.8, 0.8, 0.8, 1
+                    rgb: 0.4, 0.4, 0.4, 1
                 Line:
                     rectangle: self.x,self.y,self.width,self.height
             GridLayout:
@@ -69,10 +64,15 @@
                     spacing: 10
                     canvas.before:
                         Color:
-                            rgba: 1,1,1,1
+                            rgba: 0.95,0.95,0.95, 1
                         Rectangle:
                             pos: self.pos
                             size: self.size
+                    canvas.after:
+                        Color:
+                            rgb: 0.7, 0.7, 0.7, 1
+                        Line:
+                            rectangle: self.x,self.y,self.width,self.height
                     Label:
                         text: ' NVT Equilibration '
                         color: 1,1,1,1
@@ -144,10 +144,15 @@
                     spacing: 10
                     canvas.before:
                         Color:
-                            rgba: 1,1,1,1
+                            rgba: 0.95,0.95,0.95, 1
                         Rectangle:
                             pos: self.pos
                             size: self.size
+                    canvas.after:
+                        Color:
+                            rgb: 0.7, 0.7, 0.7, 1
+                        Line:
+                            rectangle: self.x,self.y,self.width,self.height
                     Label:
                         text: ' NVT Equilibration '
                         color: 1,1,1,1
@@ -219,10 +224,15 @@
                     spacing: 10
                     canvas.before:
                         Color:
-                            rgba: 1,1,1,1
+                            rgba: 0.95,0.95,0.95, 1
                         Rectangle:
                             pos: self.pos
                             size: self.size
+                    canvas.after:
+                        Color:
+                            rgb: 0.7, 0.7, 0.7, 1
+                        Line:
+                            rectangle: self.x,self.y,self.width,self.height
                     Label:
                         text: ' MD Equilibration '
                         color: 1,1,1,1
@@ -294,10 +304,15 @@
                     spacing: 10
                     canvas.before:
                         Color:
-                            rgba: 1,1,1,1
+                            rgba: 0.95,0.95,0.95, 1
                         Rectangle:
                             pos: self.pos
                             size: self.size
+                    canvas.after:
+                        Color:
+                            rgb: 0.7, 0.7, 0.7, 1
+                        Line:
+                            rectangle: self.x,self.y,self.width,self.height
                     Label:
                         text: ' Steered Molecular Dynamic '
                         color: 1,1,1,1

@@ -103,6 +103,7 @@ class GromacsMD(object):
         self.GroRight = ''
       else: 
         # Check gmx
+        mdrun_array = gromacs_version.split(' VERSION ')[0].split('mdrun')
         self.GroLeft = 'gmx '
         self.GroRight = mdrun_array[1]
 
