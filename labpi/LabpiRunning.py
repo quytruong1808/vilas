@@ -27,6 +27,9 @@ from multiprocessing import Process
 from LabpiRun import GromacsRun
 from Utils import DataController
 from parsePdb import Variable
+from parsePdb import ParsePdb
+from Utils import PdbFile
+from Utils import Chain
 
 Builder.load_file(os.path.dirname(__file__)+"/LabpiRunning.kv")
 
@@ -59,6 +62,11 @@ class RunningScreen(Screen):
     lastSMD = 0
     angle = 0
     firstFinish = True
+    lastFinish = False
+
+    GroLeft = ''
+    GroRight = ''
+    GroVersion = ''
 
     #Create thread to run background
     gromacsRun = GromacsRun()
@@ -76,12 +84,16 @@ class RunningScreen(Screen):
         self.pymol = pym
 
     def setupView(self):
+        # Check gromacs version
+        self.checkGromacVersion()
+
         #Check if folder is exits
         call('mkdir '+self.dataController.getdata('path '), shell=True)
         call('mkdir '+self.dataController.getdata('path ')+'/run', shell=True)
         call('mkdir '+self.dataController.getdata('path ')+'/output', shell=True)
         call('mkdir '+self.dataController.getdata('path ')+'/output/receptor', shell=True)
         call('mkdir '+self.dataController.getdata('path ')+'/output/ligand', shell=True)
+        call('mkdir '+self.dataController.getdata('path ')+'/analyse', shell=True)
         
         runfolders = check_output('ls '+self.dataController.getdata('path ')+'/run/', shell = True).splitlines()
         if len(runfolders) > 0:
@@ -100,7 +112,7 @@ class RunningScreen(Screen):
         Clock.schedule_interval(self.pymol_log, 300)
 
         #close pymol
-        thread.start_new_thread( self.pymol.cmd.quit, ())
+        # thread.start_new_thread( self.pymol.cmd.quit, ())
 
     def spin_progress(self, dt):
         if(self.angle == 360):
@@ -112,11 +124,21 @@ class RunningScreen(Screen):
         # self.progressImage.canvas.add(Rotate(angle=(self.angle), origin=(self.progressImage.center)))
 
     def check_log(self, dt):
-        if self.dataController.getdata('status') != '':
+        if self.dataController.getdata('status') == 'finished':
+            if self.lastFinish == False:
+                self.lastFinish = True
+                popup = FinishDialog()
+                popup.setText('Your job is finished. \n \nNow, you can close the interface. ')
+                popup.open()
+                self.progressText.text = 'Labpi finished your jobs! now you can close app.'
+                self.checkFile.text = str(self.dataController.getdata('status'))
+
+        elif self.dataController.getdata('status') != '':
             # Check run nohup finish app
-            if(self.dataController.getdata('nohup ') == 'True' and self.firstFinish == True):
+            if(self.dataController.getdata('mode ') == 'nohup' and self.firstFinish == True):
                 self.firstFinish = False
                 popup = FinishDialog()
+                popup.setText('Your job is running in background. \n \nNow, you can close the interface. ')
                 popup.open()
 
             run_path = str(self.dataController.getdata('path ')) + '/run/' + str(self.dataController.getdata('status'))
@@ -178,7 +200,7 @@ class RunningScreen(Screen):
             # TODO: check percent import signal
             smd_log = 0
             for x in range(0, int(repeat_times)):
-                smd_path_x = run_path + '/md_1_'+str(x)+'.gro'
+                smd_path_x = run_path + '/md_st_'+str(x)+'.gro'
                 if os.path.isfile(smd_path_x) == True:
                     smd_log+=1
                     if self.lastSMD < x:
@@ -190,7 +212,7 @@ class RunningScreen(Screen):
                         self.progressPoint += self.progressUnit
             self.smdLog.text = str(smd_log)+'/'+str(repeat_times)
 
-            smd_path_last = run_path + '/md_1_'+str(repeat_times-1)+'.gro' 
+            smd_path_last = run_path + '/md_st_'+str(repeat_times-1)+'.gro' 
             if os.path.isfile(smd_path_last) == True:
                 self.smdImg.source = self.root_path+'/img/tick_select.png'
             else:
@@ -200,9 +222,71 @@ class RunningScreen(Screen):
             self.progressBar.value = self.progressPoint
             self.checkFile.text = str(self.dataController.getdata('status'))
 
+
     def pymol_log(self, dt):
-        pymol_thread = Thread(target = self.pymol_show, args = (chain, chainname, ))
-        pymol_thread.start()
+        if self.dataController.getdata('status') == '' or self.dataController.getdata('status') == 'finished':
+            return
+
+        run_folder = self.dataController.getdata('status')
+        run_path = str(self.dataController.getdata('path ')) + '/run/' + run_folder
+        ligand_name = run_folder.split('run_')[1]
+        repeat_times = int(self.dataController.getdata('repeat_times '))
+
+        # Check point for pymol
+        check_path = ''
+        if os.path.isfile(run_path+'/em.gro') == False and os.path.isfile(run_path+'/em.cpt') == True and os.path.isfile(run_path+'/em.tpr') == True:
+            check_path = run_path+'/em'
+        if os.path.isfile(run_path+'/nvt.gro') == False and os.path.isfile(run_path+'/nvt.cpt') == True and os.path.isfile(run_path+'/nvt.tpr') == True:
+            check_path = run_path+'/nvt'
+        if os.path.isfile(run_path+'/npt.gro') == False and os.path.isfile(run_path+'/npt.cpt') == True and os.path.isfile(run_path+'/npt.tpr') == True:
+            check_path = run_path+'/npt'
+        if os.path.isfile(run_path+'/md.gro') == False and os.path.isfile(run_path+'/md.cpt') == True and os.path.isfile(run_path+'/md.tpr') == True:
+            check_path = run_path+'/md'
+        if os.path.isfile(run_path+'/md_st.gro') == False and os.path.isfile(run_path+'/md_st.cpt') == True and os.path.isfile(run_path+'/md_st.tpr') == True:
+            check_path = run_path+'/md_st'
+        for x in range(0, int(repeat_times)):
+            if os.path.isfile(run_path+'/md_st_'+str(x)+'.gro') == False and os.path.isfile(run_path+'/md_st_'+str(x)+'.cpt') == True and os.path.isfile(run_path+'/md_st_'+str(x)+'.tpr') == True:
+                check_path = run_path+'/md_st_'+str(x)
+
+        if(check_path != ''):
+            call('echo -e \"non-Water\"|' + self.GroLeft + 'trjconv' + self.GroRight +'-f '+ check_path +'.cpt -s '+ check_path +'.tpr -o '+ check_path +'.pdb', shell=True)
+            self.pymol.cmd.reinitialize()
+            self.pymol.cmd.load(check_path+'.pdb')
+
+            chains = ParsePdb().listChain(check_path+'.pdb')
+            for chain in chains:
+                if chain.chain_type == 'protein':
+                    self.pymol.cmd.show_as('cartoon', str(chain.chain_view) )
+                    self.pymol.cmd.cartoon('automatic', str(chain.chain_view))
+                else:
+                    self.pymol.cmd.show_as('sticks', 'resname ' + str(chain.chain_view.getResnames()[0]))
+                    self.pymol.cmd('set stick_color red')
+            self.pymol.util.cbc()
+        pass
+
+    def checkGromacVersion(self):
+        gromacs_version = self.dataController.getdata('gromacs_version ')
+        version_array = gromacs_version.split(' VERSION ')[1].split('.')
+        print version_array
+        # If version >= 5
+        if int(version_array[0]) == 5:
+          # If version >= 5.1
+          if int(version_array[1]) > 0:
+            self.GroLeft = gromacs_version.split(' VERSION ')[0]
+            self.GroRight = ''
+          else: 
+            # Check gmx
+            mdrun_array = gromacs_version.split(' VERSION ')[0].split('mdrun')
+            self.GroLeft = 'gmx '
+            self.GroRight = mdrun_array[1]
+
+          self.GroVersion = 5
+        # If version = 4
+        else:
+          mdrun_array = gromacs_version.split(' VERSION ')[0].split('mdrun')
+          self.GroLeft = mdrun_array[0]
+          self.GroRight = mdrun_array[1]
+          self.GroVersion = 4
 
 class ProgressImage(Image):
     root_path = os.path.dirname(__file__)
@@ -245,6 +329,10 @@ class RemoveDialog(Popup):
     pass
 
 class FinishDialog(Popup):
+    dialogText = ObjectProperty(None)
+
+    def setText(self, dialog_text):
+        self.dialogText.text = dialog_text
 
     gromacsRun = GromacsRun()
     thread = ObjectProperty(None)

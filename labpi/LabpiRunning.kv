@@ -6,6 +6,7 @@
 
 <RemoveDialog>:
     title: 'Warning!'
+    auto_dismiss: False
     size_hint: None, None 
     size: 450, 250
     BoxLayout:
@@ -27,6 +28,8 @@
                 text: "Yes! remove its"
                 on_release: root.remove()
 <FinishDialog>:
+    dialogText: dialog_text
+
     title: 'Notification!'
     size_hint: None, None 
     size: 400, 250
@@ -36,6 +39,7 @@
         orientation: "vertical"
 
         Label:
+            id: dialog_text
             text:'Your job is running in background. \n \n  Now, you can close the interface. '
 
         BoxLayout:

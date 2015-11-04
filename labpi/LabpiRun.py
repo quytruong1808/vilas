@@ -29,7 +29,7 @@ GroVersion = ''
 AvogadroAuto = ''
 run_caver = ''
 run_icst = ''
-run_nohup = ''
+run_mode = ''
 repeat_times = '0'
 Method = '1'
 main_path = ''
@@ -83,20 +83,45 @@ class GromacsRun(object):
           
           #If receptor is in group for pulling
           if chain.is_group == True:
-            ResidueStart = int(chain.resindices[0])
-            RedidueEnd = int(chain.resindices[1])
-            for resId in range(ResidueStart,RedidueEnd+1):
-              listCenter += calcCenter(protein[resId])
+            # split to seperate domain
+            domains = chain.resindices.split(',')
+            resBegin = protein.getResnums()[0]
+            receptor_string = ''
+            for domain in domains:
+              ResidueStart = int(domain.split('-')[0])
+              RedidueEnd = int(domain.split('-')[1])
 
-            ReceptorNumAtom += protein.numAtoms()
-            ResidueNumber += RedidueEnd - ResidueStart + 1
+              # Calc center and total atoms of each domain
+              for resId in range(ResidueStart,RedidueEnd+1):
+                listCenter += calcCenter(protein[resId])
+                ReceptorNumAtom += protein[resId].numAtoms()
+
+              # string resi ex: 123-424,560-818
+              receptor_string += ','+str(ResidueStart-resBegin + lastResidueId)+'-'+str(RedidueEnd - resBegin + lastResidueId)
+
+              # Calc number of residue
+              ResidueNumber += RedidueEnd - ResidueStart + 1
 
             #format ReceptorResidues
-            resBegin = protein.getResnums()[0]
-            ReceptorResidues.append(str(ResidueStart-resBegin + lastResidueId)+':'+str(RedidueEnd - resBegin + lastResidueId))
+            ReceptorResidues.append(receptor_string[1:])
+            ReceptorFile.append(fileName.replace(" ", ""))
             
             lastResidueId += protein.numResidues()
-            ReceptorFile.append(fileName.replace(" ", ""))
+
+            # ResidueStart = int(chain.resindices[0])
+            # RedidueEnd = int(chain.resindices[1])
+            # for resId in range(ResidueStart,RedidueEnd+1):
+            #   listCenter += calcCenter(protein[resId])
+
+            # ReceptorNumAtom += protein.numAtoms()
+            # ResidueNumber += RedidueEnd - ResidueStart + 1
+
+            # #format ReceptorResidues
+            # resBegin = protein.getResnums()[0]
+            # ReceptorResidues.append(str(ResidueStart-resBegin + lastResidueId)+':'+str(RedidueEnd - resBegin + lastResidueId))
+            
+            # lastResidueId += protein.numResidues()
+            # ReceptorFile.append(fileName.replace(" ", ""))
 
         else:
           ligand = chain.chain_view
@@ -164,11 +189,13 @@ class GromacsRun(object):
     repeat_times = int(self.dataController.getdata('repeat_times '))
 
     #Run nohup
-    global run_nohup
-    if self.dataController.getdata('nohup ') == 'True':
-      run_nohup = 'y'
+    global run_mode
+    if self.dataController.getdata('mode ') == 'nohup':
+      run_mode = 'nohup'
+    elif self.dataController.getdata('mode ') == 'config':
+      run_mode = 'config'
     else:
-      run_nohup = 'n'
+      run_mode = 'normal'
 
     #Check add hydro by hand or auto
     global AvogadroAuto
@@ -240,7 +267,7 @@ class GromacsRun(object):
         continue
 
       #Add hydrogen to ligand
-      AddHydrogen(main_path+'/output/ligand/'+ligand_name)
+      self.AddHydrogen(main_path+'/output/ligand/'+ligand_name)
 
       #Count charge of ligand
       charge = self.CountCharge(main_path+'/output/ligand/'+ligand_name)
@@ -266,7 +293,9 @@ class GromacsRun(object):
 
   def PrepareCluster(self):
     global ReceptorChain
+    call('cp '+root_path+'/source/top_pull.py '+main_path+'/analyse', shell = True)
     ligands = check_output('cd '+main_path+'/output/ligand; ls *.pdb', shell = True).splitlines()
+      
     #cp file vo run
     for x in range(0,len(ligands)):
       ligandName = ligands[x].split('.')[0]
@@ -283,17 +312,22 @@ class GromacsRun(object):
         call('mkdir '+main_path+'/run/run_' + ligandName+'/mdp', shell = True)
         call('cp -r '+main_path+'/output/ligand/'+ligandName+'.acpype '+main_path+'/run/run_'+ligandName, shell = True)
         call('cp -r '+root_path+'/config/* '+main_path+'/run/run_'+ligandName+'/mdp', shell = True)
+        call('cp '+main_path+'/run/run_'+ligandName+'/'+ligandName+'.acpype/'+ligandName+'.pdb '+main_path+'/run/run_'+ligandName+'/'+ligandName+'.pdb', shell = True)
 
       call('cp '+root_path+'/source/parse_pull.py '+main_path+'/run/run_'+ligandName, shell=True)
-      call('cp '+root_path+'/source/MmPbSaStat.py '+main_path+'/run/run_'+ligandName, shell=True)
+      call('cp '+root_path+'/source/pullana.py '+main_path+'/run/run_'+ligandName, shell=True)
+      # call('cp '+root_path+'/source/MmPbSaStat.py '+main_path+'/run/run_'+ligandName, shell=True)
       call('cp -r '+main_path+'/output/receptor/*.acpype '+main_path+'/run/run_'+ligandName, shell = True)
 
       #Luu tung chain vao array de cong dong lai
       chains = []
       totalResidue = 0
+      numberReceptor = 0
+      numberLigand = 0
       print ReceptorFile
       for numR in range(0, len(ReceptorFile)):
         chains.append(parsePDB(ReceptorFile[numR]+'.pdb'))
+        # change chain name A, B, C 
         ReceptorChain = ChainNames[numR]
         chainName = []
         for z in range(0, chains[numR].numAtoms()): 
@@ -301,14 +335,20 @@ class GromacsRun(object):
         chains[numR].setChids(chainName)
         #Find total residue to know where is starting of ligand (type protein)
         totalResidue += chains[numR].numResidues()
+        # count numberReceptor
+        numberReceptor += 1
 
       #If ligand is protein => add it to pdb file 
       if isProtein == True:
         chains.append(parsePDB(main_path+'/output/ligand/'+ligands[x]))
+        # change chain name A, B, C 
         chainName = []
         for z in range(0, chains[numR+1].numAtoms()): 
           chainName.append(ChainNames[numR+1])
         chains[numR+1].setChids(chainName)
+
+        # count number Ligand
+        numberLigand += 1
     
         file = open(main_path+'/run/run_' + ligandName+ '/ligand_residues.txt', 'w')
         file.close
@@ -330,16 +370,17 @@ class GromacsRun(object):
       
       #Cong don protein lai thanh 1 file
       sumProtein = chains[0]
+      sumReceptor = chains[0]
       for y in range(1, len(chains)):  
-        if y > 0:
-          sumProtein += chains[y]
+        sumProtein += chains[y]
+        # pdb file includes only receptor
+        if y < numberReceptor or y >= numberReceptor + numberLigand:
+          sumReceptor += chains[y]
    
       call('rm '+main_path+'/run/run_'+ligandName+'/protein.pdb', shell=True)
       call('rm '+main_path+'/run/run_'+ligandName+'/system.pdb', shell=True)
-      if 'protein_' in ligandName:
-        writePDB(main_path+'/run/run_'+ligandName.split('_')[1]+'/protein.pdb',sumProtein)
-      else:
-        writePDB(main_path+'/run/run_'+ligandName+'/protein.pdb',sumProtein)
+      writePDB(main_path+'/run/run_'+ligandName+'/protein.pdb',sumProtein)
+      writePDB(main_path+'/run/run_'+ligandName+'/receptor.pdb',sumReceptor)
 
   def EditMdpFile(self):
     runfolders = check_output('ls '+main_path+'/run/', shell = True).splitlines()
@@ -390,7 +431,60 @@ class GromacsRun(object):
       self.replaceLine('nstxtcout', 'nstxtcout     = '+str(nstout)+'\n', mdpFolder+mdp_pull_file)
       self.replaceLine('nstenergy', 'nstenergy     = '+str(nstout)+'\n', mdpFolder+mdp_pull_file)
       self.replaceLine('nstlog', 'nstlog     = '+str(nstout)+'\n', mdpFolder+mdp_pull_file)
-      
+  
+  
+  #**********************************************************************#
+  #************************** System Fuction ****************************#
+  #**********************************************************************#
+
+  def CallCommand(self, patch, command):
+    call('cd '+patch+'; '+command, shell = True, executable='/bin/bash')
+
+  def substring(self, mystr, mylist): 
+    return [i for i, val in enumerate(mylist) if mystr in val]
+
+  def replaceLine(self, search, replace, myfile):
+    f = open(myfile, "r")
+    contents = f.readlines()
+    f.close()
+
+    contents[self.substring(search,contents)[0]] = replace
+
+    f = open(myfile, "w")
+    contents = "".join(contents)
+    f.write(contents)
+    f.close()
+
+  def insertLine(self, search, position, insert, myfile):
+    f = open(myfile, "r")
+    contents = f.readlines()
+    f.close()
+
+    if len(self.substring(search,contents)) > 0:
+      contents.insert(self.substring(search,contents)[0]+position, insert)
+      f = open(myfile, "w")
+      contents = "".join(contents)
+      f.write(contents)
+      f.close()
+    else:
+      self.addLine(insert, myfile)  
+
+  def searchLine(self, search, myfile):
+    f = open(myfile, "r")
+    contents = f.readlines()
+    f.close()
+    if len(self.substring(search,contents)) > 0:
+      return contents[self.substring(search,contents)[0]]
+    else:
+      return ''
+
+  def addLine(self, line, myfile):
+    with open(myfile, "a") as mf:
+      mf.write(line)
+
+  def Log(self, tag, comment):
+    self.addLine(tag+ ' ' +comment+'\n', 'log.txt')
+
 
   #**********************************************************************#
   #************************* Calc Fuction ****************************#
@@ -443,7 +537,7 @@ class GromacsRun(object):
           min[2] = pos_z
 
     #Change distance
-    distance *= 1.8
+    distance *= 1.5
 
     #Check distance between ligand and maxZ protein
     dz = float(ligandZ) + float(distance) - float(proteinMax/10)
@@ -535,59 +629,6 @@ class GromacsRun(object):
     tunel = parsePDB(main_path+'/caver/out/data/clusters/'+outputFile[0])
     tunelVector = tunel.getCoords()[tunel.numAtoms()-1] - tunel.getCoords()[tunel.numAtoms()-2]
     return tunelVector
-
-
-  #**********************************************************************#
-  #************************** System Fuction ****************************#
-  #**********************************************************************#
-
-  def CallCommand(self, patch, command):
-    call('cd '+patch+'; '+command, shell = True, executable='/bin/bash')
-
-  def substring(self, mystr, mylist): 
-    return [i for i, val in enumerate(mylist) if mystr in val]
-
-  def replaceLine(self, search, replace, myfile):
-    f = open(myfile, "r")
-    contents = f.readlines()
-    f.close()
-
-    contents[self.substring(search,contents)[0]] = replace
-
-    f = open(myfile, "w")
-    contents = "".join(contents)
-    f.write(contents)
-    f.close()
-
-  def insertLine(self, search, position, insert, myfile):
-    f = open(myfile, "r")
-    contents = f.readlines()
-    f.close()
-
-    if len(self.substring(search,contents)) > 0:
-      contents.insert(self.substring(search,contents)[0]+position, insert)
-      f = open(myfile, "w")
-      contents = "".join(contents)
-      f.write(contents)
-      f.close()
-    else:
-      self.addLine(insert, myfile)  
-
-  def searchLine(self, search, myfile):
-    f = open(myfile, "r")
-    contents = f.readlines()
-    f.close()
-    if len(self.substring(search,contents)) > 0:
-      return contents[self.substring(search,contents)[0]]
-    else:
-      return ''
-
-  def addLine(self, line, myfile):
-    with open(myfile, "a") as mf:
-      mf.write(line)
-
-  def Log(self, tag, comment):
-    self.addLine(tag+ ' ' +comment+'\n', 'log.txt')
 
 
   #**********************************************************************#
@@ -742,7 +783,12 @@ class GromacsRun(object):
         if vectorPull is None:
           vectorPull = ligandCenter - ReceptorCenter
       elif run_icst == 'y':
-        call('cp '+root_path+'/source/icst '+run_path, shell=True)
+        if os.path.isfile(run_path+'/pull_direction.pdb') is False: 
+          print 'Detect pulling vector ...'
+          call('cp '+root_path+'/source/icst '+run_path, shell=True)
+          self.CallCommand(run_path, './icst -r receptor.pdb -l '+ligandCurrent+'.pdb -keep')
+          pull_direction = parsePDB(run_path+'/pull_direction.pdb')
+          vectorPull = pull_direction.getCoords()[1] - pull_direction.getCoords()[0]
       else:
         vectorPull = ligandCenter - ReceptorCenter
 
@@ -863,24 +909,44 @@ class GromacsRun(object):
       mergeGroup = ''
       nameOfGroup = ''
       nameOfLigand = ''
+      firstResidue = True
       if int(Method) == 1 or int(Method) == 2:
         system = Avogadro.MoleculeFile.readMolecule(run_path+'/newbox.gro')
 
         for y in range(0,len(ReceptorResidues)):
           receptorResidue = ReceptorResidues[y]
-          ResStart = receptorResidue.split(':')[0]
-          ResEnd = receptorResidue.split(':')[1]
-
           print receptorResidue
 
-          AtomStart = system.residues[int(ResStart)].atoms[0]+1
-          AtomEnd = system.residues[int(ResEnd)].atoms[len(system.residues[int(ResEnd)].atoms)-1]+1
-          if(y != 0):
-           mergeGroup += ' | '
-           nameOfGroup += '_'
-          mergeGroup += 'a '+str(AtomStart)+'-'+str(AtomEnd)
-          nameOfGroup += 'a_'+str(AtomStart)+'-'+str(AtomEnd)
+          domains = receptorResidue.split(',')
+          for domain in domains:
+            ResStart = domain.split('-')[0]
+            ResEnd = domain.split('-')[1]
+
+            AtomStart = system.residues[int(ResStart)].atoms[0]+1
+            AtomEnd = system.residues[int(ResEnd)].atoms[len(system.residues[int(ResEnd)].atoms)-1]+1
+            if firstResidue == True:
+              firstResidue = False
+            else:
+              mergeGroup += ' | '
+              nameOfGroup += '_'
+            mergeGroup += 'a '+str(AtomStart)+'-'+str(AtomEnd)
+            nameOfGroup += 'a_'+str(AtomStart)+'-'+str(AtomEnd)
+
         mergeGroup += '\\n'
+
+        #   ResStart = receptorResidue.split(':')[0]
+        #   ResEnd = receptorResidue.split(':')[1]
+
+        #   print receptorResidue
+
+        #   AtomStart = system.residues[int(ResStart)].atoms[0]+1
+        #   AtomEnd = system.residues[int(ResEnd)].atoms[len(system.residues[int(ResEnd)].atoms)-1]+1
+        #   if(y != 0):
+        #    mergeGroup += ' | '
+        #    nameOfGroup += '_'
+        #   mergeGroup += 'a '+str(AtomStart)+'-'+str(AtomEnd)
+        #   nameOfGroup += 'a_'+str(AtomStart)+'-'+str(AtomEnd)
+        # mergeGroup += '\\n'
 
         #Check if ligand is protein => add index
         if os.path.isfile(run_path+'/ligand_residues.txt') is True: 
@@ -932,9 +998,6 @@ class GromacsRun(object):
   def main(self):
     self.ParsePDBInput()
     self.setupOptions()   
-    # if run_nohup == 'y':
-    #   call('nohup python2.7 labpi.py &', shell=True)              
-    # else:
     self.PrepareLigand()
     self.PrepareLigandReceptor()
     self.PrepareCluster()
@@ -942,11 +1005,14 @@ class GromacsRun(object):
     self.SetupSystem()
 
     gromacsMD = GromacsMD()
-    if (run_nohup == 'n'):
+    if run_mode == 'nohup':
+      call('nohup python2.7 '+root_path+'/GromacsMD.py &', shell = True, executable='/bin/bash')      
+    elif run_mode == 'config':
+      self.dataController.setdata('status', 'finished')
+      # call('cp '+root_path+'/source/acpype.py '+ patchOutput +'; cd '+ patchOutput+ '; python2.7 acpype.py -i '+ ligandNamePDB +' -n '+ str(charge) +'; rm acpype.py', shell=True, executable='/bin/bash');
+    else:
       gromacsMD.setupOptions()
       gromacsMD.mdrun()
-    else:
-      call('nohup python2.7 '+root_path+'/GromacsMD.py &', shell = True, executable='/bin/bash')
 
 
 

@@ -3,61 +3,42 @@ from subprocess import check_output
 import os.path
 import sys, getopt
 
-def findName(i, myfile):
-  f = open(myfile)
-  data = []
-  for j, line in enumerate(f):
-    #print str(int(str(line)[0:3])) + ' ' + str(i+1)
-    if int(str(line)[0:3]) == i:
-      return str(line[69:].split('\n')[0])
-  f.close()
-  
+MaxName = []
+MaxForce = []
+MaxIntergral = []
 
-MaxFile = []
-MaxValue = []
-MaxIndex = []
+folders = check_output('ls -d */', shell = True).splitlines()
+topfile= open('rank_pull.csv','w')
 
-folders = check_output('ls -d run_*', shell = True).splitlines()
-topfile= open('top_pull','w')
-
-for i in range(0, len(folders[i])):
+for i in range(0, len(folders)):
   print folders[i]
-  Max_aver = 0.0
-  for j in range(1,3):
-    if os.path.isfile(folders[i]+'/pullfx_'+str(j)+'.xvg') == False:
-      print 'check '+str(i)
-      continue
-    f = open(folders[i]+'/pullfx_'+str(j)+'.xvg', "r")
-    contents = f.readlines()
-    f.close()
+  if os.path.isfile(folders[i]+'/pull_data.csv') == False:
+    print 'check '+str(i)
+    continue
 
-    Max = 0.0
-    for line in range(0, len(contents)):
-      valueF = float(contents[line].split('\t')[2])
-      if Max<valueF:
-        Max = valueF
-    Max_aver += Max
-  Max_aver/=3
+  f = open(folders[i]+'/pull_data.csv', "r")
+  contents = f.readlines()
+  f.close()
+
+  MaxName.append(folders[i].split('/')[0])
+  MaxForce.append(contents[len(contents)-1].split(',')[0])
+  MaxIntergral.append(contents[len(contents)-1].split(',')[2])
     
-  #print folders[i]+' '+str(Max)
-  MaxFile.append(folders[i])
-  MaxValue.append(Max_aver)
-  MaxIndex.append(i+1)
-
-for j in range(0,len(MaxValue)):
-  for k in range(j+1, len(MaxValue)):
-    if MaxValue[j] < MaxValue[k]:
-      tempValue = MaxValue[j]
-      MaxValue[j] = MaxValue[k]
-      MaxValue[k] = tempValue
-      tempFile = MaxFile[j]
-      MaxFile[j] = MaxFile[k]
-      MaxFile[k] = tempFile
-      tempIndex = MaxIndex[j]
-      MaxIndex[j] = MaxIndex[k]
-      MaxIndex[k] = tempIndex
-  ligandName = MaxFile[j]
-  newline = str(j+1) +'\t'+ str(MaxIndex[j]) + '\t' + str(MaxValue[j]) + '\t\t' + str(ligandName) +'\n'
+newline = 'Id, Name, Intergral, Force\n'
+topfile.write(newline)
+for j in range(0,len(MaxIntergral)):
+  for k in range(j+1, len(MaxIntergral)):
+    if MaxIntergral[j] < MaxIntergral[k]:
+      tempValue = MaxIntergral[j]
+      MaxIntergral[j] = MaxIntergral[k]
+      MaxIntergral[k] = tempValue
+      tempValue = MaxForce[j]
+      MaxForce[j] = MaxForce[k]
+      MaxForce[k] = tempValue
+      tempValue = MaxName[j]
+      MaxName[j] = MaxName[k]
+      MaxName[k] = tempValue
+  newline = str(j+1) +','+ str(MaxName[j]) +','+ str(MaxIntergral[j]) + ',' + str(MaxForce[j]) +'\n'
   topfile.write(newline)
 topfile.close()
 

@@ -9,6 +9,8 @@
     smdNst: smd_nst
     smdVel: smd_vel
     smdK: smd_k
+    smdDirection: smd_direction
+    smdDistance: smd_distance
 
 
     AsyncImage:
@@ -19,7 +21,7 @@
         size_hint: None, None
         size: 50, 50
         pos: 50, 30
-        on_press: root.manager.changeScreen('load')
+        on_press: root.manager.changeScreen('back')
         Image:
             source: root.root_path+'/img/back.png'
             size: 50, 50
@@ -300,7 +302,7 @@
                     id: box_4
                     orientation: "vertical"
                     size_hint_y: None
-                    height: 25 + 40*4
+                    height: 25 + 40*5
                     spacing: 10
                     canvas.before:
                         Color:
@@ -428,3 +430,56 @@
                             text_size: self.width, None
                             halign: 'left'
                             valign: 'middle'
+
+                    BoxLayout:
+                        size_hint_y: None
+                        height: 30
+                        padding: 30,0,0,0
+                        Label:
+                            text: ' Pull geometry: '
+                            color: 0,0,0,1
+                            disabled_color: 0,0,0,1
+                            font_size: '16sp'
+                            text_size: self.width, None
+                            halign: 'left'
+                            valign: 'middle'
+                            size_hint_x: None
+                            width: self.parent.width/2
+
+                        BoxLayout:
+                            size_hint: None, 1
+                            width: 300
+                            pos_hint: {'center_y': 0.5}
+                            padding: 0, 0, 20, 0
+                            spacing: 10
+                            BoxLayout:
+                                Label: 
+                                    text: 'Direction'
+                                    size_hint_x: None 
+                                    width: 75
+                                    pos: 0,0
+                                    font_size: '16sp'
+                                    color: 0,0,0,1
+
+                                CheckBox:
+                                    id: smd_direction
+                                    size_hint_x: None 
+                                    width: 30
+                                    pos: 0,0
+                                    group: 'pullmethod'
+
+                            BoxLayout:
+                                Label: 
+                                    text: 'Distance'
+                                    size_hint_x: None 
+                                    width: 75
+                                    pos: 0, 0
+                                    font_size: '16sp'
+                                    color: 0,0,0,1
+
+                                CheckBox:
+                                    id: smd_distance
+                                    size_hint_x: None 
+                                    width: 30
+                                    pos: 0,0
+                                    group: 'pullmethod'

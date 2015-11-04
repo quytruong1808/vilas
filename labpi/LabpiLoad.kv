@@ -38,9 +38,22 @@
                     font_size: '16sp'            
                     text: ctx.text
                     valign: 'middle'
-            
+
             Button:
-                size_hint_x: 0.5
+                size_hint_x: None 
+                width: 25
+                background_color: 1, 1, 1, 0
+                on_press: ctx.zoom_item(ctx.pdbFile)
+                Image:
+                    source: ctx.root_path +'/img/eye.png'
+                    size: 20, 20
+                    center_x: self.parent.center_x
+                    center_y: self.parent.center_y
+                    allow_stretch: True
+
+            Button:
+                size_hint_x: None 
+                width: 45
                 background_color: 1, 1, 1, 0
                 on_press: ctx.remove_item(ctx.item_id, ctx.list_id, ctx.pdbFile)
                 Image:

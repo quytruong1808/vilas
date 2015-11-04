@@ -8,6 +8,8 @@ smd-nsteps = 1000
 smd-nst  = 5000
 smd-vel = 0.004
 smd-k  = 600
+smd-direction = True
+smd-distance = False
 
 config_auto  = False
 path  = 

@@ -33,7 +33,7 @@ class ReceptorScreen(Screen):
 
     def __init__(self, *args, **kwargs):
         super(ReceptorScreen, self).__init__(*args, **kwargs)
-        list_item_args_converter = lambda row_index, obj: {'root_path': obj.root_path, 'item_id': obj.item_id, 'text': obj.text, 'pdbFile': obj.pdbFile, 'list_id': obj.list_id, 'number_chain': obj.number_chain}
+        list_item_args_converter = lambda row_index, obj: {'root_path': obj.root_path, 'item_id': obj.item_id, 'text': obj.text, 'pdbFile': obj.pdbFile, 'list_id': obj.list_id, 'number_chain': obj.number_chain, 'zoom_item': obj.zoom_item}
 
         self.list_adapter_receptor = ReceptorAdapter(data=[],
                             args_converter=list_item_args_converter,
@@ -53,16 +53,21 @@ class ReceptorScreen(Screen):
 
             filename = os.path.basename(pdbFile.file_path)
             chainname = os.path.splitext(filename)[0]
+            
+            # zoom to recepter
+            pymol_thread = Thread(target = self.pymol_zoom, args = (chainname, ))
+            pymol_thread.start()
+
             # Find number of chain avarible for kivy height
             number_chain = 0
             for chain in pdbFile.chains:
-                if(chain.is_selected and chain.chain_type != 'ligand'):
+                if(chain.is_selected):
                     number_chain += 1
-                    pymol_thread = Thread(target = self.pymol_spectrum, args = (chain, chainname, str(chain.resindices[0])+'-'+str(chain.resindices[1]), ))
+                    pymol_thread = Thread(target = self.pymol_spectrum, args = (chain, chainname, chain.resindices, ))
                     pymol_thread.start()
 
             filename = os.path.basename(pdbFile.file_path)
-            data.append(DataItem(root_path=self.root_path, item_id=ItemId, text=filename, pdbFile=pdbFile , list_id = 'receptor_lv', number_chain = number_chain))
+            data.append(DataItem(root_path=self.root_path, item_id=ItemId, text=filename, pdbFile=pdbFile , list_id = 'receptor_lv', number_chain = number_chain, zoom_item = self.zoom_item))
 
         ligands = Variable.parsepdb.Ligands
         for ligand in ligands:
@@ -82,14 +87,27 @@ class ReceptorScreen(Screen):
         self.pymol = pym
         self.list_adapter_receptor.set_data(self.pymol)
 
+    def pymol_zoom(self, chainname):
+        self.pymol.cmd.zoom(chainname)
+
     def pymol_spectrum(self, chain, chainname, value):
-        self.pymol.cmd.color('gray', str(chain.chain_view) + ' & ' + chainname) 
-        self.pymol.cmd.spectrum('count', 'rainbow', str(chain.chain_view) + ' & ' + chainname +' & resi '+str(value))
-    
+        if chain.chain_type == 'protein':
+            # self.pymol.cmd.color('gray', str(chain.chain_view) + ' & ' + chainname + '& resi '+str(chain.chain_view.getResnums()[0])+'-'+str(chain.chain_view.getResnums()[len(chain.chain_view.getResnums())-1]) ) 
+            self.pymol.cmd.color('gray', str(chain.chain_view) + ' & ' + chainname)
+            self.pymol.cmd.spectrum('count', 'rainbow', str(chain.chain_view) + ' & ' + chainname +' & resi '+str(value))
+        else:
+            self.pymol.cmd.hide('sticks', 'resname ' + str(chain.chain_view.getResnames()[0]) + ' & ' + chainname)
+
     def pymol_hide(self, chain, chainname):
-        self.pymol.cmd.hide('cartoon', str(chain.chain_view) + ' & ' + chainname)
+        if chain.chain_type == 'protein':
+            self.pymol.cmd.hide('cartoon', str(chain.chain_view) + ' & ' + chainname)
+        else:
+            self.pymol.cmd.hide('sticks', 'resname ' + str(chain.chain_view.getResnames()[0]) + ' & ' + chainname)
 
-
+    def zoom_item(self, pdbFile):
+        filename = os.path.basename(pdbFile.file_path)
+        chainname = os.path.splitext(filename)[0]
+        self.pymol.cmd.zoom(chainname)    
 
 #--------------------------------------------------------#
 # ListView class
@@ -151,7 +169,7 @@ class ReceptorAdapter(ListAdapter):
             itemCB.chainBox.active = chain.is_selected
 
             itemCB.resdiueFrom.id = '0-_-' + item.list_id + '-_-' + str(index) + '-_-' + str(chain.chain_id) + '-_-' + item.pdbFile.file_path
-            itemCB.resdiueFrom.text = str(chain.resindices[0]) + '-' + str(chain.resindices[1])
+            itemCB.resdiueFrom.text = chain.resindices
             itemCB.resdiueFrom.multiline=False
             itemCB.resdiueFrom.bind(text=self.on_text_change)
             # itemCB.resdiueTo.id = '1-_-' + item.list_id + '-_-' + str(index) + '-_-' + str(chain.chain_id)
@@ -189,14 +207,13 @@ class ReceptorAdapter(ListAdapter):
 
         filename = os.path.basename(file_path)
         chainname = os.path.splitext(filename)[0]
+        chain = Variable.parsepdb.Receptors[index].chains[chain_id]
 
-        if(list_id == 'receptor_lv' and int(value.split('-')[0]) < int(value.split('-')[1]) ):
-            chain = Variable.parsepdb.Receptors[index].chains[chain_id]
-            chain.resindices[0] = value.split('-')[0] 
-            chain.resindices[1] = value.split('-')[1]   
+        if list_id == 'receptor_lv':
+            chain.resindices = value.replace(' ','')
 
             # Spectrum in pymol
-            pymol_thread = Thread(target = self.pymol_spectrum, args = (chain, chainname, value, ))
+            pymol_thread = Thread(target = self.pymol_spectrum, args = (chain, chainname, value.replace(' ',''), ))
             pymol_thread.start()
     
     def pymol_spectrum(self, chain, chainname, value):
@@ -204,13 +221,14 @@ class ReceptorAdapter(ListAdapter):
         self.pymol.cmd.spectrum('count', 'rainbow', str(chain.chain_view) + ' & ' + chainname +' & resi '+str(value))
 
 class DataItem(object):
-    def __init__(self, root_path='', item_id=0, text='', pdbFile='', list_id='', number_chain=0):
+    def __init__(self, root_path='', item_id=0, text='', pdbFile='', list_id='', number_chain=0, zoom_item = ObjectProperty(None)):
         self.item_id = item_id
         self.root_path = root_path
         self.text = text
         self.pdbFile = pdbFile
         self.list_id = list_id
         self.number_chain = number_chain
+        self.zoom_item = zoom_item
     pass
 
 

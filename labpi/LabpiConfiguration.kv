@@ -15,14 +15,17 @@
     # config
     pathText: path_text
     caverBox: caver_box
+    icstBox: icst_box
     ligandAutoBox: ligand_auto_box
     repeatTimesText: repeat_times_text
     nohupBox: nohup_box
+    configBox: config_box
+    normalBox: normal_box
     maximumCoresText: maximum_cores_text
     gpuAutoBox: gpu_auto_box
 
-
     AsyncImage:
+        size_hint: 1,1
         source: root.root_path + '/img/background.png'
 
     FloatLayout:
@@ -203,6 +206,7 @@
                             valign: 'middle'
                             size_hint_x: None
                             width: self.parent.width/2
+
                         TextInput:
                             id: path_text
                             size_hint: 1, 0.6
@@ -221,7 +225,7 @@
                         height: 50
                         padding: 10, 0, 20, 0
                         Label:
-                            text: ' Use Caver tool'
+                            text: ' Detecting pulling-vector tool'
                             color: 0,0,0,1
                             disabled_color: 0,0,0,1
                             font_size: '16sp'
@@ -230,11 +234,42 @@
                             valign: 'middle'
                             size_hint_x: None
                             width: self.parent.width/2
-                        CheckBox:
-                            id: caver_box
-                            size_hint_x: None 
-                            width: 30
-                            pos: 0,0
+
+                        BoxLayout:
+                            spacing: 5
+                            Label: 
+                                text: 'Caver'
+                                size_hint_x: None 
+                                width: 30
+                                pos: 0,0
+                                font_size: '16sp'
+                                color: 0,0,0,1
+
+                            CheckBox:
+                                id: caver_box
+                                size_hint_x: None 
+                                width: 30
+                                pos: 0,0
+                                group: 'pullvec'
+
+                        BoxLayout:
+                            padding: 10, 0, 0, 0
+                            spacing: 5
+                            Label: 
+                                text: 'ICST'
+                                size_hint_x: None 
+                                width: 30
+                                pos: 0, 0
+                                font_size: '16sp'
+                                color: 0,0,0,1
+
+                            CheckBox:
+                                id: icst_box
+                                size_hint_x: None 
+                                width: 30
+                                pos: 0,0
+                                group: 'pullvec'
+
 
                     BoxLayout:
                         id: box_2
@@ -293,7 +328,7 @@
                         height: 50
                         padding: 10, 0, 20, 0
                         Label:
-                            text: ' Do you want to run in backgroud (nohup)?'
+                            text: ' Runing mode: '
                             color: 0,0,0,1
                             disabled_color: 0,0,0,1
                             font_size: '16sp'
@@ -302,11 +337,63 @@
                             valign: 'middle'
                             size_hint_x: None
                             width: self.parent.width/2
-                        CheckBox:
-                            id: nohup_box
+
+                        BoxLayout:
+                            spacing: 5
                             size_hint_x: None 
-                            width: 30
-                            pos: 0,0
+                            width: self.parent.width/6-30
+                            Label: 
+                                text: 'Normal'
+                                size_hint_x: None 
+                                width: 30
+                                pos: 0,0
+                                font_size: '16sp'
+                                color: 0,0,0,1
+
+                            CheckBox:
+                                id: normal_box
+                                size_hint_x: None 
+                                width: 40
+                                pos: 0,0
+                                group: 'mode'
+
+                        BoxLayout:
+                            spacing: 5
+                            size_hint_x: None 
+                            width: self.parent.width/6+15
+                            Label: 
+                                text: 'Background'
+                                size_hint_x: None 
+                                width: 90
+                                pos: 0, 0
+                                font_size: '16sp'
+                                color: 0,0,0,1
+
+                            CheckBox:
+                                id: nohup_box
+                                size_hint_x: None 
+                                width: 20
+                                pos: 0,0
+                                group: 'mode'
+
+                        BoxLayout:
+                            spacing: 5
+                            size_hint_x: None 
+                            width: self.parent.width/6
+                            Label: 
+                                text: 'Configuration'
+                                size_hint_x: None 
+                                width: 90
+                                pos: 0, 0
+                                font_size: '16sp'
+                                color: 0,0,0,1
+
+                            CheckBox:
+                                id: config_box
+                                size_hint_x: None 
+                                width: 20
+                                pos: 0,0
+                                group: 'mode'
 
                     BoxLayout:
                         id: box_5

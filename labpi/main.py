@@ -31,7 +31,17 @@ from multiprocessing import Process
 
 class ScreenManagement(ScreenManager):
 
+    currentScreen = 'load'
+
     def changeScreen(self, screen):
+        # back button
+        print screen
+        print self.currentScreen
+        if(screen != '' and screen != 'back' and screen != 'setting'):
+            self.currentScreen = screen
+        elif(screen == 'back'):
+            screen = self.currentScreen
+
         if(screen == 'receptor'):
             #Check data input
             Receptors = Variable.parsepdb.Receptors

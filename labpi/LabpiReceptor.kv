@@ -29,6 +29,18 @@
                     text: ctx.text
                     valign: 'middle'
 
+            Button:
+                size_hint_x: None 
+                width: 45
+                background_color: 1, 1, 1, 0
+                on_press: ctx.zoom_item(ctx.pdbFile)
+                Image:
+                    source: ctx.root_path +'/img/eye.png'
+                    size: 20, 20
+                    center_x: self.parent.center_x
+                    center_y: self.parent.center_y
+                    allow_stretch: True
+
         BoxLayout:
             id: cb_layout
             orientation: "vertical"
@@ -247,7 +259,7 @@
                     allow_stretch: True
                 Label:
                     
-                    text: 'Please select receptor groups or skip to next step'
+                    text: 'Please select receptor groups (protein only) or skip to next step'
                 
             BoxLayout:
                 BoxLayout:

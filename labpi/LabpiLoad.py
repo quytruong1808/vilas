@@ -68,11 +68,10 @@ class LoadScreen(Screen):
         self.pymol.cmd.show('cartoon', str(chain.chain_view) + ' & ' + chainname)
         self.pymol.util.cbc()
 
-
     def __init__(self, *args, **kwargs):
         super(LoadScreen, self).__init__(*args, **kwargs)
 
-        list_item_args_converter = lambda row_index, obj: {'root_path': obj.root_path, 'item_id': obj.item_id, 'text': obj.text, 'pdbFile': obj.pdbFile, 'remove_item': obj.remove_item, 'list_id': obj.list_id}
+        list_item_args_converter = lambda row_index, obj: {'root_path': obj.root_path, 'item_id': obj.item_id, 'text': obj.text, 'pdbFile': obj.pdbFile, 'remove_item': obj.remove_item, 'zoom_item': obj.zoom_item, 'list_id': obj.list_id}
 
         self.list_adapter_receptor = LoadAdapter(data=[], 
                             args_converter=list_item_args_converter,
@@ -130,7 +129,7 @@ class LoadScreen(Screen):
                     pdbFile = PdbFile(file_path = fl, chains = chains)
                     Variable.parsepdb.Receptors.append(pdbFile)
 
-                    dataItem.append(DataItem(root_path=self.root_path, item_id=ItemId, text=filename, pdbFile=pdbFile , remove_item=self.remove_item, list_id = 'pdb_list_1'))
+                    dataItem.append(DataItem(root_path=self.root_path, item_id=ItemId, text=filename, pdbFile=pdbFile , remove_item=self.remove_item, zoom_item=self.zoom_item, list_id = 'pdb_list_1'))
                 
                     #load pymol
                     pymol_thread = Thread(target = self.load_pymol, args = (chains, fl, ))
@@ -149,13 +148,19 @@ class LoadScreen(Screen):
             loadPymol = True
             self.pymol.finish_launching()
 
-        self.pymol.cmd.load(fl)
         filename = os.path.basename(fl)
         chainname = os.path.splitext(filename)[0]
+
+        self.pymol.cmd.load(fl)
+        self.pymol.cmd.zoom(chainname)
         print chainname
         for chain in chains:
-            self.pymol.cmd.show_as('cartoon', str(chain.chain_view) + ' & ' + chainname)
-            self.pymol.cmd.cartoon('automatic', str(chain.chain_view) + ' & ' + chainname)
+            if chain.chain_type == 'protein':
+                self.pymol.cmd.show_as('cartoon', str(chain.chain_view) + ' & ' + chainname)
+                self.pymol.cmd.cartoon('automatic', str(chain.chain_view) + ' & ' + chainname)
+            else:
+                self.pymol.cmd.show_as('sticks', 'resname ' + str(chain.chain_view.getResnames()[0]) + ' & ' + chainname)
+                self.pymol.cmd('set stick_color red')
         self.pymol.util.cbc()
         # pymol.cmd.show_as('sticks', 'resn FDA')
 
@@ -180,9 +185,9 @@ class LoadScreen(Screen):
                     pdbFile = PdbFile(file_path = fl, chains = chains)
                     Variable.parsepdb.Ligands.append(pdbFile)
 
-                    dataItem.append(DataItem(root_path=self.root_path, item_id=ItemId, text=filename, pdbFile=pdbFile, remove_item=self.remove_item, list_id = 'pdb_list_2'))            
+                    dataItem.append(DataItem(root_path=self.root_path, item_id=ItemId, text=filename, pdbFile=pdbFile, remove_item=self.remove_item, zoom_item=self.zoom_item, list_id = 'pdb_list_2'))            
 
-                     #load pymol
+                    #load pymol
                     pymol_thread = Thread(target = self.load_pymol, args = (chains, fl, ))
                     pymol_thread.start()
             # print parsepdb.Receptors
@@ -212,6 +217,11 @@ class LoadScreen(Screen):
                         Variable.parsepdb.Ligands.remove(pdbFile)
 
                     break
+
+    def zoom_item(self, pdbFile):
+        filename = os.path.basename(pdbFile.file_path)
+        chainname = os.path.splitext(filename)[0]
+        self.pymol.cmd.zoom(chainname)        
 
     def findWidget(self, layout, widget_id):
         for widget in layout.walk():
@@ -291,28 +301,41 @@ class LoadAdapter(ListAdapter):
             chain = Variable.parsepdb.Receptors[index].chains[chain_id]
             chain.is_selected = value   
             if value == True:
-                thread.start_new_thread( self.pymol.cmd.show, ('cartoon', str(chain.chain_view) + ' & ' + chainname,) )
+                if chain.chain_type == 'protein':
+                    thread.start_new_thread( self.pymol.cmd.show, ('cartoon', str(chain.chain_view) + ' & ' + chainname,) )
+                else: 
+                    thread.start_new_thread( self.pymol.cmd.show, ('sticks', 'resname ' + str(chain.chain_view.getResnames()[0]) + ' & ' + chainname,) )
             else:
-                thread.start_new_thread( self.pymol.cmd.hide, ('cartoon', str(chain.chain_view) + ' & ' + chainname,) )
+                if chain.chain_type == 'protein':
+                    thread.start_new_thread( self.pymol.cmd.hide, ('cartoon', str(chain.chain_view) + ' & ' + chainname,) )
+                else:
+                    thread.start_new_thread( self.pymol.cmd.hide, ('sticks', 'resname ' + str(chain.chain_view.getResnames()[0]) + ' & ' + chainname,) )
         else:
             chain =  Variable.parsepdb.Ligands[index].chains[chain_id]
             chain.is_selected = value
             if value == True:
-                thread.start_new_thread( self.pymol.cmd.show, ('cartoon', str(chain.chain_view) + ' & ' + chainname,) )
+                if chain.chain_type == 'protein':
+                    thread.start_new_thread( self.pymol.cmd.show, ('cartoon', str(chain.chain_view) + ' & ' + chainname,) )
+                else:
+                    thread.start_new_thread( self.pymol.cmd.show, ('sticks', 'resname ' + str(chain.chain_view.getResnames()[0]) + ' & ' + chainname,) )
             else:
-                thread.start_new_thread( self.pymol.cmd.hide, ('cartoon', str(chain.chain_view) + ' & ' + chainname,) )
+                if chain.chain_type == 'protein':
+                    thread.start_new_thread( self.pymol.cmd.hide, ('cartoon', str(chain.chain_view) + ' & ' + chainname,) )
+                else:
+                    thread.start_new_thread( self.pymol.cmd.hide, ('sticks', 'resname ' + str(chain.chain_view.getResnames()[0]) + ' & ' + chainname,) )
     pass
 
 
 
 class DataItem(object):
-    def __init__(self, root_path = '', item_id=0, text='', pdbFile='', remove_item = ObjectProperty(None), list_id = ''):
+    def __init__(self, root_path = '', item_id=0, text='', pdbFile='', remove_item = ObjectProperty(None), zoom_item = ObjectProperty(None), list_id = ''):
         self.item_id = item_id
         self.text = text
         self.remove_item = remove_item
         self.pdbFile = pdbFile
         self.list_id = list_id
         self.root_path = root_path
+        self.zoom_item = zoom_item
 
 class ItemCheckBox(BoxLayout):
     pass

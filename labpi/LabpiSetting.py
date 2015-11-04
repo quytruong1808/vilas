@@ -23,6 +23,8 @@ class SettingScreen(Screen):
     smdNst =  ObjectProperty(None)
     smdVel =  ObjectProperty(None)
     smdK =  ObjectProperty(None)
+    smdDirection = ObjectProperty(None)
+    smdDistance = ObjectProperty(None)
 
     def __init__(self, *args, **kwargs):
         super(SettingScreen, self).__init__(*args, **kwargs)
@@ -38,6 +40,16 @@ class SettingScreen(Screen):
         self.smdVel.text = self.dataController.getdata('smd-vel ')
         self.smdK.text = self.dataController.getdata('smd-k ')
 
+        if (self.dataController.getdata('smd-direction') == 'True'):
+            self.smdDirection.active = True
+        else:
+            self.smdDirection.active = False
+
+        if (self.dataController.getdata('smd-distance') == 'True'):
+            self.smdDistance.active = True
+        else:
+            self.smdDistance.active = False
+
         self.nvtNsteps.bind(text=self.on_nvt_nsteps)
         self.nvtNst.bind(text=self.on_nvt_nst)
         self.nptNsteps.bind(text=self.on_npt_nsteps)
@@ -48,6 +60,8 @@ class SettingScreen(Screen):
         self.smdNst.bind(text=self.on_smd_nst)
         self.smdVel.bind(text=self.on_smd_vel)
         self.smdK.bind(text=self.on_smd_k)
+        self.smdDirection.bind(active = self.smd_direction)
+        self.smdDistance.bind(active = self.smd_distance)
 	pass
 
     def on_nvt_nsteps(self, instance, value):
@@ -79,3 +93,11 @@ class SettingScreen(Screen):
 
     def on_smd_k(self, instance, value):
         self.dataController.setdata('smd-k ', value)
+
+    def smd_direction(self, checkbox, value):
+        self.dataController.setdata('smd-direction', str(value))
+        #self.dataController.setdata('smd-distance', str(not value))
+
+    def smd_distance(self, checkbox, value):
+        self.dataController.setdata('smd-distance', str(value))
+        #self.dataController.setdata('smd-direction', str(not value))

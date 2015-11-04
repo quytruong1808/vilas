@@ -16,6 +16,9 @@ sudo apt-get install avogadro
 5. Pymol
 sudo apt-get install pymol
 
+6. Xmgrace
+sudo apt-get install grace
+
 
 How to install labpi in Ubuntu
 1. Install pip

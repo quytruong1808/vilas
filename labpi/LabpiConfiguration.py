@@ -33,9 +33,12 @@ class ConfigurationScreen(Screen):
 
     pathText = ObjectProperty(None)
     caverBox = ObjectProperty(None)
+    icstBox = ObjectProperty(None)
     ligandAutoBox = ObjectProperty(None)
     repeatTimesText = ObjectProperty(None)
     nohupBox = ObjectProperty(None)
+    configpBox = ObjectProperty(None)
+    normalBox = ObjectProperty(None)
     maximumCoresText = ObjectProperty(None)
     gpuAutoBox = ObjectProperty(None)
 
@@ -128,6 +131,11 @@ class ConfigurationScreen(Screen):
         else:
             self.caverBox.active = False
 
+        if (self.dataController.getdata('icst') == 'True'):
+            self.icstBox.active = True
+        else:
+            self.icstBox.active = False
+
         if (self.dataController.getdata('ligand_auto') == 'True'):
             self.ligandAutoBox.active = True
         else:
@@ -135,10 +143,18 @@ class ConfigurationScreen(Screen):
 
         self.repeatTimesText.text = self.dataController.getdata('repeat_times')
 
-        if (self.dataController.getdata('nohup') == 'True'):
+        self.nohupBox.active = False
+        self.configBox.active = False
+        self.normalBox.active = False
+        if (self.dataController.getdata('mode') == 'nohup'):
             self.nohupBox.active = True
+        elif(self.dataController.getdata('mode') == 'config'):
+            self.configBox.active = True
         else:
-            self.nohupBox.active = False
+            self.normalBox.active = True
+            # self.dataController.setdata('mode', 'normal')
+
+
 
         self.maximumCoresText.text = self.dataController.getdata('maximum_cores')
 
@@ -151,9 +167,12 @@ class ConfigurationScreen(Screen):
         # set listener
         self.pathText.bind(text = self.path_change)
         self.caverBox.bind(active = self.caver_check)
+        self.icstBox.bind(active = self.icst_check)
         self.ligandAutoBox.bind(active = self.ligand_auto_check)
         self.repeatTimesText.bind(text = self.repeat_times)
         self.nohupBox.bind(active = self.nohup_check)
+        self.configBox.bind(active = self.config_check)
+        self.normalBox.bind(active = self.normal_check)
         self.maximumCoresText.bind(text = self.maximum_cores)
         self.gpuAutoBox.bind(active = self.gpu_auto_check)
 
@@ -163,6 +182,11 @@ class ConfigurationScreen(Screen):
         
     def caver_check(self, checkbox, value):
         self.dataController.setdata('caver', str(value))
+        #self.dataController.setdata('icst', str(not value))
+
+    def icst_check(self, checkbox, value):
+        self.dataController.setdata('icst', str(value))
+        #self.dataController.setdata('caver', str(not value))
 
     def ligand_auto_check(self, checkbox, value):
         self.dataController.setdata('ligand_auto', str(value))
@@ -171,7 +195,14 @@ class ConfigurationScreen(Screen):
         self.dataController.setdata('repeat_times ', value)
 
     def nohup_check(self, checkbox, value):
-        self.dataController.setdata('nohup ', str(value))
+        if value == True:
+            self.dataController.setdata('mode ', 'nohup')
+    def config_check(self, checkbox, value):
+        if value == True:
+            self.dataController.setdata('mode ', 'config')
+    def normal_check(self, checkbox, value):
+        if value == True:
+            self.dataController.setdata('mode ', 'normal')
 
     def maximum_cores(self, instance, value):
         self.dataController.setdata('maximum_cores ', value)
