@@ -43,7 +43,8 @@ or
 `sudo pip install hg+http://bitbucket.org/pygame/pygame`
 
 ** Missing some package
-`sudo apt-get installgcc swig dialog
+```
+sudo apt-get installgcc swig dialog
 
 sudo apt-get install -y python-pip build-essential libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf-dev libportmidi-dev libswscale-dev libavformat-dev libavcodec-dev zlib1g-dev
 
@@ -51,4 +52,5 @@ sudo apt-get install libsdl2-2.0-0 libsdl2-image-2.0-0 libsdl2-mixer-2.0-0 libsd
 
 sudo apt-get install xmlsec1 openssl libxmlsec1 libxmlsec1-dev
 
-sudo apt-get install build-essential autoconf libtool pkg-config  idle-python2.7 qt4-dev-tools qt4-designer libqtgui4 libqtcore4 libqt4-xml libqt4-test libqt4-script libqt4-network libqt4-dbus libgle3`
+sudo apt-get install build-essential autoconf libtool pkg-config  idle-python2.7 qt4-dev-tools qt4-designer libqtgui4 libqtcore4 libqt4-xml libqt4-test libqt4-script libqt4-network libqt4-dbus libgle3
+```
