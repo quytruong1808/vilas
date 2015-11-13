@@ -1,4 +1,5 @@
-#Need software
+#Labpi tool
+##Need software
 1. Python version >= 2.7
 `sudo apt-get install python python-setuptools python-dev python-augeas python-opengl python-imaging python-pyrex python-pyside.qtopengl python-qt4 python-qt4-gl python-lxml`
 
@@ -20,13 +21,13 @@ or
 `sudo apt-get install grace`
 
 
-#How to install labpi in Ubuntu
+##How to install labpi in Ubuntu
 1. Install pip
 `sudo apt-get install python-pip`
 2. Install Labpi
 `sudo pip install labpi`
 
-#If you get error while installing, maybe it lacks some below packages
+##If you get error while installing, maybe it lacks some below packages
 
 ** Error when install Cython:
 `sudo apt-get install cython`
