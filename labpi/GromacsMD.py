@@ -16,9 +16,13 @@ class GromacsMD(object):
 
 	def mdrun(self):
 		main_path = self.dataController.getdata('path ')
-		runfolders = check_output('ls '+main_path+'/run/', shell = True).splitlines()
+		runfolders = check_output('ls '+main_path+'/run', shell = True).splitlines()
+		call('rm -r '+main_path+'/analyse/*', shell=True)
 
 		for x in range(0,len(runfolders)):
+			if not os.path.isdir(main_path+'/run/'+runfolders[x]):
+				continue
+
 			#create folder for analyse
 			call('mkdir '+self.dataController.getdata('path ')+'/analyse/'+runfolders[x].split('_')[1], shell=True)
 
@@ -64,28 +68,12 @@ class GromacsMD(object):
 						
 			# else:
 				# Repeat the steered for times
-			if(self.GroVersion >= 5):
-				self.CallCommand(run_path, 'cp mdp/md_pull_5.mdp mdp/md_pull_repeat.mdp')
-				self.replaceLine('gen_vel','gen_vel   = yes\ngen_temp = 300\ngen_seed = -1\n', run_path+'/mdp/md_pull_repeat.mdp')
-				self.replaceLine('pull-group2-name', 'pull-group2-name     = '+ligandCurrent+'\n', run_path+'/mdp/md_pull_repeat.mdp')
-				if (self.dataController.getdata('smd-direction ') == 'True'):
-					self.addLine('pull-coord1-vec = 0 0 1', run_path+'/mdp/md_pull_repeat.mdp')
-			else:
-				self.CallCommand(run_path, 'cp mdp/md_pull.mdp mdp/md_pull_repeat.mdp')
-				self.replaceLine('gen_vel','gen_vel   = yes\ngen_temp = 300\ngen_seed = -1\n', run_path+'/mdp/md_pull_repeat.mdp')
-				self.replaceLine('pull_group1', 'pull_group1     = '+ligandCurrent+'\n', run_path+'/mdp/md_pull_repeat.mdp')
-				if (self.dataController.getdata('smd-direction ') == 'True'):
-					self.addLine('pull_vec1 = 0 0 1', run_path+'/mdp/md_pull_repeat.mdp')
-
-			self.replaceLine('continuation', 'continuation  = no   ; Restarting after NPT\n', run_path+'/mdp/md_pull_repeat.mdp')
-			if (self.dataController.getdata('smd-direction ') == 'True'):
-				self.replaceLine('pull-geometry', 'pull-geometry  = direction  \n', run_path+'/mdp/md_pull_repeat.mdp')
 
 			analyse_path = main_path+'/analyse/'+runfolders[x].split('_')[1]
 			pull_vec = self.dataController.getdata('smd-vel ')
 			pullx_path = ''
 			pullf_path = ''
-			for k in range(0,int(self.repeat_times)):
+			for k in range(1,int(self.repeat_times)+1):
 				if os.path.isfile(run_path+'/md_st_'+str(k)+'.gro') is False:
 					groCmd += self.GroLeft+'grompp'+self.GroRight+ ' -maxwarn 20 -f mdp/md_pull_repeat.mdp -c md.gro -t md.cpt -p topol.top -n index.ndx -o md_st_'+str(k)+'.tpr \n'
 					groCmd += self.GroLeft+'mdrun'+self.GroRight+ ' '+self.GroOption+ ' -px pullx_'+str(k)+'.xvg -pf pullf_'+str(k)+'.xvg -deffnm md_st_'+str(k)+' -v -cpt 5\n'
@@ -156,24 +144,6 @@ class GromacsMD(object):
 	def CallCommand(self, patch, command):
 		call('cd '+patch+'; '+command, shell = True, executable='/bin/bash')
 
-	def replaceLine(self, search, replace, myfile):
-		f = open(myfile, "r")
-		contents = f.readlines()
-		f.close()
-
-		contents[self.substring(search,contents)[0]] = replace
-
-		f = open(myfile, "w")
-		contents = "".join(contents)
-		f.write(contents)
-		f.close()
-
-	def addLine(self, line, myfile):
-		with open(myfile, "a") as mf:
-			mf.write(line)
-
-	def substring(self, mystr, mylist): 
-		return [i for i, val in enumerate(mylist) if mystr in val]
 
 if __name__ == '__main__':
 	gromacsMD = GromacsMD()

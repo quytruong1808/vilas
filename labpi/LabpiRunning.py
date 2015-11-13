@@ -322,6 +322,8 @@ class RemoveDialog(Popup):
     def remove(self):
         self.dismiss()
         call('rm -r '+self.dataController.getdata('path ')+'/run/*', shell=True)
+        call('rm -r '+self.dataController.getdata('path ')+'/output/ligand/*', shell=True)
+        call('rm -r '+self.dataController.getdata('path ')+'/output/receptor/*', shell=True)
         self.thread = Process(target= self.gromacsRun.main)
         self.thread.start()
         pass
