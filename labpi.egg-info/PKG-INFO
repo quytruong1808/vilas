@@ -1,6 +1,6 @@
 Metadata-Version: 1.1
 Name: labpi
-Version: 1.1.18
+Version: 1.2.0
 Summary: Auto tools for Steered Molecule Simulation in Gromacs
 Home-page: https://github.com/quytruong/labpi
 Author: quytruong
@@ -21,6 +21,11 @@ Description: Need software
         4. Avogadro for python
         sudo apt-get install avogadro
         
+        5. Pymol
+        sudo apt-get install pymol
+        
+        6. Xmgrace
+        sudo apt-get install grace
         
         
         How to install labpi in Ubuntu
@@ -37,7 +42,7 @@ Description: Need software
         or
         sudo pip install cython
         
-        ** Error with missing openGL:
+        ** Missing openGL:
         sudo apt-get install build-essential
         sudo apt-get install freeglut3-dev
         

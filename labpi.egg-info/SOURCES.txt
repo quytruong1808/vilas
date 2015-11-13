@@ -3,6 +3,7 @@ MANIFEST.in
 README.rst
 setup.cfg
 setup.py
+labpi/GromacsMD.py
 labpi/LabpiConfiguration.kv
 labpi/LabpiConfiguration.py
 labpi/LabpiConfiguration.pyc
@@ -35,22 +36,16 @@ labpi/config/apolar_sasa.mdp
 labpi/config/apolar_sav.mdp
 labpi/config/ions.mdp
 labpi/config/md.mdp
-labpi/config/md.mdp~
 labpi/config/md_md.mdp
-labpi/config/md_md.mdp~
 labpi/config/md_pull.mdp
-labpi/config/md_pull.mdp~
 labpi/config/md_pull_5.mdp
 labpi/config/minim.mdp
 labpi/config/npt.mdp
-labpi/config/npt.mdp~
 labpi/config/nvt.mdp
-labpi/config/nvt.mdp~
 labpi/config/pbsa.mdp
 labpi/config/plumed.dat
 labpi/config/polar.mdp
 labpi/data/__init__.pyc
-labpi/data/setting.txt
 labpi/img/1.png
 labpi/img/1_dis.png
 labpi/img/2.png
@@ -61,7 +56,9 @@ labpi/img/4.png
 labpi/img/4_dis.png
 labpi/img/__init__.pyc
 labpi/img/back.png
+labpi/img/background.png
 labpi/img/cross.png
+labpi/img/eye.png
 labpi/img/file.png
 labpi/img/info.png
 labpi/img/infor.png
@@ -69,6 +66,7 @@ labpi/img/next.png
 labpi/img/next_1.png
 labpi/img/remove.png
 labpi/img/setting.png
+labpi/img/spin.png
 labpi/img/tick.png
 labpi/img/tick_normal.png
 labpi/img/tick_select.png
@@ -85,6 +83,7 @@ labpi/source/optimize_ligands.sh
 labpi/source/parse_mmpbsa.py
 labpi/source/parse_pull.py
 labpi/source/parse_pull.sh
+labpi/source/pullana.py
 labpi/source/rotate.py
 labpi/source/rotate.py~
 labpi/source/setbox.py
