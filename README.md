@@ -6,18 +6,23 @@
 2. Gromacs version >= 4.6
 `sudo apt-get install gromacs`
 
-3. Openbabel
+3. Cython:
+`sudo apt-get install cython`
+or
+`sudo pip install cython`
+
+4. Openbabel
 `sudo apt-get install openbabel`
 or 
 `sudo pip insatall openbabel`
 
-4. Avogadro for python
+5. Avogadro for python
 `sudo apt-get install avogadro`
 
-5. Pymol
+6. Pymol
 `sudo apt-get install pymol`
 
-6. Xmgrace
+7. Xmgrace
 `sudo apt-get install grace`
 
 
@@ -28,11 +33,6 @@ or
 `sudo pip install labpi`
 
 ##If you get error while installing, maybe it lacks some below packages
-
-** Error when install Cython:
-`sudo apt-get install cython`
-or
-`sudo pip install cython`
 
 ** Missing openGL:
 `sudo apt-get install build-essential
