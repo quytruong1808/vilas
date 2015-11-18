@@ -7,7 +7,7 @@
 `sudo apt-get install gromacs`
 
 3. ANTECHAMBER 14
-download: http://ambermd.org/AmberTools14-get.html
+- download: http://ambermd.org/AmberTools14-get.html
 ```
 tar xvfj AmberTools14.tar.bz2
 cd amber14
@@ -20,28 +20,28 @@ nano ~/.bashrc
 source ~/.bashrc
 ```
 
-3. Cython:
+4. Cython:
 `sudo apt-get install cython`
 or
 `sudo pip install cython`
 
-4. Openbabel
+5. Openbabel
 `sudo apt-get install openbabel`
 or 
 `sudo pip install openbabel`
 
-5. Scipy
+6. Scipy
 `sudo apt-get install scipy`
 or
 `sudo pip install scipy`
 
-5. Avogadro for python
+7. Avogadro for python
 `sudo apt-get install avogadro`
 
-6. Pymol
+8. Pymol
 `sudo apt-get install pymol`
 
-7. Xmgrace
+9. Xmgrace
 `sudo apt-get install grace`
 
 

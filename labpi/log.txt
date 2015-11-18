@@ -2520,3 +2520,45 @@ proteinMax -5.112
 dz 11.3667253011
 systemCenter 4.68057243834
 ratio 69.0
+number atom 4761 63
+distance 1.7526559423
+ligandZ -7.3793440577
+proteinMax -3.132
+dz 11.2536559423
+systemCenter 4.61007795707
+ratio 75.5714285714
+number atom 4761 69
+distance 1.88365731365
+ligandZ -8.40034268635
+proteinMax -4.284
+dz 11.4096573136
+systemCenter 4.6632290726
+ratio 69.0
+number atom 4761 69
+distance 2.19955059317
+ligandZ -7.73844940683
+proteinMax -3.938
+dz 11.7155505932
+systemCenter 4.58366128631
+ratio 69.0
+number atom 4761 61
+distance 1.95537133124
+ligandZ -8.21862866876
+proteinMax -4.174
+dz 11.4283713312
+systemCenter 4.85805709855
+ratio 78.0491803279
+number atom 4761 60
+distance 1.85696906959
+ligandZ -10.2390309304
+proteinMax -6.096
+dz 11.5299690696
+systemCenter 4.62682176295
+ratio 79.35
+number atom 4761 66
+distance 1.0983200737
+ligandZ -11.8206799263
+proteinMax -6.919
+dz 11.2183200737
+systemCenter 4.98369806337
+ratio 72.1363636364
