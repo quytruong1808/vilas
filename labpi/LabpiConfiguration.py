@@ -11,7 +11,6 @@ from subprocess import check_output
 import subprocess
 import os
 
-
 from Utils import DataController
 
 #Kivy file

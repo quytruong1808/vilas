@@ -352,6 +352,7 @@ class GromacsRun(object):
         call('cp -r '+root_path+'/config/* '+main_path+'/run/run_'+ligandName+'/mdp', shell = True)
         call('cp '+main_path+'/run/run_'+ligandName+'/'+ligandName+'.acpype/'+ligandName+'.pdb '+main_path+'/run/run_'+ligandName+'/'+ligandName+'.pdb', shell = True)
 
+      # call('cp '+root_path+'/source/antechamber '+main_path+'/run/run_'+ligandName, shell=True)
       call('cp '+root_path+'/source/parse_pull.py '+main_path+'/run/run_'+ligandName, shell=True)
       call('cp '+root_path+'/source/pullana.py '+main_path+'/run/run_'+ligandName, shell=True)
       # call('cp '+root_path+'/source/MmPbSaStat.py '+main_path+'/run/run_'+ligandName, shell=True)
@@ -871,17 +872,17 @@ class GromacsRun(object):
 
       #*******************************************************************************
       #Add solv
-      if os.path.isfile(run_path+'/solv.gro') is False: 
-        if GroVersion >=5:
-          self.CallCommand(run_path, GroLeft+'solvate'+GroRight+' -cp newbox.gro -cs spc216.gro -p topol.top -o solv.gro')
-        else:
-          self.CallCommand(run_path, GroLeft+'genbox'+GroRight+' -cp newbox.gro -cs spc216.gro -p topol.top -o solv.gro')
+      # if os.path.isfile(run_path+'/solv.gro') is False: 
+      if GroVersion >=5:
+        self.CallCommand(run_path, GroLeft+'solvate'+GroRight+' -cp newbox.gro -cs spc216.gro -p topol.top -o solv.gro')
+      else:
+        self.CallCommand(run_path, GroLeft+'genbox'+GroRight+' -cp newbox.gro -cs spc216.gro -p topol.top -o solv.gro')
       
       #Add ions to solv 
       #self.CallCommand('run/'+runfolders[x], 'cp solv.gro solv_ions.gro')
-      if os.path.isfile(run_path+'/solv_ions.gro') is False: 
-        self.CallCommand(run_path, GroLeft+'grompp'+GroRight+' -maxwarn 10 -f mdp/ions.mdp -c solv.gro -p topol.top -o ions.tpr')
-        self.CallCommand(run_path, 'echo -e \"SOL\"|' +GroLeft+'genion'+GroRight+' -s ions.tpr -o solv_ions.gro -p topol.top -pname NA -nname CL -neutral -conc 0.1')
+      # if os.path.isfile(run_path+'/solv_ions.gro') is False: 
+      self.CallCommand(run_path, GroLeft+'grompp'+GroRight+' -maxwarn 10 -f mdp/ions.mdp -c solv.gro -p topol.top -o ions.tpr')
+      self.CallCommand(run_path, 'echo -e \"SOL\"|' +GroLeft+'genion'+GroRight+' -s ions.tpr -o solv_ions.gro -p topol.top -pname NA -nname CL -neutral -conc 0.1')
 
       #Create index file for first time => check double name
       self.CallCommand(run_path, 'echo -e \"q\\n\" | '+ GroLeft+'make_ndx'+GroRight+' -f solv_ions.gro -o index.ndx') 
@@ -1029,7 +1030,6 @@ class GromacsRun(object):
 
         mergeGroup += ' | \\"' + resname +'\\"'
       self.CallCommand(run_path, 'echo -e \"'+mergeGroup +'\\nq\\n\" | '+ GroLeft+'make_ndx'+GroRight+' -f solv_ions.gro -n index.ndx') 
-      print 'echo -e \"'+mergeGroup +'\\nq\\n\" | '+ GroLeft+'make_ndx'+GroRight+' -f solv_ions.gro -n index.ndx'
       #Change water to water_and_ions in index.ndx
       #replaceLine('[ Water ]', '[ Water_and_ions ]\n', indexfile)
 
@@ -1038,6 +1038,7 @@ class GromacsRun(object):
         self.replaceLine(nameOfGroup, '[ Receptor ]\n', indexfile)
       if os.path.isfile(run_path+'/ligand_residues.txt') is True: 
         self.replaceLine(nameOfLigand, '[ '+ligandCurrent+' ]\n', indexfile)
+
       #*********************************************************************************
       if(GroVersion >= 5):
         self.CallCommand(run_path, 'cp mdp/md_pull_5.mdp mdp/md_pull_repeat.mdp')

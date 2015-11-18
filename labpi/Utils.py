@@ -2,6 +2,7 @@ import os
 import os.path
 from subprocess import check_output
 from subprocess import call
+import distutils.spawn
 
 class PdbFile(object):
     def __init__(self, file_path = '', chains = []):
@@ -94,7 +95,30 @@ class DataController(object):
             call('cp '+self.main_path+'/data/.labpi_setting.txt '+setting_path, shell=True)
             run_path = '/home/'+self.username + '/Documents/labpi-result'
             self.setdata('path ', run_path)
-            
+
+    # def checkAntechamber(self):
+    #     # Check antechamber
+    #     check_antechamber = distutils.spawn.find_executable('antechamber') is not None 
+    #     if check_antechamber == False and self.searchLine('/home/'+self.username+'/.bashrc', 'AMBERHOME') == '':
+    #         self.addLine('/home/'+self.username+'/.bashrc', '\n')
+    #         self.addLine('/home/'+self.username+'/.bashrc', 'export AMBERHOME='+self.main_path+'\n')
+    #         self.addLine('/home/'+self.username+'/.bashrc', 'export PATH=$AMBERHOME/bin:$PATH\n')
+    #         self.addLine('/home/'+self.username+'/.bashrc', '\n')
+    #         call('source /home/'+self.username+'/.bashrc', shell = True)
+
+    # def addLine(self, myfile, line):
+    #     with open(myfile, "a") as mf:
+    #         mf.write(line)
+
+    # def searchLine(self, myfile, search):
+    #     f = open(myfile, "r")
+    #     contents = f.readlines()
+    #     f.close()
+    #     if len(self.substring(search,contents)) > 0:
+    #       return contents[self.substring(search,contents)[0]]
+    #     else:
+    #       return ''
+                
 class CheckPoint(object):
     point = ''
     step = ''
