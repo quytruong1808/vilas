@@ -6,8 +6,7 @@
 2. Gromacs version >= 4.6
 `sudo apt-get install gromacs`
 
-3. ANTECHAMBER 14
-- download: http://ambermd.org/AmberTools14-get.html
+3. ANTECHAMBER - download: http://ambermd.org/AmberTools14-get.html
 ```
 tar xvfj AmberTools14.tar.bz2
 cd amber14
