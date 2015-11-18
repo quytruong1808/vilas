@@ -1,12 +1,37 @@
 #Labpi tool
 ##Need software
+
 1. Python version >= 2.7
 `sudo apt-get install python python-setuptools python-dev python-augeas python-opengl python-imaging python-pyrex python-pyside.qtopengl python-qt4 python-qt4-gl python-lxml`
 
 2. Gromacs version >= 4.6
 `sudo apt-get install gromacs`
 
-3. ANTECHAMBER - download: http://ambermd.org/AmberTools14-get.html
+3. Cython:
+`sudo apt-get install cython`
+or
+`sudo pip install cython`
+
+4. Openbabel
+`sudo apt-get install openbabel`
+or 
+`sudo pip install openbabel`
+
+5. Scipy
+`sudo apt-get install scipy`
+or
+`sudo pip install scipy`
+
+6. Avogadro for python
+`sudo apt-get install avogadro`
+
+7. Pymol
+`sudo apt-get install pymol`
+
+8. Xmgrace
+`sudo apt-get install grace`
+
+9. ANTECHAMBER - download: http://ambermd.org/AmberTools14-get.html
 ```
 tar xvfj AmberTools14.tar.bz2
 cd amber14
@@ -18,30 +43,6 @@ nano ~/.bashrc
 -> export PATH=$AMBERHOME/bin:$PATH
 source ~/.bashrc
 ```
-
-4. Cython:
-`sudo apt-get install cython`
-or
-`sudo pip install cython`
-
-5. Openbabel
-`sudo apt-get install openbabel`
-or 
-`sudo pip install openbabel`
-
-6. Scipy
-`sudo apt-get install scipy`
-or
-`sudo pip install scipy`
-
-7. Avogadro for python
-`sudo apt-get install avogadro`
-
-8. Pymol
-`sudo apt-get install pymol`
-
-9. Xmgrace
-`sudo apt-get install grace`
 
 
 ##How to install labpi in Ubuntu
