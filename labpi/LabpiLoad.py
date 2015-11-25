@@ -209,6 +209,7 @@ class LoadScreen(Screen):
                     filename = os.path.basename(pdbFile.file_path)
                     chainname = os.path.splitext(filename)[0]
                     thread.start_new_thread( self.pymol.cmd.hide, ('cartoon', chainname,) )
+                    thread.start_new_thread( self.pymol.cmd.hide, ('sticks',  chainname,) )
 
                     #Xoa trong parsePDB
                     if(list_id == 'pdb_list_1'):

@@ -104,15 +104,16 @@ class RunningScreen(Screen):
             self.thread.start()
 
         #Check log
-        self.progressUnit = 1000/5.5/len(Variable.parsepdb.Ligands)
+        repeat_times = int(self.dataController.getdata('repeat_times '))
+        self.progressUnit = 1000/(4.5 + repeat_times)/len(Variable.parsepdb.Ligands)
         self.progressPoint = 0
         self.dataController.setdata('status', '')
         Clock.schedule_interval(self.check_log, 5)
         Clock.schedule_interval(self.spin_progress, 0.05)
-        Clock.schedule_interval(self.pymol_log, 300)
+        # Clock.schedule_interval(self.pymol_log, 300)
 
         #close pymol
-        # thread.start_new_thread( self.pymol.cmd.quit, ())
+        self.pymol.cmd.window('hide')
 
     def spin_progress(self, dt):
         if(self.angle == 360):
@@ -249,7 +250,7 @@ class RunningScreen(Screen):
                 check_path = run_path+'/md_st_'+str(x)
 
         if(check_path != ''):
-            call('echo -e \"non-Water\"|' + self.GroLeft + 'trjconv' + self.GroRight +'-f '+ check_path +'.cpt -s '+ check_path +'.tpr -o '+ check_path +'.pdb', shell=True)
+            call('echo \"non-Water\"|' + self.GroLeft + 'trjconv' + self.GroRight +'-f '+ check_path +'.cpt -s '+ check_path +'.tpr -o '+ check_path +'.pdb', shell=True)
             self.pymol.cmd.reinitialize()
             self.pymol.cmd.load(check_path+'.pdb')
 
@@ -260,7 +261,7 @@ class RunningScreen(Screen):
                     self.pymol.cmd.cartoon('automatic', str(chain.chain_view))
                 else:
                     self.pymol.cmd.show_as('sticks', 'resname ' + str(chain.chain_view.getResnames()[0]))
-                    self.pymol.cmd('set stick_color red')
+            # self.pymol.cmd.set('stick_color', 'red')
             self.pymol.util.cbc()
         pass
 

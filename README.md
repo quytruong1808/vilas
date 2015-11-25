@@ -54,8 +54,10 @@ source ~/.bashrc
 ##If you get error while installing, maybe it lacks some below packages
 
 ** Missing openGL:
-`sudo apt-get install build-essential
-sudo apt-get install freeglut3-dev`
+```
+sudo apt-get install build-essential
+sudo apt-get install freeglut3-dev
+```
 
 ** Missing pygame:
 `sudo apt-get install python-pygame`

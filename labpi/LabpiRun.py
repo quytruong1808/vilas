@@ -137,6 +137,11 @@ class GromacsRun(object):
         else:
           ligand = chain.chain_view
           fileName = main_path + '/output/receptor/ligand_' +  filename + "_" + str(ligand.getResnames()[0])
+          
+          # change resnum 
+          ligand.setResnums(1)
+
+          # save ligand to file pdb
           writePDB(fileName.replace(" ", ""), ligand)
 
     ReceptorCenter = listCenter/ResidueNumber
@@ -218,9 +223,8 @@ class GromacsRun(object):
   #**********************************************************************#
   #************************* Ligand Fuction *****************************#
   #**********************************************************************#
-  def AddHydrogen(self, ligandFile):
+  def AddHydrogen(self, ligandFile, ligandName):
     ligand = Avogadro.MoleculeFile.readMolecule(ligandFile)
-    ligandName = ligand.residues[0].name
     if AvogadroAuto == 'true':  
       ligand.removeHydrogens()
       ligand.addHydrogens()
@@ -294,6 +298,10 @@ class GromacsRun(object):
          first_ligand = False
         else:
          ligand_view += ligand.chains[i].chain_view
+
+      # change resnum 
+      ligand_view.setResnums(1)
+
       writePDB(main_path+'/output/ligand/'+ ligand_name, ligand_view)
 
       # parse pdb file 
@@ -305,7 +313,7 @@ class GromacsRun(object):
         continue
 
       #Add hydrogen to ligand
-      self.AddHydrogen(main_path+'/output/ligand/'+ligand_name)
+      self.AddHydrogen(main_path+'/output/ligand/'+ligand_name, ligand_name.split('.')[0])
 
       #Count charge of ligand
       charge = self.CountCharge(main_path+'/output/ligand/'+ligand_name)
@@ -321,7 +329,7 @@ class GromacsRun(object):
 
       for x in range(0,len(ligands)):
         #Add hydrogen to ligand
-        AddHydrogen(main_path+'/output/receptor/'+ligands[x])
+        AddHydrogen(main_path+'/output/receptor/'+ligands[x], ligands[x].split('_')[1].split('.')[0])
 
         #Count charge of ligand
         charge = self.CountCharge(main_path+'/output/receptor/'+ligands[x])
@@ -1046,7 +1054,6 @@ class GromacsRun(object):
         self.replaceLine('pull-group2-name', 'pull-group2-name     = '+ligandCurrent+'\n', run_path+'/mdp/md_pull_repeat.mdp')
         if (self.dataController.getdata('smd-direction ') == 'True'):
           self.addLine('pull-coord1-vec = 0 0 1', run_path+'/mdp/md_pull_repeat.mdp')
-        if (self.dataController.getdata('smd-direction ') == 'True'):
           self.replaceLine('pull-geometry', 'pull-geometry  = direction  \n', run_path+'/mdp/md_pull_repeat.mdp')
 
       else:
@@ -1055,7 +1062,6 @@ class GromacsRun(object):
         self.replaceLine('pull_group1', 'pull_group1     = '+ligandCurrent+'\n', run_path+'/mdp/md_pull_repeat.mdp')
         if (self.dataController.getdata('smd-direction ') == 'True'):
           self.addLine('pull_vec1 = 0 0 1', run_path+'/mdp/md_pull_repeat.mdp')
-        if (self.dataController.getdata('smd-direction ') == 'True'):
           self.replaceLine('pull_geometry', 'pull_geometry  = direction  \n', run_path+'/mdp/md_pull_repeat.mdp')
 
       self.replaceLine('continuation', 'continuation  = no   ; Restarting after NPT\n', run_path+'/mdp/md_pull_repeat.mdp')
