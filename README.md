@@ -18,8 +18,6 @@ or
 `sudo pip install openbabel`
 
 5. Scipy
-`sudo apt-get install scipy`
-or
 `sudo pip install scipy`
 
 6. Avogadro for python
