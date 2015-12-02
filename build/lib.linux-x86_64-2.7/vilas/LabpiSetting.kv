@@ -1,0 +1,485 @@
+<SettingScreen>:
+    nvtNsteps: nvt_nsteps
+    nvtNst: nvt_nst
+    nptNsteps: npt_nsteps
+    nptNst: npt_nst
+    mdNsteps: md_nsteps
+    mdNst: md_nst    
+    smdNsteps: smd_nsteps
+    smdNst: smd_nst
+    smdVel: smd_vel
+    smdK: smd_k
+    smdDirection: smd_direction
+    smdDistance: smd_distance
+
+
+    AsyncImage:
+        source: root.root_path + '/img/background.png'
+
+    Button:
+        background_color: 1, 1, 1, 0
+        size_hint: None, None
+        size: 50, 50
+        pos: 50, 30
+        on_press: root.manager.changeScreen('back')
+        Image:
+            source: root.root_path+'/img/back.png'
+            size: 50, 50
+            center_x: self.parent.center_x
+            center_y: self.parent.center_y
+            allow_stretch: True
+
+    Label: 
+        size_hint: None, None
+        size: 100, 30
+        pos: root.width/2-50, root.height * 9/10 + 15
+        text: 'Setings'
+        font_size: '40sp'
+        color: 0.8,0.8,0.8,1
+
+    BoxLayout:
+        size_hint: None, None
+        size: root.width * 9/10, root.height * 7/10
+        pos: root.width /20, root.height * 2/10 - 10
+        spacing: 10
+        orientation: "vertical"
+
+        ScrollView:
+            id: config_layout
+            size_hint: None, None
+            size: self.parent.width, self.parent.height
+            canvas.after:
+                Color:
+                    rgb: 0.4, 0.4, 0.4, 1
+                Line:
+                    rectangle: self.x,self.y,self.width,self.height
+            GridLayout:
+                cols: 1
+                size_hint_y: None
+                height: box_1.height + box_2.height + box_3.height + box_4.height + 100
+                spacing: 20
+                BoxLayout:
+                    id: box_1
+                    orientation: "vertical"
+                    size_hint_y: None
+                    height: 25 + 40*2
+                    spacing: 10
+                    canvas.before:
+                        Color:
+                            rgba: 0.95,0.95,0.95, 1
+                        Rectangle:
+                            pos: self.pos
+                            size: self.size
+                    canvas.after:
+                        Color:
+                            rgb: 0.7, 0.7, 0.7, 1
+                        Line:
+                            rectangle: self.x,self.y,self.width,self.height
+                    Label:
+                        text: ' NVT Equilibration '
+                        color: 1,1,1,1
+                        size_hint_y: None
+                        height: 25
+                        canvas.before:
+                            Color:
+                                rgba: 0, 0.588, 0.533, 1
+                            Rectangle:
+                                pos: self.pos
+                                size: self.size
+                    BoxLayout:
+                        size_hint_y: None
+                        height: 30
+                        padding: 30,0,0,0
+                        Label:
+                            text: ' Total time (ps): '
+                            color: 0,0,0,1
+                            disabled_color: 0,0,0,1
+                            font_size: '16sp'
+                            text_size: self.width, None
+                            halign: 'left'
+                            valign: 'middle'
+                            size_hint_x: None
+                            width: self.parent.width/2
+                        TextInput:
+                            id: nvt_nsteps
+                            size_hint: None, 1
+                            width: 100
+                            pos_hint: {'center_y': 0.5}
+                            color: 0,0,0,1
+                            disabled_color: 0,0,0,1
+                            font_size: '16sp'
+                            text_size: self.width, None
+                            halign: 'left'
+                            valign: 'middle'
+
+                    BoxLayout:
+                        size_hint_y: None
+                        height: 30
+                        padding: 30,0,0,0
+                        Label:
+                            text: ' Save output every (steps): '
+                            color: 0,0,0,1
+                            disabled_color: 0,0,0,1
+                            font_size: '16sp'
+                            text_size: self.width, None
+                            halign: 'left'
+                            valign: 'middle'
+                            size_hint_x: None
+                            width: self.parent.width/2
+                        TextInput:
+                            id: nvt_nst
+                            size_hint: None, 1
+                            width: 100
+                            pos_hint: {'center_y': 0.5}
+                            color: 0,0,0,1
+                            disabled_color: 0,0,0,1
+                            font_size: '16sp'
+                            text_size: self.width, None
+                            halign: 'left'
+                            valign: 'middle'
+
+                BoxLayout:
+                    id: box_2
+                    orientation: "vertical"
+                    size_hint_y: None
+                    height: 25 + 40*2
+                    spacing: 10
+                    canvas.before:
+                        Color:
+                            rgba: 0.95,0.95,0.95, 1
+                        Rectangle:
+                            pos: self.pos
+                            size: self.size
+                    canvas.after:
+                        Color:
+                            rgb: 0.7, 0.7, 0.7, 1
+                        Line:
+                            rectangle: self.x,self.y,self.width,self.height
+                    Label:
+                        text: ' NVT Equilibration '
+                        color: 1,1,1,1
+                        size_hint_y: None
+                        height: 25
+                        canvas.before:
+                            Color:
+                                rgba: 0, 0.588, 0.533, 1
+                            Rectangle:
+                                pos: self.pos
+                                size: self.size
+                    BoxLayout:
+                        size_hint_y: None
+                        height: 30
+                        padding: 30,0,0,0
+                        Label:
+                            text: ' Total time (ps): '
+                            color: 0,0,0,1
+                            disabled_color: 0,0,0,1
+                            font_size: '16sp'
+                            text_size: self.width, None
+                            halign: 'left'
+                            valign: 'middle'
+                            size_hint_x: None
+                            width: self.parent.width/2
+                        TextInput:
+                            id: npt_nsteps
+                            size_hint: None, 1
+                            width: 100
+                            pos_hint: {'center_y': 0.5}
+                            color: 0,0,0,1
+                            disabled_color: 0,0,0,1
+                            font_size: '16sp'
+                            text_size: self.width, None
+                            halign: 'left'
+                            valign: 'middle'
+
+                    BoxLayout:
+                        size_hint_y: None
+                        height: 30
+                        padding: 30,0,0,0
+                        Label:
+                            text: ' Save output every (steps): '
+                            color: 0,0,0,1
+                            disabled_color: 0,0,0,1
+                            font_size: '16sp'
+                            text_size: self.width, None
+                            halign: 'left'
+                            valign: 'middle'
+                            size_hint_x: None
+                            width: self.parent.width/2
+                        TextInput:
+                            id: npt_nst
+                            size_hint: None, 1
+                            width: 100
+                            pos_hint: {'center_y': 0.5}
+                            color: 0,0,0,1
+                            disabled_color: 0,0,0,1
+                            font_size: '16sp'
+                            text_size: self.width, None
+                            halign: 'left'
+                            valign: 'middle'
+
+                BoxLayout:
+                    id: box_3
+                    orientation: "vertical"
+                    size_hint_y: None
+                    height: 25 + 40*2
+                    spacing: 10
+                    canvas.before:
+                        Color:
+                            rgba: 0.95,0.95,0.95, 1
+                        Rectangle:
+                            pos: self.pos
+                            size: self.size
+                    canvas.after:
+                        Color:
+                            rgb: 0.7, 0.7, 0.7, 1
+                        Line:
+                            rectangle: self.x,self.y,self.width,self.height
+                    Label:
+                        text: ' MD Equilibration '
+                        color: 1,1,1,1
+                        size_hint_y: None
+                        height: 25
+                        canvas.before:
+                            Color:
+                                rgba: 0, 0.588, 0.533, 1
+                            Rectangle:
+                                pos: self.pos
+                                size: self.size
+                    BoxLayout:
+                        size_hint_y: None
+                        height: 30
+                        padding: 30,0,0,0
+                        Label:
+                            text: ' Total time (ps): '
+                            color: 0,0,0,1
+                            disabled_color: 0,0,0,1
+                            font_size: '16sp'
+                            text_size: self.width, None
+                            halign: 'left'
+                            valign: 'middle'
+                            size_hint_x: None
+                            width: self.parent.width/2
+                        TextInput:
+                            id: md_nsteps
+                            size_hint: None, 1
+                            width: 100
+                            pos_hint: {'center_y': 0.5}
+                            color: 0,0,0,1
+                            disabled_color: 0,0,0,1
+                            font_size: '16sp'
+                            text_size: self.width, None
+                            halign: 'left'
+                            valign: 'middle'
+
+                    BoxLayout:
+                        size_hint_y: None
+                        height: 30
+                        padding: 30,0,0,0
+                        Label:
+                            text: ' Save output every (steps): '
+                            color: 0,0,0,1
+                            disabled_color: 0,0,0,1
+                            font_size: '16sp'
+                            text_size: self.width, None
+                            halign: 'left'
+                            valign: 'middle'
+                            size_hint_x: None
+                            width: self.parent.width/2
+                        TextInput:
+                            id: md_nst
+                            size_hint: None, 1
+                            width: 100
+                            pos_hint: {'center_y': 0.5}
+                            color: 0,0,0,1
+                            disabled_color: 0,0,0,1
+                            font_size: '16sp'
+                            text_size: self.width, None
+                            halign: 'left'
+                            valign: 'middle'
+
+                BoxLayout:
+                    id: box_4
+                    orientation: "vertical"
+                    size_hint_y: None
+                    height: 25 + 40*5
+                    spacing: 10
+                    canvas.before:
+                        Color:
+                            rgba: 0.95,0.95,0.95, 1
+                        Rectangle:
+                            pos: self.pos
+                            size: self.size
+                    canvas.after:
+                        Color:
+                            rgb: 0.7, 0.7, 0.7, 1
+                        Line:
+                            rectangle: self.x,self.y,self.width,self.height
+                    Label:
+                        text: ' Steered Molecular Dynamic '
+                        color: 1,1,1,1
+                        size_hint_y: None
+                        height: 25
+                        canvas.before:
+                            Color:
+                                rgba: 0, 0.588, 0.533, 1
+                            Rectangle:
+                                pos: self.pos
+                                size: self.size
+                    BoxLayout:
+                        size_hint_y: None
+                        height: 30
+                        padding: 30,0,0,0
+                        Label:
+                            text: ' Total time (ps): '
+                            color: 0,0,0,1
+                            disabled_color: 0,0,0,1
+                            font_size: '16sp'
+                            text_size: self.width, None
+                            halign: 'left'
+                            valign: 'middle'
+                            size_hint_x: None
+                            width: self.parent.width/2
+                        TextInput:
+                            id: smd_nsteps
+                            size_hint: None, 1
+                            width: 100
+                            pos_hint: {'center_y': 0.5}
+                            color: 0,0,0,1
+                            disabled_color: 0,0,0,1
+                            font_size: '16sp'
+                            text_size: self.width, None
+                            halign: 'left'
+                            valign: 'middle'
+
+                    BoxLayout:
+                        size_hint_y: None
+                        height: 30
+                        padding: 30,0,0,0
+                        Label:
+                            text: ' Save output every (steps): '
+                            color: 0,0,0,1
+                            disabled_color: 0,0,0,1
+                            font_size: '16sp'
+                            text_size: self.width, None
+                            halign: 'left'
+                            valign: 'middle'
+                            size_hint_x: None
+                            width: self.parent.width/2
+                        TextInput:
+                            id: smd_nst
+                            size_hint: None, 1
+                            width: 100
+                            pos_hint: {'center_y': 0.5}
+                            color: 0,0,0,1
+                            disabled_color: 0,0,0,1
+                            font_size: '16sp'
+                            text_size: self.width, None
+                            halign: 'left'
+                            valign: 'middle'
+
+
+                    BoxLayout:
+                        size_hint_y: None
+                        height: 30
+                        padding: 30,0,0,0
+                        Label:
+                            text: ' Pulling velocity (nm/ps): '
+                            color: 0,0,0,1
+                            disabled_color: 0,0,0,1
+                            font_size: '16sp'
+                            text_size: self.width, None
+                            halign: 'left'
+                            valign: 'middle'
+                            size_hint_x: None
+                            width: self.parent.width/2
+                        TextInput:
+                            id: smd_vel
+                            size_hint: None, 1
+                            width: 100
+                            pos_hint: {'center_y': 0.5}
+                            color: 0,0,0,1
+                            disabled_color: 0,0,0,1
+                            font_size: '16sp'
+                            text_size: self.width, None
+                            halign: 'left'
+                            valign: 'middle'
+
+                    BoxLayout:
+                        size_hint_y: None
+                        height: 30
+                        padding: 30,0,0,0
+                        Label:
+                            text: ' Harmonic force constant (kJ/mol^1/nm^2): '
+                            color: 0,0,0,1
+                            disabled_color: 0,0,0,1
+                            font_size: '16sp'
+                            text_size: self.width, None
+                            halign: 'left'
+                            valign: 'middle'
+                            size_hint_x: None
+                            width: self.parent.width/2
+                        TextInput:
+                            id: smd_k
+                            size_hint: None, 1
+                            width: 100
+                            pos_hint: {'center_y': 0.5}
+                            color: 0,0,0,1
+                            disabled_color: 0,0,0,1
+                            font_size: '16sp'
+                            text_size: self.width, None
+                            halign: 'left'
+                            valign: 'middle'
+
+                    BoxLayout:
+                        size_hint_y: None
+                        height: 30
+                        padding: 30,0,0,0
+                        Label:
+                            text: ' Pull geometry: '
+                            color: 0,0,0,1
+                            disabled_color: 0,0,0,1
+                            font_size: '16sp'
+                            text_size: self.width, None
+                            halign: 'left'
+                            valign: 'middle'
+                            size_hint_x: None
+                            width: self.parent.width/2
+
+                        BoxLayout:
+                            size_hint: None, 1
+                            width: 300
+                            pos_hint: {'center_y': 0.5}
+                            padding: 0, 0, 20, 0
+                            spacing: 10
+                            BoxLayout:
+                                Label: 
+                                    text: 'Direction'
+                                    size_hint_x: None 
+                                    width: 75
+                                    pos: 0,0
+                                    font_size: '16sp'
+                                    color: 0,0,0,1
+
+                                CheckBox:
+                                    id: smd_direction
+                                    size_hint_x: None 
+                                    width: 30
+                                    pos: 0,0
+                                    group: 'pullmethod'
+
+                            BoxLayout:
+                                Label: 
+                                    text: 'Distance'
+                                    size_hint_x: None 
+                                    width: 75
+                                    pos: 0, 0
+                                    font_size: '16sp'
+                                    color: 0,0,0,1
+
+                                CheckBox:
+                                    id: smd_distance
+                                    size_hint_x: None 
+                                    width: 30
+                                    pos: 0,0
+                                    group: 'pullmethod'

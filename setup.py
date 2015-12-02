@@ -11,18 +11,18 @@ with open(path.join(here, 'DESCRIPTION.rst'), encoding='utf-8') as f:
     long_description = f.read()
 
 setup(
-    name='labpi',
+    name='vilas',
 
     # Versions should comply with PEP440.  For a discussion on single-sourcing
     # the version across setup.py and the project code, see
     # https://packaging.python.org/en/latest/single_source_version.html
-    version='1.2.11',
+    version='0.1.1',
 
     description='Auto tools for Steered Molecule Simulation in Gromacs',
     long_description=long_description,
 
     # The project's main homepage.
-    url='https://github.com/quytruong/labpi',
+    url='https://github.com/comobiophys/vilas',
 
     # Author details
     author='quytruong',
@@ -58,7 +58,7 @@ setup(
     ],
 
     # What does your project relate to?
-    keywords=['gromacs', 'tools', 'steered', 'labpi'],
+    keywords=['gromacs', 'tools', 'steered', 'vilas'],
 
     # You can just specify the packages manually here if your project is
     # simple. Or you can use find_packages().
@@ -83,7 +83,7 @@ setup(
     # installed, specify them here.  If using Python 2.6 or less, then these
     # have to be included in MANIFEST.in as well.
     package_data={
-        'labpi': ['labpi*.*','Labpi*.*','*.kv','img/*.*','data/.labpi*','config/*.*','source/*.*'],
+        'vilas': ['labpi*.*','Labpi*.*','*.kv','img/*.*','data/.labpi*','config/*.*','source/*.*','source/ics*'],
     },
 
     # Although 'package_data' is the preferred approach, in some case you may
@@ -96,6 +96,6 @@ setup(
     # "scripts" keyword. Entry points provide cross-platform support and allow
     # pip to create the appropriate form of executable for the target platform.
     entry_points={
-        'gui_scripts': ['labpi=labpi.main:main']
+        'gui_scripts': ['vilas=vilas.main:main']
     },
 )

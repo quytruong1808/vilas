@@ -1,4 +1,4 @@
-#Labpi tool
+#ViLAS tool
 ##Need software
 
 1. Python version >= 2.7
@@ -43,11 +43,11 @@ source ~/.bashrc
 ```
 
 
-##How to install labpi in Ubuntu
+##How to install ViLAS in Ubuntu
 1. Install pip
 `sudo apt-get install python-pip`
-2. Install Labpi
-`sudo pip install labpi`
+2. Install ViLAS
+`sudo pip install ViLAS`
 
 ##If you get error while installing, maybe it lacks some below packages
 

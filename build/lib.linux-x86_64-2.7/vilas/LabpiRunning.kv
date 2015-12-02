@@ -1,0 +1,386 @@
+#:kivy 1.9.0
+#:import sys sys
+#:import lv kivy.uix.listview
+#:import la kivy.adapters.listadapter
+#:import os os
+
+<RemoveDialog>:
+    title: 'Warning!'
+    auto_dismiss: False
+    size_hint: None, None 
+    size: 450, 250
+    BoxLayout:
+        size: root.size
+        pos: root.pos
+        orientation: "vertical"
+
+        Label:
+            text:'I find some old datas in your folder /run \n \n  Do you want to remove all of them \n before running new job?'
+
+        BoxLayout:
+            size_hint_y: None
+            height: 30
+            Button:
+                text: "No, continue jobs"
+                on_release: root.cancel()
+
+            Button:
+                text: "Yes! remove its"
+                on_release: root.remove()
+<FinishDialog>:
+    dialogText: dialog_text
+
+    title: 'Notification!'
+    size_hint: None, None 
+    size: 400, 250
+    BoxLayout:
+        size: root.size
+        pos: root.pos
+        orientation: "vertical"
+
+        Label:
+            id: dialog_text
+            text:'Your job is running in background. \n \n  Now, you can close the interface. '
+
+        BoxLayout:
+            size_hint_y: None
+            height: 30
+            Button:
+                text: "Cancel"
+                on_release: root.cancel()
+
+        #     Button:
+        #         text: "Yes! close its"
+        #         on_release: root.remove()
+
+# Screen
+<RunningScreen>:
+    progressBar: progress_bar
+    checkFile: check_file
+    emImg: em_img
+    nvtImg: nvt_img
+    nptImg: npt_img
+    mdImg: md_img 
+    smdImg: smd_img
+    smdLog: smd_log
+    progressText: progress_text
+    progressLayout: progress_layout
+    # progressImage: progress_image
+
+    AsyncImage:
+        source: root.root_path + '/img/background.png'
+    FloatLayout:
+        # Button:
+        #     background_color: 1, 1, 1, 0
+        #     size_hint: None, None
+        #     size: 50, 50
+        #     pos: root.width-100, 30
+        #     on_press: exit()
+        #     Image:
+        #         source: root.root_path+'/img/cross.png'
+        #         size: 50, 50
+        #         center_x: self.parent.center_x
+        #         center_y: self.parent.center_y
+        #         allow_stretch: True
+
+        BoxLayout:
+            size_hint: None, None
+            size: root.width * 9/10, root.height * 2/10
+            pos: root.width /20, root.height * 8/10
+            canvas.before:
+                Color:
+                    rgba: 0.3, 0.3, 0.3, 1
+                Rectangle:
+                    pos: self.width/8 + root.width/20-5, self.center_y-5-5
+                    size: self.width*3/4+10, 8+10
+
+        BoxLayout:
+            size_hint: None, None
+            size: root.width * 9/10, root.height * 2/10
+            pos: root.width /20, root.height * 8/10
+            canvas.before:
+                Color:
+                    rgba: 0.62, 0.62, 0.62, 1
+                Rectangle:
+                    pos: self.width/8 + root.width/20, self.center_y-5
+                    size: self.width*3/4, 8
+        BoxLayout:
+            size_hint: None, None
+            size: root.width * 9/10, root.height * 2/10
+            pos: root.width /20, root.height * 8/10
+            FloatLayout:
+                Image:
+                    source: root.root_path +'/img/1.png'
+                    size_hint: None, None
+                    size: 90, 90
+                    center_x: self.parent.center_x
+                    center_y: self.parent.center_y
+            FloatLayout:
+                Image:
+                    source: root.root_path +'/img/2.png'
+                    size_hint: None, None
+                    size: 90, 90
+                    center_x: self.parent.center_x
+                    center_y: self.parent.center_y
+            FloatLayout:
+                Image:
+                    source: root.root_path +'/img/3.png'
+                    size_hint: None, None
+                    size: 90, 90
+                    center_x: self.parent.center_x
+                    center_y: self.parent.center_y
+            FloatLayout:
+                Image:
+                    source: root.root_path +'/img/4.png'
+                    size_hint: None, None
+                    size: 90, 90
+                    center_x: self.parent.center_x
+                    center_y: self.parent.center_y
+
+
+        BoxLayout:
+            size_hint: None, None
+            size: root.width * 9/10, root.height * 6/10
+            pos: root.width /20, root.height * 1.8/10
+            spacing: 10
+            orientation: "vertical"
+
+            BoxLayout:
+
+                ProgressBar:
+                    id: progress_bar
+                    max: 1000
+
+                Label:
+                    id: check_file
+                    text: ''
+                    color: 0.9,0.9,0.9,1
+                    disabled_color: 0.9,0.9,0.9,1
+                    font_size: '16sp'
+                    text_size: self.width, None
+                    halign: 'left'
+                    valign: 'middle'
+                    padding_x: 10
+                    size_hint_x: None 
+                    width: 80
+
+            BoxLayout:
+                size_hint_y: None
+                height: 50
+                padding: 10, 0, 20, 0
+                canvas.before:
+                    Color:
+                        rgba: 0.95,0.95,0.95, 1
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                canvas.after:
+                    Color:
+                        rgb: 0.7, 0.7, 0.7, 1
+                    Line:
+                        rectangle: self.x,self.y,self.width,self.height
+                Image:
+                    id: em_img
+                    source: root.root_path+'/img/tick_normal.png'
+                    size_hint: None, 0.7
+                    width: 50
+                    pos_hint: {'center_y': 0.5}
+                    center_x: self.parent.center_x
+                    center_y: self.parent.center_y
+                    allow_stretch: True
+
+                Label:
+                    text: 'Energy minimization'
+                    color: 0,0,0,1
+                    disabled_color: 0,0,0,1
+                    font_size: '16sp'
+                    text_size: self.width, None
+                    halign: 'left'
+                    valign: 'middle'
+                    padding_x: 100
+                    size_hint_x: 1
+
+            BoxLayout:
+                size_hint_y: None
+                height: 50
+                padding: 10, 0, 20, 0
+                canvas.before:
+                    Color:
+                        rgba: 0.95,0.95,0.95, 1
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                canvas.after:
+                    Color:
+                        rgb: 0.7, 0.7, 0.7, 1
+                    Line:
+                        rectangle: self.x,self.y,self.width,self.height
+                Image:
+                    id: nvt_img
+                    source: root.root_path+'/img/tick_normal.png'
+                    size_hint: None, 0.7
+                    width: 50
+                    pos_hint: {'center_y': 0.5}
+                    center_x: self.parent.center_x
+                    center_y: self.parent.center_y
+                    allow_stretch: True
+
+                Label:
+                    text: 'NVT: isothermal-isochoric'
+                    color: 0,0,0,1
+                    disabled_color: 0,0,0,1
+                    font_size: '16sp'
+                    text_size: self.width, None
+                    halign: 'left'
+                    valign: 'middle'
+                    padding_x: 100
+                    size_hint_x: 1
+
+            BoxLayout:
+                size_hint_y: None
+                height: 50
+                padding: 10, 0, 20, 0
+                canvas.before:
+                    Color:
+                        rgba: 0.95,0.95,0.95, 1
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                canvas.after:
+                    Color:
+                        rgb: 0.7, 0.7, 0.7, 1
+                    Line:
+                        rectangle: self.x,self.y,self.width,self.height
+                Image:
+                    id: npt_img
+                    source: root.root_path+'/img/tick_normal.png'
+                    size_hint: None, 0.7
+                    width: 50
+                    pos_hint: {'center_y': 0.5}
+                    center_x: self.parent.center_x
+                    center_y: self.parent.center_y
+                    allow_stretch: True
+
+                Label:
+                    text: 'NPT: isothermal-isobaric'
+                    color: 0,0,0,1
+                    disabled_color: 0,0,0,1
+                    font_size: '16sp'
+                    text_size: self.width, None
+                    halign: 'left'
+                    valign: 'middle'
+                    padding_x: 100
+                    size_hint_x: 1
+
+            BoxLayout:
+                size_hint_y: None
+                height: 50
+                padding: 10, 0, 20, 0
+                canvas.before:
+                    Color:
+                        rgba: 0.95,0.95,0.95, 1
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                canvas.after:
+                    Color:
+                        rgb: 0.7, 0.7, 0.7, 1
+                    Line:
+                        rectangle: self.x,self.y,self.width,self.height
+                Image:
+                    id: md_img
+                    source: root.root_path+'/img/tick_normal.png'
+                    size_hint: None, 0.7
+                    width: 50
+                    pos_hint: {'center_y': 0.5}
+                    center_x: self.parent.center_x
+                    center_y: self.parent.center_y
+                    allow_stretch: True
+
+                Label:
+                    text: 'MD: RMSD equilibration'
+                    color: 0,0,0,1
+                    disabled_color: 0,0,0,1
+                    font_size: '16sp'
+                    text_size: self.width, None
+                    halign: 'left'
+                    valign: 'middle'
+                    padding_x: 100
+                    size_hint_x: 1
+
+            BoxLayout:
+                size_hint_y: None
+                height: 50
+                padding: 10, 0, 20, 0
+                canvas.before:
+                    Color:
+                        rgba: 0.95,0.95,0.95, 1
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                canvas.after:
+                    Color:
+                        rgb: 0.7, 0.7, 0.7, 1
+                    Line:
+                        rectangle: self.x,self.y,self.width,self.height
+                Image:
+                    id: smd_img
+                    source: root.root_path+'/img/tick_normal.png'
+                    size_hint: None, 0.7
+                    width: 50
+                    pos_hint: {'center_y': 0.5}
+                    center_x: self.parent.center_x
+                    center_y: self.parent.center_y
+                    allow_stretch: True
+
+                Label:
+                    id: smd_log
+                    text: '0/3'
+                    color: 0,0,0,1
+                    disabled_color: 0,0,0,1
+                    font_size: '16sp'
+                    text_size: self.width, None
+                    halign: 'left'
+                    valign: 'middle'
+                    padding_x: 15
+                    size_hint_x: None 
+                    width: 85
+
+                Label:
+                    text: 'SMD: Steered Molecular Dynamics'
+                    color: 0,0,0,1
+                    disabled_color: 0,0,0,1
+                    font_size: '16sp'
+                    text_size: self.width, None
+                    halign: 'left'
+                    valign: 'middle'
+                    padding_x: 10
+                    size_hint_x: 1
+
+            BoxLayout:
+                
+        BoxLayout:
+            id: progress_layout
+            size_hint: None, None
+            size: root.width * 6/10, root.height * 1/10
+            pos: root.width *2/10, root.height * 0.5/10
+            orientation: "horizontal"
+
+            # Image:
+            #     id: progress_image
+            #     source: root.root_path +'/img/spin.png'
+            #     size_hint: None, None
+            #     size: 90, 90
+                
+
+            Label:
+                id: progress_text
+                color: 0.9,0.9,0.9,1
+                disabled_color: 0.9,0.9,0.9,1
+                font_size: '16sp'
+                text_size: self.width, None
+                halign: 'left'
+                valign: 'middle'
+                size_hint_x: 1
+                text: 'Labpi is preparing for simulation ...'
+
