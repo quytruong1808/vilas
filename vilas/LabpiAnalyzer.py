@@ -7,6 +7,7 @@ from subprocess import call, Popen, PIPE  # check_output,
 # from sys import argv, exit
 # import getopt
 import os
+import prody
 
 
 class GromacsAnalyzer(object):
@@ -23,7 +24,7 @@ class GromacsAnalyzer(object):
         runfolder: absolute path of folder contains all .gro, traj.trr, .xtc, .ndx, .mdp,... file
     """
     def __init__(self,
-                 residFile,
+                 pdbFile,
                  grofile,
                  trajfile,
                  tprfile,
@@ -32,7 +33,7 @@ class GromacsAnalyzer(object):
                  group,
                  conjugateGroup,
                  runfolder):
-        self.residFile = str(residFile)
+        self.pdbFile = str(pdbFile)
         self.grofile = str(grofile)
         self.trajfile = str(trajfile)
         self.tprfile = str(tprfile)
@@ -41,25 +42,22 @@ class GromacsAnalyzer(object):
         self.group = str(group)
         self.conjugateGroup = str(conjugateGroup)
         self.runfolder = str(runfolder)
+        self.resid = self.Resid(self.pdbFile, self.group, self.conjugateGroup)
         pass
 
     def copyScript(self, runfolder):
         call('cp analyzer/* ' + str(runfolder) + '/')
 
-    def Resid(self, residFile, runfolder):
+    def Resid(self, pdbFile, group, conjugateGroup):
         """
-        Read file containing ID number of residues. Return list of residues.
-        The file must be in format:
-        resid1 resid2 resid3 ...
-        For example:
-        1 69 123 124 125 146 332
-        ...
+        Return a list of residue in `group` which distance from `conjugateGroup` is less or equal 5 angstroms.
         """
-        os.chdir(runfolder)
-        o = open(residFile, 'r')
-        resid = o.read().split()
-        o.close()
-        return resid
+        a = prody.parsePDB(str(pdbFile)).select('chain ' + group + ' and within 5 of chain ' + conjugateGroup)
+        residList = [str(a[0])]
+        for i in a:
+            if str(i) != residList[-1]:
+                residList.append(i)
+        return residList
 
     def make_ndx(self, resid, grofile, runfolder):
         """
@@ -265,7 +263,7 @@ class GromacsAnalyzer(object):
 
     def plotPotential(self, residFile, runfolder):
         os.chdir(runfolder)
-        resid = self.Resid(residFile, runfolder)
+        resid = self.resid
 
         # read potential.plot file
         f = open('potential.plot', 'r')
@@ -302,7 +300,7 @@ class GromacsAnalyzer(object):
              runfolder):
         self.copyScript(runfolder)
         os.chdir(runfolder)
-        resid_list = self.Resid(residFile, runfolder)
+        resid_list = self.resid
 
         for i in range(len(resid_list)):
             self.make_ndx(resid_list[i], grofile, runfolder)
@@ -338,7 +336,7 @@ start_time =
 end_time =
 group =
 conjugateGroup =
-runfolder = '/home/quyngan/CPL/Ngan/Ngan_MD/no_fix_comm/3L25/md'
+runfolder = '/home/quyngan/CPL/Ngan/Ngan_MD/no_fix_comm/4L25/md'
 GA = GromacsAnalyzer(residFile, runfolder)
 resid_list = GA.Resid('cutoff-resid-14angstroms', '/home/quyngan/CPL/Ngan/Ngan_MD/no_fix_comm/3L25/md')
 
@@ -381,6 +379,18 @@ GA.plotPotential('cutoff-resid-14angstroms', '/home/quyngan/CPL/Ngan/Ngan_MD/no_
         # for opt, arg in opts:
             # if opt == '-h' or opt == '--help':
                 # print """"""
+    # def Resid(self, residFile, runfolder):
+        # Read file containing ID number of residues. Return list of residues.
+        # The file must be in format:
+        # resid1 resid2 resid3 ...
+        # For example:
+        # 1 69 123 124 125 146 332
+        # ...
+        # os.chdir(runfolder)
+        # o = open(residFile, 'r')
+        # resid = o.read().split()
+        # o.close()
+        # return resid
                 # exit()
             # elif opt in ("-x", "--trajfile"):
                 # trajfile = arg
