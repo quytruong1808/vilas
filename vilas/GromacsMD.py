@@ -20,6 +20,8 @@ class GromacsMD(object):
 		call('rm -r '+main_path+'/analyse/*', shell=True)
 
 		for x in range(0,len(runfolders)):
+			run_path = main_path+'/run/'+runfolders[x]
+			
 			if not os.path.isdir(main_path+'/run/'+runfolders[x]):
 				continue
 

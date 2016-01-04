@@ -13,7 +13,7 @@ smd-distance = False
 
 config_auto  = False
 path  = 
-/Documents/labpi-result
+/Documents/vilas-result
 caver = False
 icst = True
 ligand_auto = True

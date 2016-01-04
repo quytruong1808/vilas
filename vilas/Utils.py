@@ -29,21 +29,21 @@ class DataController(object):
 
     def __init__(self, *args, **kwargs):
         super(DataController, self).__init__(*args, **kwargs)
-        setting_path = self.root_path + '/.labpi_setting.txt'
+        setting_path = self.root_path + '/.vilas_setting.txt'
         if os.path.isfile(setting_path) == True:
             if self.getdata('config_auto ') == 'True':
                 self.root_path = self.main_path + '/data'
         pass
 
     def getdata(self, name):
-        f = open(self.root_path+'/.labpi_setting.txt', "r")
+        f = open(self.root_path+'/.vilas_setting.txt', "r")
         contents = f.readlines()
         f.close()
         if len(self.substring(name,contents)) > 0:
             content = contents[self.substring(name,contents)[0]].split(' = ')[1].split('\n')[0]
             if content.replace(' ','') == '':
                 if(name == 'path ' or name == 'path'):
-                    return '/home/'+self.username + '/Documents/labpi-result';
+                    return '/home/'+self.username + '/Documents/vilas-result';
             return content
         else: 
             self.initdata(name, '')
@@ -54,14 +54,14 @@ class DataController(object):
             self.root_path = '/home/'+self.username
 
         print name + ' ' + value
-        f = open(self.root_path+'/.labpi_setting.txt', "r")
+        f = open(self.root_path+'/.vilas_setting.txt', "r")
         contents = f.readlines()
         f.close()
 
         if len(self.substring(name,contents)) > 0:
-            print self.root_path+'/.labpi_setting.txt'
+            print self.root_path+'/.vilas_setting.txt'
             contents[self.substring(name,contents)[0]] = name + ' = ' + value + '\n'
-            f = open(self.root_path+'/.labpi_setting.txt', "w")
+            f = open(self.root_path+'/.vilas_setting.txt', "w")
             contents = "".join(contents)
             f.write(contents)
             f.close()
@@ -70,7 +70,7 @@ class DataController(object):
         
 
     def initdata(self, name, value):
-        f = open(self.root_path+'/.labpi_setting.txt', "r")
+        f = open(self.root_path+'/.vilas_setting.txt', "r")
         contents = f.readlines()
         f.close()
 
@@ -80,7 +80,7 @@ class DataController(object):
 
         contents.append(name + ' = ' + value + '\n')
 
-        f = open(self.root_path+'/.labpi_setting.txt', "w")
+        f = open(self.root_path+'/.vilas_setting.txt', "w")
         contents = "".join(contents)
         f.write(contents)
         f.close()
@@ -90,10 +90,10 @@ class DataController(object):
 
     def checkExist(self):
         #Check root path
-        setting_path = '/home/'+self.username + '/.labpi_setting.txt'
+        setting_path = '/home/'+self.username + '/.vilas_setting.txt'
         if os.path.isfile(setting_path) == False:
-            call('cp '+self.main_path+'/data/.labpi_setting.txt '+setting_path, shell=True)
-            run_path = '/home/'+self.username + '/Documents/labpi-result'
+            call('cp '+self.main_path+'/data/.vilas_setting.txt '+setting_path, shell=True)
+            run_path = '/home/'+self.username + '/Documents/vilas-result'
             self.setdata('path ', run_path)
 
     # def checkAntechamber(self):

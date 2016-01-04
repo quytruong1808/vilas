@@ -275,7 +275,10 @@ class GromacsRun(object):
       if os.path.isfile(main_path+'/run/connection.txt') is False: 
         if(len(filename)>3 or filename[0].isdigit() == True):
           # ligand_name = ligand.chain_view.getResnames()[0]
-          ligand_name = ("A%02d" % (index))+'.pdb'
+          if len(ligand.chains) > 0:
+            ligand_name = ligand.chains[0].chain_view.getResnames()[0]
+          else:
+            ligand_name = ("A%02d" % (index))+'.pdb'
           # connection between ligand before and after rename
           self.addLine(filename + '\t' + ligand_name +'\n', main_path+'/run/connection.txt')
       else:
@@ -284,7 +287,10 @@ class GromacsRun(object):
           ligand_name = linesearch.split('\t')[1].split('\n')[0]
         elif(len(filename)>3 or filename[0].isdigit() == True):
           # ligand_name = ligand.chain_view.getResnames()[0]
-          ligand_name = ("A%02d" % (index))+'.pdb'
+          if len(ligand.chains) > 0:
+            ligand_name = ligand.chains[0].chain_view.getResnames()[0]
+          else:
+            ligand_name = ("A%02d" % (index))+'.pdb'
           # connection between ligand before and after rename
           self.addLine(filename + '\t' + ligand_name +'\n', main_path+'/run/connection.txt')
 
@@ -300,7 +306,9 @@ class GromacsRun(object):
          ligand_view += ligand.chains[i].chain_view
 
       # change resnum 
-      ligand_view.setResnums(1)
+      if len(ligand.chains) > 0:
+        if ligand.chains[0].chain_type == 'ligand':
+          ligand_view.setResnums(1)
 
       writePDB(main_path+'/output/ligand/'+ ligand_name, ligand_view)
 
@@ -354,6 +362,8 @@ class GromacsRun(object):
         call('cp '+main_path+'/output/ligand/'+ligands[x]+' '+main_path+'/run/run_' + ligandName+'/'+ligandName+'.pdb', shell = True)
         call('cp -r '+root_path+'/config/* '+main_path+'/run/run_'+ligandName+'/mdp', shell = True)
       else:      
+        if os.path.isfile(main_path+'/output/ligand/'+ligandName+'.acpype/'+ligandName+'_GMX.gro') is False:
+          break 
         call('mkdir '+main_path+'/run/run_' + ligandName, shell = True)
         call('mkdir '+main_path+'/run/run_' + ligandName+'/mdp', shell = True)
         call('cp -r '+main_path+'/output/ligand/'+ligandName+'.acpype '+main_path+'/run/run_'+ligandName, shell = True)
@@ -601,10 +611,10 @@ class GromacsRun(object):
     self.Log('proteinMax',str(proteinMax/10))
 
     #distance between protein and box
-    Oxyz = [min[0]-14,min[1]-14,min[2]-14]
-    d_x = (max[0]-min[0])/10 + 2.8
-    d_y = (max[1]-min[1])/10 + 2.8
-    d_z = (max[2]-min[2])/10 + 2.8 + float(distance) 
+    Oxyz = [min[0]-10,min[1]-10,min[2]-10]
+    d_x = (max[0]-min[0])/10 + 2
+    d_y = (max[1]-min[1])/10 + 2
+    d_z = (max[2]-min[2])/10 + 2 + float(distance) 
     systemCenter /= system.numAtoms
     systemCenter = (systemCenter - Oxyz)/10 
     systemCenter[2] += (1/(float(ratio)+1))*float(distance)

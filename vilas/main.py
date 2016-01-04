@@ -66,7 +66,7 @@ class ScreenManagement(ScreenManager):
 
     pass
 
-class LiVASApp(App):
+class ViLASApp(App):
     def build(self):
         sm = ScreenManagement(transition = FadeTransition())
         sm.add_widget(LoadScreen(name='load'))
@@ -86,7 +86,7 @@ def main():
     dataController = DataController()
     dataController.checkExist()
 
-    LiVASApp().run()
+    ViLASApp().run()
 
 
 

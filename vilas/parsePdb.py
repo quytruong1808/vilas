@@ -5,6 +5,7 @@ labpi_path = os.path.dirname(__file__) + '/..'
 sys.path.insert(0, labpi_path)
 
 from Utils import Chain
+ChainNames = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','P','Q','R','S','T','U','V','Y','Z']
 
 
 class ParsePdb(object):
@@ -25,8 +26,20 @@ class ParsePdb(object):
         for y in range(0, len(chains)):
             chain = chains[y].select('protein')
             if chain is None: continue 
-            #get hierview again
+            #get hierview again => change chain name if it null
             chain = chain.getHierView()
+            if str(list(chain)[0]).replace(' ','') == 'Chain':
+                for index in range(0, 22):
+                    is_double = False
+                    for protein in listProtein:
+                        if 'Chain '+ChainNames[index] == str(protein):
+                            is_double = True
+                            break
+                    if is_double == False:
+                        list(chain)[0].setChids(ChainNames[index] )
+                        writePDB(pdbFile, input)
+                        break
+                
             listProtein.append(list(chain)[0])
 
         #Check ligand

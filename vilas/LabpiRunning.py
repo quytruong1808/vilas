@@ -135,7 +135,7 @@ class RunningScreen(Screen):
                 popup = FinishDialog()
                 popup.setText('Your job is finished. \n \nNow, you can close the interface. ')
                 popup.open()
-                self.progressText.text = 'Labpi finished your jobs! now you can close app.'
+                self.progressText.text = 'ViLAS finished your jobs! now you can close app.'
                 self.checkFile.text = str(self.dataController.getdata('status'))
 
         elif self.dataController.getdata('status') != '':
@@ -152,7 +152,7 @@ class RunningScreen(Screen):
             if self.checkPOINT == '':
                 self.checkPOINT = str(self.dataController.getdata('status'))
             elif self.checkPOINT != str(self.dataController.getdata('status')): 
-                self.checkEM = checkNVT = checkNPT = checkMD = checkSMD = True
+                self.checkEM = self.checkNVT = self.checkNPT = self.checkMD = self.checkSMD = False
                 self.lastSMD = 0
                 self.checkPOINT = str(self.dataController.getdata('status'))
 
@@ -163,10 +163,10 @@ class RunningScreen(Screen):
                 if self.checkEM == False: 
                     self.checkEM = True
                     self.progressPoint += self.progressUnit*0.5
-                    self.progressText.text = 'Labpi is running at NVT step'
+                    self.progressText.text = 'ViLAS is running at NVT step'
             else:
                 self.emImg.source = self.root_path+'/img/tick_normal.png'
-                self.progressText.text = 'Labpi is running at Energy minimization step'
+                self.progressText.text = 'ViLAS is running at Energy minimization step'
             # self.emImg.reload()
 
             nvt_path = run_path + '/nvt.gro' 
@@ -175,7 +175,7 @@ class RunningScreen(Screen):
                 if self.checkNVT == False: 
                     self.checkNVT = True
                     self.progressPoint += self.progressUnit*0.5
-                    self.progressText.text = 'Labpi is running at NPT step'
+                    self.progressText.text = 'ViLAS is running at NPT step'
             else:
                 self.nvtImg.source = self.root_path+'/img/tick_normal.png'
             # self.nvtImg.reload()
@@ -186,7 +186,7 @@ class RunningScreen(Screen):
                 if self.checkNPT == False: 
                     self.checkNPT = True
                     self.progressPoint += self.progressUnit*0.5
-                    self.progressText.text = 'Labpi is running at MD step'
+                    self.progressText.text = 'ViLAS is running at MD step'
             else:
                 self.nptImg.source = self.root_path+'/img/tick_normal.png'
             # self.nptImg.reload()
@@ -197,7 +197,7 @@ class RunningScreen(Screen):
                 if self.checkMD == False: 
                     self.checkMD = True
                     self.progressPoint += self.progressUnit
-                    self.progressText.text = 'Labpi is running at SMD step'
+                    self.progressText.text = 'ViLAS is running at SMD step'
             else:
                 self.mdImg.source = self.root_path+'/img/tick_normal.png'
             # self.mdImg.reload()

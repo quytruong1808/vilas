@@ -47,7 +47,7 @@ source ~/.bashrc
 1. Install pip
 `sudo apt-get install python-pip`
 2. Install ViLAS
-`sudo pip install ViLAS`
+`sudo pip install vilas`
 
 ##If you get error while installing, maybe it lacks some below packages
 

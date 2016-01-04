@@ -65,7 +65,13 @@ class LoadScreen(Screen):
                     pymol_thread.start()
 
     def pymol_show(self, chain, chainname):
-        self.pymol.cmd.show('cartoon', str(chain.chain_view) + ' & ' + chainname)
+        for chain in chains:
+            if chain.chain_type == 'protein':
+                self.pymol.cmd.show_as('cartoon', str(chain.chain_view) + ' & ' + chainname)
+                self.pymol.cmd.cartoon('automatic', str(chain.chain_view) + ' & ' + chainname)
+            else:
+                self.pymol.cmd.show_as('sticks', 'resname ' + str(chain.chain_view.getResnames()[0]) + ' & ' + chainname)
+
         self.pymol.util.cbc()
 
     def __init__(self, *args, **kwargs):
@@ -122,7 +128,6 @@ class LoadScreen(Screen):
                 filename = os.path.basename(fl)
                 if(os.path.splitext(filename)[1].split('.')[1]=='pdb'):   
                     
-
                     ItemId += 1
                     #Add pdb file and chains to variable
                     chains = ParsePdb().listChain(fl)
@@ -153,14 +158,13 @@ class LoadScreen(Screen):
 
         self.pymol.cmd.load(fl)
         self.pymol.cmd.zoom(chainname)
-        print chainname
         for chain in chains:
             if chain.chain_type == 'protein':
                 self.pymol.cmd.show_as('cartoon', str(chain.chain_view) + ' & ' + chainname)
                 self.pymol.cmd.cartoon('automatic', str(chain.chain_view) + ' & ' + chainname)
             else:
                 self.pymol.cmd.show_as('sticks', 'resname ' + str(chain.chain_view.getResnames()[0]) + ' & ' + chainname)
-                self.pymol.cmd('set stick_color red')
+                # self.pymol.cmd('set stick_color red')
         self.pymol.util.cbc()
         # pymol.cmd.show_as('sticks', 'resn FDA')
 
@@ -174,10 +178,10 @@ class LoadScreen(Screen):
             for fl in file_path:
                 filename = os.path.basename(fl)
                 if(os.path.splitext(filename)[1].split('.')[1]=='pdb'):     
-                    global loadPymol  
-                    if loadPymol == False:
-                        loadPymol = True
-                        thread.start_new_thread( self.pymol.finish_launching, ())
+                    # global loadPymol  
+                    # if loadPymol == False:
+                    #     loadPymol = True
+                    #     thread.start_new_thread( self.pymol.finish_launching, ())
 
                     ItemId += 1
                     #Add pdb file and chains to variable
