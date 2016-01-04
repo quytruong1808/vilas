@@ -1,0 +1,9 @@
+set xrange[227:341]
+set xlabel 'residue ID'
+set ylabel 'Potential (kJ/mol)'
+set title 'Potential between each residue and dsRNA'
+set grid
+set xtics rotate by -45
+
+plot './mean.dat' u 2:7:8 w boxerror
+set style fill solid 1.00 border 0
