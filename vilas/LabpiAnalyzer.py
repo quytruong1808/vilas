@@ -30,6 +30,8 @@ class GromacsAnalyzer(object):
                  tprfile,
                  start_time,
                  end_time,
+                 pdbChain1,
+                 pdbChain2,
                  group,
                  conjugateGroup,
                  runfolder):
@@ -39,20 +41,22 @@ class GromacsAnalyzer(object):
         self.tprfile = str(tprfile)
         self.start_time = str(start_time)
         self.end_time = str(end_time)
+        self.pdbChain1 = str(pdbChain1)
+        self.pdbChain2 = str(pdbChain2)
         self.group = str(group)
         self.conjugateGroup = str(conjugateGroup)
         self.runfolder = str(runfolder)
-        self.resid = self.Resid(self.pdbFile, self.group, self.conjugateGroup)
+        self.resid = self.Resid(self.pdbFile, self.pdbChain1, self.pdbChain2)
         pass
 
     def copyScript(self, runfolder):
         call('cp analyzer/* ' + str(runfolder) + '/')
 
-    def Resid(self, pdbFile, group, conjugateGroup):
+    def Resid(self, pdbFile, pdbChain1, pdbChain2):
         """
         Return a list of residue in `group` which distance from `conjugateGroup` is less or equal 5 angstroms.
         """
-        a = prody.parsePDB(str(pdbFile)).select('chain ' + group + ' and within 5 of chain ' + conjugateGroup)
+        a = prody.parsePDB(str(pdbFile)).select('chain ' + pdbChain1 + ' and within 5 of chain ' + pdbChain2)
         residList = [str(a[0])]
         for i in a:
             if str(i) != residList[-1]:
@@ -295,6 +299,8 @@ class GromacsAnalyzer(object):
              tprfile,
              start_time,
              end_time,
+             pdbChain1,
+             pdbChain2,
              group,
              conjugateGroup,
              runfolder):
