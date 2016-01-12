@@ -38,6 +38,7 @@ class GromacsAnalyzer(object):
                  pdbChain2,
                  group,
                  conjugateGroup,
+                 rootAnalyzer,
                  runfolder):
         self.pdbFile = str(pdbFile)
         self.grofile = str(grofile)
@@ -50,29 +51,41 @@ class GromacsAnalyzer(object):
         self.pdbChain2 = str(pdbChain2)
         self.group = str(group)
         self.conjugateGroup = str(conjugateGroup)
+        self.rootAnalyzer = rootAnalyzer
         self.runfolder = str(runfolder)
-        self.resid = self.Resid(self.pdbFile, self.pdbChain1, self.pdbChain2)
+        self.resid, self.residFile = self.Resid(self.pdbFile, self.pdbChain1, self.pdbChain2, self.runfolder)
         pass
 
-    def copyScript(self, runfolder):
-        filelist = glob('analyzer/*')
+    def copyScript(self, rootAnalyzer, runfolder):
+        filelist = glob(rootAnalyzer + '/analyzer/*')
         print filelist
         for i in filelist:
             copy(i, str(runfolder))
         # call('cp analyzer/* ' + str(runfolder) + '/')
 
-    def Resid(self, pdbFile, pdbChain1, pdbChain2):
+    def Resid(self, pdbFile, pdbChain1, pdbChain2, runfolder):
         """
         Return a list of residue in `group` which distance from `conjugateGroup` is less or equal 5 angstroms.
         """
+        os.chdir(runfolder)
         a = prody.parsePDB(str(pdbFile)).select('chain ' + pdbChain1 + ' and within 5 of chain ' + pdbChain2)
         # print a
-        residList = list(set(a.getResnums()))
+        residList = list(sorted(set(a.getResnums())))
+        # print "This is a list of residues: %s" % residList
+        # print "This is type of it: %s" % type(residList)
+        residlist = str(residList[0])
+        for i in range(1, len(residList)):
+            residlist += ' ' + str(residList[i])
+        # residlist = " ".join(residList)
+        # print "This is a list of residues: %s" % residlist
+        # print "This is type of it: %s" % type(residlist)
+        with open('cutoff-resid-5angstroms', 'w') as residfile:
+            residfile.write(residlist)
         # for i in a:
         # if str(i) != residList[-1]:
         # residList.append(i)
         # print residList
-        return residList
+        return residList, str(runfolder + '/cutoff-resid-5angstroms')
 
     def make_ndx(self, resid, grofile, runfolder):
         """
@@ -130,11 +143,11 @@ class GromacsAnalyzer(object):
         os.chdir(runfolder + '/' + resid)
         Popen(['g_energy', '-f ener.edr', '-s ' + resid + '.tpr',
                '-o energy' + resid + '.xvg'], stdin=PIPE,
-              shell=True).communicate('LJ-14\nCoulomb-14\nLJ-(SR)\nCoulomb-(SR)\nCoul.-recip.\nPotential\nKinetic-En.\nTotal-Energy\nCoul-SR:r_'+resid+'-'+group+'\nLJ-SR:r_'+resid+'-'+group+'\nCoul-14:r_'+resid+'-'+group+'\nLJ-14:r_'+resid+'-'+group+' 0\n')
+              shell=True).communicate('LJ-14\nCoulomb-14\nLJ-(SR)\nCoulomb-(SR)\nCoul.-recip.\nPotential\nKinetic-En.\nTotal-Energy\nCoul-SR:r_'+resid+'-'+group+'\nLJ-SR:r_'+resid+'-'+group+'\nCoul-14:r_'+resid+'-'+group+'\nLJ-14:r_'+resid+'-'+group+'\n0\n')
         # 4 5 6 8 9 10 11 12 50 51 52 53
         os.chdir(runfolder)
 
-    def mdrun(self, resid, runfolder, trajfile):
+    def mdrun(self, resid, trajfile, runfolder):
         os.chdir(runfolder + '/' + resid)
         call('grompp' + ' -f ' + '../' + resid + '.mdp'
              + ' -c ' + self.grofile + ' -p ../topol.top -n ../index.ndx'
@@ -249,7 +262,9 @@ class GromacsAnalyzer(object):
         os.chdir(runfolder)
 
         # make plot_potential folder
-        Popen('mkdir plot_potential', stdin=PIPE, shell=True).communicate()
+        if not os.path.isdir(runfolder + '/plot_potential'):
+            Popen('mkdir plot_potential', stdin=PIPE, shell=True).communicate()
+            os.makedirs(runfolder + '/plot_potential')
 
         f = open(str(resid) + '/energy.xvg', 'r')
         contents = f.readlines()
@@ -274,7 +289,7 @@ class GromacsAnalyzer(object):
         residue = 'residues <- read.table("' + str(residFile) + '",header=F)'
 
         # modify plot_potential.r file
-        f = open('plot_potential.r', 'r')
+        f = open(runfolder + '/plot_potential.r', 'r')
         contents = f.readlines()
         f.close()
         for i in range(len(contents)):
@@ -287,6 +302,10 @@ class GromacsAnalyzer(object):
         f.write(contents)
         f.close()
 
+        # copy plot_potential.r and cutoff-resid-5angstroms file to
+        # plot_potential folder
+        copy(runfolder + '/plot_potential.r', runfolder + 'plot_potential')
+        copy(residFile, runfolder + 'plot_potential')
         # call R script
         call('R CMD BATCH plot_potential.r', shell=True)
 
@@ -317,43 +336,31 @@ class GromacsAnalyzer(object):
         # call gnuplot
         Popen(['gnuplot', 'potential.plot'])
 
-    def main(self,
-             residFile,
-             grofile,
-             trajfile,
-             mdMdpFile,
-             tprfile,
-             start_time,
-             end_time,
-             pdbChain1,
-             pdbChain2,
-             group,
-             conjugateGroup,
-             runfolder):
-        self.copyScript(runfolder)
-        os.chdir(runfolder)
+    def main(self):
+        self.copyScript(self.rootAnalyzer, self.runfolder)
+        os.chdir(self.runfolder)
         residList = self.resid
 
         for i in range(len(residList)):
-            self.make_ndx(str(residList[i]), grofile, runfolder)
+            self.make_ndx(str(residList[i]), self.grofile, self.runfolder)
         call('rm \\#*', shell=True)
 
         # rerun
         for i in range(len(residList)):
-            self.mkdir(str(residList[i]), conjugateGroup, mdMdpFile, runfolder)
-            self.mdrun(str(residList[i]), runfolder, trajfile)
+            self.mkdir(str(residList[i]), self.conjugateGroup, self.mdMdpFile, self.runfolder)
+            self.mdrun(str(residList[i]), self.trajfile, self.runfolder)
 
         # Calculate potential & plot
         for i in range(len(residList)):
-            self.g_energy(str(residList[i]), str(conjugateGroup), runfolder)
+            self.g_energy(str(residList[i]), str(self.conjugateGroup), self.runfolder)
         for i in range(len(residList)):
-            self.change_Header(str(residList[i]), runfolder)
-        self.R_mean(residFile, runfolder)
-        self.plotPotential(residFile, runfolder)
+            self.change_Header(str(residList[i]), self.runfolder)
+        self.R_mean(self.residFile, self.runfolder)
+        self.plotPotential(self.residFile, self.runfolder)
 
         # Calculate Hydrogen bond & plot
-        self.g_hbond(str(group), str(conjugateGroup), start_time, end_time, tprfile, trajfile, runfolder)
-        self.plotHbond(str(runfolder))
+        self.g_hbond(str(self.group), str(self.conjugateGroup), self.start_time, self.end_time, self.tprfile, self.trajfile, self.runfolder)
+        self.plotHbond(str(self.runfolder))
 
 
 """

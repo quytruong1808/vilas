@@ -1,4 +1,4 @@
-residues <- read.table(file='cutoff-resid-14angstroms',header=F)
+residues <- read.table(file='cutoff-resid-5angstroms',header=F)
 for(res in residues){
 
 line <- read.table(file=paste(res,".dat",sep=""),header=TRUE) ## if you have headers in your files ##
