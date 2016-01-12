@@ -29,6 +29,7 @@ class GromacsAnalyzer(object):
                  pdbFile,
                  grofile,
                  trajfile,
+                 mdMdpFile,
                  tprfile,
                  start_time,
                  end_time,
@@ -40,6 +41,7 @@ class GromacsAnalyzer(object):
         self.pdbFile = str(pdbFile)
         self.grofile = str(grofile)
         self.trajfile = str(trajfile)
+        self.mdMdpFile = str(mdMdpFile)
         self.tprfile = str(tprfile)
         self.start_time = str(start_time)
         self.end_time = str(end_time)
@@ -88,24 +90,38 @@ class GromacsAnalyzer(object):
             return 0
         print "Add residue " + resid + " to index file."
 
-    def mdp_generator(self, resid, group_to_calculate, runfolder):
+    def mdp_generator(self, resid, group_to_calculate, mdMdpFile, runfolder):
         """
         Create mdp file within specified groups to calculate energy
         """
         os.chdir(runfolder)
-        copy('md_md.mdp', str(resid) + '.mdp')
-        with open(resid + '.mdp', 'a') as edit:
-            edit.write('energy_grps =\tr_' + str(resid) + '\t'+str(group_to_calculate)+'\n')
+        # copy('md_md.mdp', str(resid) + '.mdp')
+        # with open(resid + '.mdp', 'w') as edit:
+        # if str(edit.read()) == 'energygrps      = Protein\n':
+        # edit.write('energygrps =\tr_' + str(resid) + '\t'+str(group_to_calculate)+'\n')
+        with open(mdMdpFile, 'r') as oldMdp, open(str(resid) + '.mdp', 'w') as newMdp:
+            for line in oldMdp:
+                # print type(line.strip('\n').split())
+                # print line.strip('\n').split()
+                a = line.strip('\n').split()
+                # print a
+                if not a:
+                    pass
+                elif a[0] == 'energygrps':
+                    # print 'Found "energygrps" line!!!'
+                    newMdp.write('energygrps =\tr_' + str(resid) + '\t'+str(group_to_calculate) + '\n')
+                else:
+                    newMdp.write(line)
         print "Created %s.mdp" % resid
 
-    def mkdir(self, resid, conjugateGroup, runfolder):
+    def mkdir(self, resid, conjugateGroup, mdMdpFile, runfolder):
         """Create folder that will contain all data file for energy calculation.
         Then jump back to the root folder."""
         print "Created folder %s" % resid
         Popen('mkdir ' + resid, stdin=PIPE, shell=True).communicate()
         os.chdir(str(runfolder) + '/' + str(resid))
         call("pwd", shell=True)
-        self.mdp_generator(resid, conjugateGroup, runfolder)
+        self.mdp_generator(resid, conjugateGroup, mdMdpFile, runfolder)
         # copy('md_md.mdp', str(resid) + '/' + str(resid) + '.mdp')
         os.chdir(runfolder)
 
@@ -122,7 +138,7 @@ class GromacsAnalyzer(object):
         call('grompp' + ' -f ' + '../' + resid + '.mdp'
              + ' -c ' + self.grofile + ' -p ../topol.top -n ../index.ndx'
              + ' -o ' + resid + '.tpr -maxwarn 20', shell=True)
-        call('mdrun -s ' + resid + '.tpr -rerun ../' + trajfile,
+        call('mdrun -s ' + resid + '.tpr -rerun ' + str(trajfile),
              shell=True)
         print "Deleting new md_noPBC.xtc file in the folder %s created" % resid
         if not os.getcwd() == runfolder:
@@ -305,6 +321,7 @@ class GromacsAnalyzer(object):
              residFile,
              grofile,
              trajfile,
+             mdMdpFile,
              tprfile,
              start_time,
              end_time,
@@ -317,13 +334,13 @@ class GromacsAnalyzer(object):
         os.chdir(runfolder)
         residList = self.resid
 
-        # for i in range(len(residList)):
-        #    # self.make_ndx(str(residList[i]), grofile, runfolder)
-        # call('rm \\#*', shell=True)
+        for i in range(len(residList)):
+            self.make_ndx(str(residList[i]), grofile, runfolder)
+        call('rm \\#*', shell=True)
 
         # rerun
         for i in range(len(residList)):
-            self.mkdir(str(residList[i]), conjugateGroup, runfolder)
+            self.mkdir(str(residList[i]), conjugateGroup, mdMdpFile, runfolder)
             self.mdrun(str(residList[i]), runfolder, trajfile)
 
         # Calculate potential & plot
