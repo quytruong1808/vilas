@@ -4,6 +4,7 @@
 import numpy as np
 # from Utils import DataController
 from subprocess import call, Popen, PIPE  # check_output,
+# import subprocess
 # from sys import argv, exit
 # import getopt
 import os
@@ -149,12 +150,11 @@ class GromacsAnalyzer(object):
     def g_hbond(self, group1, group2, start_time, end_time, tprfile, trajfile, runfolder):
         """Calculate hbond between group1 and group2, time unit: ps"""
         os.chdir(runfolder)
-        Popen(['g_hbond ', '-n index.ndx', '-s '+tprfile, '-f '+trajfile,
-               '-num hbond.xvg', '-hbn hbond.ndx', '-hbm hbond.xpm',
-               '-b '+start_time, '-e '+end_time], stdin=PIPE,
-              shell=True).communicate(group1 + '\n' + group2 + '\n')
-        Popen(['python', 'readHbondmap.py', '-hbn hbond.ndx', '-hbm hbond.xpm'
-               '-num hbond.xvg', '-n index.ndx', '-t 10'])
+        ghbond = 'g_hbond -n index.ndx -s ' + tprfile + ' -f ' + trajfile + ' -num hbond.xvg -hbn hbond.ndx -hbm hbond.xpm -b ' + start_time + ' -e ' + end_time
+        a = Popen(ghbond, shell=True, stdin=PIPE)
+        a.communicate(group1 + '\n' + group2 + '\n')[0]
+        readhbondmap = 'python readHBmap.py -hbn hbond.ndx -hbm hbond.xpm -t 10'
+        Popen(readhbondmap, shell=True)
 
     def getXvgLegend(self, xvgfile, runfolder):
         os.chdir(runfolder)
@@ -307,10 +307,10 @@ class GromacsAnalyzer(object):
         print 'modified hbond.plot file'
 
         # Check contents and write to file
-        print contents
+        # print contents
         f = open('potential.plot', 'w')
         contents = "".join(contents)
-        print contents
+        # print contents
         f.write(contents)
         f.close()
 
@@ -344,15 +344,15 @@ class GromacsAnalyzer(object):
             self.mdrun(str(residList[i]), runfolder, trajfile)
 
         # Calculate potential & plot
-        # for i in range(len(residList)):
-        #    # self.g_energy(str(residList[i]), str(conjugateGroup), runfolder)
-        # for i in range(len(residList)):
-        #    # self.change_Header(str(residList[i]), runfolder)
-        # self.R_mean(residFile, runfolder)
-        # self.plotPotential(residFile, runfolder)
+        for i in range(len(residList)):
+            self.g_energy(str(residList[i]), str(conjugateGroup), runfolder)
+        for i in range(len(residList)):
+            self.change_Header(str(residList[i]), runfolder)
+        self.R_mean(residFile, runfolder)
+        self.plotPotential(residFile, runfolder)
 
         # Calculate Hydrogen bond & plot
-        self.g_hbond(str(group), str(conjugateGroup), start_time, end_time, tprfile, trajfile)
+        self.g_hbond(str(group), str(conjugateGroup), start_time, end_time, tprfile, trajfile, runfolder)
         self.plotHbond(str(runfolder))
 
 
