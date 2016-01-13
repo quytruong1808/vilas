@@ -69,7 +69,7 @@ class GromacsAnalyzer(object):
 
     def Resid(self, pdbFile, pdbChain1, pdbChain2, runfolder):
         """
-        Return a list of residue in `group` which distance from `conjugateGroup` is less or equal 5 angstroms.
+        Return a list of residue in `Receptor` which distance from `Ligand` is less or equal 5 angstroms.
         """
         os.chdir(runfolder)
         acpype = glob('*.acepype')
