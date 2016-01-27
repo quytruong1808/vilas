@@ -373,25 +373,25 @@ class GromacsAnalyzer(object):
     def main(self, hbond=True, potential=True):
         self.copyScript(self.rootAnalyzer, self.runfolder)
         os.chdir(self.runfolder)
-        # residList = self.resid
+        residList = self.resid
 
-        # for i in range(len(residList)):
-        # self.make_ndx(str(residList[i]), self.grofile, self.runfolder)
-        # call('rm \\#*', shell=True)
+        for i in range(len(residList)):
+            self.make_ndx(str(residList[i]), self.grofile, self.runfolder)
+        call('rm \\#*', shell=True)
 
-        # if potential:
-        # # rerun
-        # for i in range(len(residList)):
-        # self.mkdir(str(residList[i]), self.conjugateGroup, self.mdMdpFile, self.runfolder)
-        # self.mdrun(str(residList[i]), self.trajfile, self.runfolder)
+        if potential:
+            # rerun
+            for i in range(len(residList)):
+                self.mkdir(str(residList[i]), self.conjugateGroup, self.mdMdpFile, self.runfolder)
+                self.mdrun(str(residList[i]), self.trajfile, self.runfolder)
 
-        # # Calculate potential & plot
-        # for i in range(len(residList)):
-        # self.g_energy(str(residList[i]), str(self.conjugateGroup), self.runfolder)
-        # for i in range(len(residList)):
-        # self.change_Header(str(residList[i]), self.runfolder)
-        # self.R_mean(self.residFile, self.runfolder)
-        # self.plotPotential(self.residFile, self.runfolder)
+            # Calculate potential & plot
+            for i in range(len(residList)):
+                self.g_energy(str(residList[i]), str(self.conjugateGroup), self.runfolder)
+            for i in range(len(residList)):
+                self.change_Header(str(residList[i]), self.runfolder)
+            self.R_mean(self.residFile, self.runfolder)
+            self.plotPotential(self.residFile, self.runfolder)
 
         if hbond:
             # Calculate Hydrogen bond & plot
