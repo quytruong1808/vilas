@@ -81,7 +81,7 @@ class GromacsAnalyzer(object):
         acpype = glob('*.acpype')
         if not acpype:
             a = prody.parsePDB(str(pdbFile)).select('chain ' + pdbChain1 + ' and within 5 of chain ' + pdbChain2)
-            residList = list(sorted(set(a.getResnums())))
+            residList = np.array(list(sorted(set(a.getResnums()))), dtype='str')
             residlist = " ".join(residList)
             # for i in range(1, len(residList)):
             # residlist += ' ' + str(residList[i])
@@ -373,25 +373,25 @@ class GromacsAnalyzer(object):
     def main(self, hbond=True, potential=True):
         self.copyScript(self.rootAnalyzer, self.runfolder)
         os.chdir(self.runfolder)
-        residList = self.resid
+        # residList = self.resid
 
-        for i in range(len(residList)):
-            self.make_ndx(str(residList[i]), self.grofile, self.runfolder)
-        call('rm \\#*', shell=True)
+        # for i in range(len(residList)):
+        # self.make_ndx(str(residList[i]), self.grofile, self.runfolder)
+        # call('rm \\#*', shell=True)
 
-        if potential:
-            # rerun
-            for i in range(len(residList)):
-                self.mkdir(str(residList[i]), self.conjugateGroup, self.mdMdpFile, self.runfolder)
-                self.mdrun(str(residList[i]), self.trajfile, self.runfolder)
+        # if potential:
+        # # rerun
+        # for i in range(len(residList)):
+        # self.mkdir(str(residList[i]), self.conjugateGroup, self.mdMdpFile, self.runfolder)
+        # self.mdrun(str(residList[i]), self.trajfile, self.runfolder)
 
-            # Calculate potential & plot
-            for i in range(len(residList)):
-                self.g_energy(str(residList[i]), str(self.conjugateGroup), self.runfolder)
-            for i in range(len(residList)):
-                self.change_Header(str(residList[i]), self.runfolder)
-            self.R_mean(self.residFile, self.runfolder)
-            self.plotPotential(self.residFile, self.runfolder)
+        # # Calculate potential & plot
+        # for i in range(len(residList)):
+        # self.g_energy(str(residList[i]), str(self.conjugateGroup), self.runfolder)
+        # for i in range(len(residList)):
+        # self.change_Header(str(residList[i]), self.runfolder)
+        # self.R_mean(self.residFile, self.runfolder)
+        # self.plotPotential(self.residFile, self.runfolder)
 
         if hbond:
             # Calculate Hydrogen bond & plot
