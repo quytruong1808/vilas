@@ -297,7 +297,7 @@ class GromacsAnalyzer(object):
 
         # make plot_potential folder
         if not os.path.isdir(runfolder + '/plot_potential'):
-            Popen('mkdir plot_potential', stdin=PIPE, shell=True).communicate()
+            # Popen('mkdir plot_potential', stdin=PIPE, shell=True).communicate()
             os.makedirs(runfolder + '/plot_potential')
 
         f = open(str(resid) + '/energy.xvg', 'r')
