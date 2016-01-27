@@ -16,15 +16,21 @@ from glob import glob
 class GromacsAnalyzer(object):
     """
     Attribute:
-        residFile: filename of the file contains list of residue to be analyzed
+        pdbFile: filename of the .pdb file
         grofile: filename of .grofile
         trajfile: filename of trajectory file. Eg: .xtc file, .trr file
+        mdMdpFile: filename of .mdp file used for MD simulation
         tprfile: filename of .tpr file
         start_time: time to start calculate hbond
         end_time: time to end calculate hbond
+        pdbChain1: chain name of receptor in pdb file
+        pdbChain2: chain name of ligand in pdb file
         group: group of molecules to calculate hbond forms between itself and conjugate group
         conjugateGroup: conjugate group of the one mentioned above
+        rootAnalyzer: path of LabpiAnalyzer.py
         runfolder: absolute path of folder contains all .gro, traj.trr, .xtc, .ndx, .mdp,... file
+        GroLeft: prefix of gromacs packages
+        GroRight: suffix of gromacs packages
     """
     def __init__(self,
                  pdbFile,
@@ -72,7 +78,7 @@ class GromacsAnalyzer(object):
         Return a list of residue in `Receptor` which distance from `Ligand` is less or equal 5 angstroms.
         """
         os.chdir(runfolder)
-        acpype = glob('*.acepype')
+        acpype = glob('*.acpype')
         if not acpype:
             a = prody.parsePDB(str(pdbFile)).select('chain ' + pdbChain1 + ' and within 5 of chain ' + pdbChain2)
             residList = list(sorted(set(a.getResnums())))
@@ -87,17 +93,29 @@ class GromacsAnalyzer(object):
             Ligand = []
             for i in range(len(acpype)):
                 Ligand.append(str(acpype[i].strip('.acpype')))
+            # print "is it a bug here??"
+            # print Ligand
             ligand = []
             for i in range(len(Ligand)):
-                ligand[i] = prody.parsePDB(str(Ligand[i]) + '.pdb')
+                ligand.append(prody.parsePDB(str(Ligand[i]) + '.acpype/' + str(Ligand[i]) + '_NEW.pdb'))
+            # print ligand
             protein = receptor
+            # print "this is protein before add ligand[i]"
+            # print protein
+            haha = ''
             for i in range(len(Ligand)):
                 protein += ligand[i]
-            haha = np.array(ligand, dtype='str')
-            ligands = ' or resnum '.join(haha)
-            hoho = protein.select('chain ' + pdbChain1 + ' and within 5 of resnum ' + ligands)
+                haha = np.array(list(sorted(set(ligand[i].getResnames()))), dtype='str')
+            # print "this is protein after add ligand[i]"
+            # print protein
+            # print haha
+            # print type(haha)
+            ligands = ' or resname '.join(haha)
+            hoho = protein.select('chain ' + pdbChain1 + ' and within 5 of resname ' + ligands)
             residList = list(sorted(set(hoho.getResnums())))
+            residList = np.array(residList, dtype='str')
             residlist = " ".join(residList)
+            # print residlist
             # for i in range(1, len(residList)):
             # residlist += ' ' + str(residList[i])
             with open('cutoff-resid-5angstroms', 'w') as residfile:
@@ -170,7 +188,9 @@ class GromacsAnalyzer(object):
         call(mdrun, shell=True)
         print "Deleting new md_noPBC.xtc file in the folder %s created" % resid
         if not os.getcwd() == runfolder:
-            Popen('rm *.trr *.xtc', stdin=PIPE, shell=True).communicate()
+            trjFile = ' '.join(glob('*.trr'))
+            trjFile += ' ' + ' '.join(glob('*.xtc'))
+            Popen(['rm', trjFile])
             os.chdir(runfolder)
         print "Finish reruning the md simulation"
 
