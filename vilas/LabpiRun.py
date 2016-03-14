@@ -64,7 +64,7 @@ class GromacsRun(object):
     #Init root path
     global main_path
     main_path = self.dataController.getdata('path ')
-    call('rm ' + main_path +'/output/receptor/*', shell=True)
+    call('rm ' + main_path +'/input/receptor/*', shell=True)
 
     #Parse PDB and save to variable
     print len(Receptors)
@@ -78,7 +78,7 @@ class GromacsRun(object):
         if chain.chain_type == 'protein': 
           protein = chain.chain_view
           
-          fileName = main_path + '/output/receptor/receptor_' + filename + "_" + str(protein) 
+          fileName = main_path + '/input/receptor/receptor_' + filename + "_" + str(protein) 
           writePDB( fileName.replace(" ", ""), protein)
           
           #If receptor is in group for pulling
@@ -136,7 +136,7 @@ class GromacsRun(object):
 
         else:
           ligand = chain.chain_view
-          fileName = main_path + '/output/receptor/ligand_' +  filename + "_" + str(ligand.getResnames()[0])
+          fileName = main_path + '/input/receptor/ligand_' +  filename + "_" + str(ligand.getResnames()[0])
           
           # change resnum 
           ligand.setResnums(1)
@@ -258,8 +258,8 @@ class GromacsRun(object):
   #**********************************************************************#
 
   def PrepareLigand(self):
-    call('mkdir '+main_path+'/output/ligand/', shell=True)
-    call('rm '+main_path+'/output/ligand/*', shell=True)
+    call('mkdir '+main_path+'/input/ligand/', shell=True)
+    call('rm '+main_path+'/input/ligand/*', shell=True)
     # call('rm '+main_path+'/run/connection.txt', shell=True)
     
     ligands = Variable.parsepdb.Ligands
@@ -310,45 +310,45 @@ class GromacsRun(object):
         if ligand.chains[0].chain_type == 'ligand':
           ligand_view.setResnums(1)
 
-      writePDB(main_path+'/output/ligand/'+ ligand_name, ligand_view)
+      writePDB(main_path+'/input/ligand/'+ ligand_name, ligand_view)
 
       # parse pdb file 
-      lg = parsePDB(main_path+'/output/ligand/'+ ligand_name)
+      lg = parsePDB(main_path+'/input/ligand/'+ ligand_name)
 
       #Check if this pdb is protein => add 'protein_' before this to identify
       if (not lg.select('protein') is None) or (not lg.select('resname A U G T C') is None):
-        self.CallCommand(main_path+'/output/ligand', 'mv '+ligand_name+' protein_'+ligand_name)
+        self.CallCommand(main_path+'/input/ligand', 'mv '+ligand_name+' protein_'+ligand_name)
         continue
 
       #Add hydrogen to ligand
-      self.AddHydrogen(main_path+'/output/ligand/'+ligand_name, ligand_name.split('.')[0])
+      self.AddHydrogen(main_path+'/input/ligand/'+ligand_name, ligand_name.split('.')[0])
 
       #Count charge of ligand
-      charge = self.CountCharge(main_path+'/output/ligand/'+ligand_name)
+      charge = self.CountCharge(main_path+'/input/ligand/'+ligand_name)
 
       #Set parameter (ff) for ligand
-      self.SetParameter(main_path+'/output/ligand/'+ligand_name, charge, main_path+'/output/ligand')
+      self.SetParameter(main_path+'/input/ligand/'+ligand_name, charge, main_path+'/input/ligand')
 
   def PrepareLigandReceptor(self):
     ligands = ''
     try:
-      ligands = check_output('cd '+main_path+'/output/receptor; ls ligand_*.pdb', shell = True).splitlines()
+      ligands = check_output('cd '+main_path+'/input/receptor; ls ligand_*.pdb', shell = True).splitlines()
     except subprocess.CalledProcessError as e:
 
       for x in range(0,len(ligands)):
         #Add hydrogen to ligand
-        AddHydrogen(main_path+'/output/receptor/'+ligands[x], ligands[x].split('_')[1].split('.')[0])
+        AddHydrogen(main_path+'/input/receptor/'+ligands[x], ligands[x].split('_')[1].split('.')[0])
 
         #Count charge of ligand
-        charge = self.CountCharge(main_path+'/output/receptor/'+ligands[x])
+        charge = self.CountCharge(main_path+'/input/receptor/'+ligands[x])
 
         #Set parameter (ff) for ligand
-        self.SetParameter(ligands[x], charge, main_path+'/output/receptor')
+        self.SetParameter(ligands[x], charge, main_path+'/input/receptor')
 
   def PrepareCluster(self):
     global ReceptorChain
     call('cp '+root_path+'/source/top_pull.py '+main_path+'/analyse', shell = True)
-    ligands = check_output('cd '+main_path+'/output/ligand; ls *.pdb', shell = True).splitlines()
+    ligands = check_output('cd '+main_path+'/input/ligand; ls *.pdb', shell = True).splitlines()
       
     #cp file vo run
     for x in range(0,len(ligands)):
@@ -359,22 +359,24 @@ class GromacsRun(object):
         ligandName = ligandName.split('_')[1]
         call('mkdir '+main_path+'/run/run_' + ligandName, shell = True)
         call('mkdir '+main_path+'/run/run_' + ligandName+'/mdp', shell = True)
-        call('cp '+main_path+'/output/ligand/'+ligands[x]+' '+main_path+'/run/run_' + ligandName+'/'+ligandName+'.pdb', shell = True)
+        call('cp '+main_path+'/input/ligand/'+ligands[x]+' '+main_path+'/run/run_' + ligandName+'/'+ligandName+'.pdb', shell = True)
+        call('cp '+root_path+'/source/mathplot.py '+main_path+'/run/run_' + ligandName, shell = True)
         call('cp -r '+root_path+'/config/* '+main_path+'/run/run_'+ligandName+'/mdp', shell = True)
       else:      
-        if os.path.isfile(main_path+'/output/ligand/'+ligandName+'.acpype/'+ligandName+'_GMX.gro') is False:
+        if os.path.isfile(main_path+'/input/ligand/'+ligandName+'.acpype/'+ligandName+'_GMX.gro') is False:
           break 
         call('mkdir '+main_path+'/run/run_' + ligandName, shell = True)
         call('mkdir '+main_path+'/run/run_' + ligandName+'/mdp', shell = True)
-        call('cp -r '+main_path+'/output/ligand/'+ligandName+'.acpype '+main_path+'/run/run_'+ligandName, shell = True)
+        call('cp -r '+main_path+'/input/ligand/'+ligandName+'.acpype '+main_path+'/run/run_'+ligandName, shell = True)
         call('cp -r '+root_path+'/config/* '+main_path+'/run/run_'+ligandName+'/mdp', shell = True)
+        call('cp '+root_path+'/source/mathplot.py '+main_path+'/run/run_' + ligandName, shell = True)
         call('cp '+main_path+'/run/run_'+ligandName+'/'+ligandName+'.acpype/'+ligandName+'.pdb '+main_path+'/run/run_'+ligandName+'/'+ligandName+'.pdb', shell = True)
 
       # call('cp '+root_path+'/source/antechamber '+main_path+'/run/run_'+ligandName, shell=True)
       call('cp '+root_path+'/source/parse_pull.py '+main_path+'/run/run_'+ligandName, shell=True)
       call('cp '+root_path+'/source/pullana.py '+main_path+'/run/run_'+ligandName, shell=True)
       # call('cp '+root_path+'/source/MmPbSaStat.py '+main_path+'/run/run_'+ligandName, shell=True)
-      call('cp -r '+main_path+'/output/receptor/*.acpype '+main_path+'/run/run_'+ligandName, shell = True)
+      call('cp -r '+main_path+'/input/receptor/*.acpype '+main_path+'/run/run_'+ligandName, shell = True)
 
       #Luu tung chain vao array de cong dong lai
       chains = []
@@ -397,7 +399,7 @@ class GromacsRun(object):
 
       #If ligand is protein => add it to pdb file 
       if isProtein == True:
-        chains.append(parsePDB(main_path+'/output/ligand/'+ligands[x]))
+        chains.append(parsePDB(main_path+'/input/ligand/'+ligands[x]))
         # change chain name A, B, C 
         chainName = []
         for z in range(0, chains[numR+1].numAtoms()): 
@@ -415,9 +417,9 @@ class GromacsRun(object):
 
       #Check if /receptor has other protein or not
       try:
-        proteins = check_output('cd '+main_path+'/output/receptor; ls protein*', shell = True).splitlines()
+        proteins = check_output('cd '+main_path+'/input/receptor; ls protein*', shell = True).splitlines()
         for y in range(len(chains), len(proteins)+len(chains)):
-          chains.append(parsePDB(main_path+'/output/receptor/'+proteins[y-len(chains)]))
+          chains.append(parsePDB(main_path+'/input/receptor/'+proteins[y-len(chains)]))
           chainName = []
           for z in range(0, chains[y].numAtoms()): 
             chainName.append(ChainNames[y])
@@ -1099,35 +1101,46 @@ class GromacsRun(object):
     cmd += 'for x in `ls -d run_*`; do\n' 
     cmd += '  mkdir ../analyse/${x#"run_"}\n'
     cmd += '  cd $x\n'
+    cmd += '  mkdir em\n'
     cmd += '  if [ ! -f em.gro ]; then\n'
-    cmd += '    '+GroLeft+'grompp'+GroRight+' -maxwarn 20 -f mdp/minim.mdp -c solv_ions.gro -p topol.top -o em.tpr\n'
-    cmd += '    '+GroLeft+'mdrun'+GroRight+' -v -deffnm em -cpt 5\n'
+    cmd += '    '+GroLeft+'grompp'+GroRight+' -maxwarn 20 -f mdp/minim.mdp -c solv_ions.gro -p topol.top -o em/em.tpr\n'
+    cmd += '    '+GroLeft+'mdrun'+GroRight+' -v -deffnm em/em -cpt 5\n'
     cmd += '  fi\n'
+    cmd += '  mkdir nvt\n'
     cmd += '  if [ ! -f nvt.gro ]; then\n'
-    cmd += '    '+GroLeft+'grompp'+GroRight+' -maxwarn 20 -f mdp/nvt.mdp -c em.gro -p topol.top -n index.ndx -o nvt.tpr\n'
-    cmd += '    '+GroLeft+'mdrun'+GroRight+' -v -deffnm nvt -cpt 5\n'
+    cmd += '    '+GroLeft+'grompp'+GroRight+' -maxwarn 20 -f mdp/nvt.mdp -c em/em.gro -p topol.top -n index.ndx -o nvt/nvt.tpr\n'
+    cmd += '    '+GroLeft+'mdrun'+GroRight+' -v -deffnm nvt/nvt -cpt 5\n'
     cmd += '  fi\n'
+    cmd += '  mkdir npt\n'
     cmd += '  if [ ! -f npt.gro ]; then\n'
-    cmd += '    '+GroLeft+'grompp'+GroRight+' -maxwarn 20 -f mdp/npt.mdp -c nvt.gro -p topol.top -n index.ndx -o npt.tpr\n'
-    cmd += '    '+GroLeft+'mdrun'+GroRight+' -v -deffnm npt -cpt 5\n'
+    cmd += '    '+GroLeft+'grompp'+GroRight+' -maxwarn 20 -f mdp/npt.mdp -c nvt/nvt.gro -p topol.top -n index.ndx -o npt/npt.tpr\n'
+    cmd += '    '+GroLeft+'mdrun'+GroRight+' -v -deffnm npt/npt -cpt 5\n'
     cmd += '  fi\n'
+    cmd += '  mkdir md\n'
     cmd += '  if [ ! -f md.gro ]; then\n'
-    cmd += '    '+GroLeft+'grompp'+GroRight+' -maxwarn 20 -f mdp/md.mdp -c npt.gro -p topol.top -n index.ndx -o md.tpr\n'
-    cmd += '    '+GroLeft+'mdrun'+GroRight+' -v -deffnm md -cpt 5\n'
+    cmd += '    '+GroLeft+'grompp'+GroRight+' -maxwarn 20 -f mdp/md.mdp -c npt/npt.gro -p topol.top -n index.ndx -o md/md.tpr\n'
+    cmd += '    '+GroLeft+'mdrun'+GroRight+' -v -deffnm md/md -cpt 5\n'
     cmd += '  fi\n'
     cmd += '  pullx_path=""\n'
     cmd += '  pullf_path=""\n'
+    cmd += '  mkdir smd\n'
     cmd += '  for i in $(seq 1 3); do \n'
     cmd += '    if [ ! -f md_st_$i.gro ]; then\n'
-    cmd += '      '+GroLeft+'grompp'+GroRight+' -maxwarn 20 -f mdp/md_pull_repeat.mdp -c md.gro -t md.cpt -p topol.top -n index.ndx -o md_st_$i.tpr\n'
-    cmd += '      '+GroLeft+'mdrun'+GroRight+' -px pullx_$i.xvg -pf pullf_$i.xvg -deffnm md_st_$i -v -cpt 5\n'
+    cmd += '      '+GroLeft+'grompp'+GroRight+' -maxwarn 20 -f mdp/md_pull_repeat.mdp -c md/md.gro -t md/md.cpt -p topol.top -n index.ndx -o smd/md_st_$i.tpr\n'
+    cmd += '      '+GroLeft+'mdrun'+GroRight+' -px smd/pullx_$i.xvg -pf smd/pullf_$i.xvg -deffnm smd/md_st_$i -v -cpt 5\n'
     cmd += '    fi\n'
     cmd += '    python2.7 parse_pull.py -x pullx_$i.xvg -f pullf_$i.xvg -o pullfx_$i.xvg\n'
-    cmd += '    pullx_path="$pullx_path pullx_$i.xvg"\n'
-    cmd += '    pullf_path="$pullf_path pullf_$i.xvg"\n'
+    cmd += '    pullx_path="$pullx_path smd/pullx_$i.xvg"\n'
+    cmd += '    pullf_path="$pullf_path smd/pullf_$i.xvg"\n'
     cmd += '  done\n'
-    cmd += '  python2.7 pullana.py -px $pullx_path -pf $pullf_path -plot ../../analyse/${x#"run_"}/pull_force_time.xvg ../../analyse/${x#"run_"}/pull_force_distance.xvg -log ../../analyse/${x#"run_"}/pull_data.csv -v 0.004\n'
+    cmd += '  python2.7 pullana.py -px $pullx_path -pf $pullf_path -plot ../../analyse/${x#"run_"}/pull_force_time.png ../../analyse/${x#"run_"}/pull_force_distance.xvg -log ../../analyse/${x#"run_"}/pull_data.png -v 0.004\n'
+    cmd += '  echo -e \"System\"|' + self.GroLeft+'trjconv'+self.GroRight+' -s md/md.tpr -f md/md.xtc -o md/md_noPBC.xtc -pbc mol -ur compact\n'
+    if(self.GroVersion >= 5):
+      cmd += 'echo -e \"Backbone\\nBackbone\"|' + self.GroLeft+'rms'+self.GroRight+' -s md/md.tpr -f md/md_noPBC.xtc -o md/rmsd.xvg -tu ns\n'
+    else:
+      cmd += 'echo -e \"Backbone\\nBackbone\"|' + 'g_rms'+self.GroRight+' -s md/md.tpr -f md/md_noPBC.xtc -o md/rmsd.xvg -tu ns\n'
     cmd += '  cd ..\n'
+    cmd += '  python2.7 mathplot.py -i md/rmsd.xvg -o ../../analyse/rmsd.png\n'
     cmd += 'done\n'
     cmd += 'mv top_pull.py ../analyse\n'
     cmd += 'cd ../analyse\n'

@@ -17,7 +17,7 @@ class GromacsMD(object):
 	def mdrun(self):
 		main_path = self.dataController.getdata('path ')
 		runfolders = check_output('ls '+main_path+'/run', shell = True).splitlines()
-		call('rm -r '+main_path+'/analyse/*', shell=True)
+		call('rm -r '+main_path+'/analyse/*/', shell=True)
 
 		for x in range(0,len(runfolders)):
 			run_path = main_path+'/run/'+runfolders[x]
@@ -39,26 +39,36 @@ class GromacsMD(object):
 
 			print self.GroLeft+'mdrun'+self.GroRight+' '+self.GroOption
 			groCmd = ''
+
 			#Run em
-			if os.path.isfile(run_path+'/em.gro') is False: 
-				groCmd += self.GroLeft+'grompp'+self.GroRight+' -maxwarn 20 -f mdp/minim.mdp -c solv_ions.gro -p topol.top -o em.tpr \n'
-				groCmd += self.GroLeft+'mdrun'+self.GroRight+' '+self.GroOption+' -v -deffnm em -cpt 5\n'
+			call('mkdir '+run_path+'/em', shell=True)
+			if os.path.isfile(run_path+'/em/em.gro') is False: 
+				groCmd += self.GroLeft+'grompp'+self.GroRight+' -maxwarn 20 -f mdp/minim.mdp -c solv_ions.gro -p topol.top -o em/em.tpr \n'
+				groCmd += self.GroLeft+'mdrun'+self.GroRight+' '+self.GroOption+' -v -deffnm em/em -cpt 5\n'
 			
 			#Run nvt
-			if os.path.isfile(run_path+'/nvt.gro') is False: 
-				groCmd += self.GroLeft+'grompp'+self.GroRight+' -maxwarn 20 -f mdp/nvt.mdp -c em.gro -p topol.top -n index.ndx -o nvt.tpr \n'
-				groCmd += self.GroLeft+'mdrun'+self.GroRight+ ' '+self.GroOption+ ' -deffnm nvt -v -cpt 5\n'
+			call('mkdir '+run_path+'/nvt', shell=True)
+			if os.path.isfile(run_path+'/nvt/nvt.gro') is False: 
+				groCmd += self.GroLeft+'grompp'+self.GroRight+' -maxwarn 20 -f mdp/nvt.mdp -c em/em.gro -p topol.top -n index.ndx -o nvt/nvt.tpr \n'
+				groCmd += self.GroLeft+'mdrun'+self.GroRight+ ' '+self.GroOption+ ' -deffnm nvt/nvt -v -cpt 5\n'
 
 			#Run npt
-			if os.path.isfile(run_path+'/npt.gro') is False: 
-				groCmd += self.GroLeft+'grompp'+self.GroRight+' -maxwarn 20 -f mdp/npt.mdp -c nvt.gro -t nvt.cpt -p topol.top -n index.ndx -o npt.tpr \n'
-				groCmd += self.GroLeft+'mdrun'+self.GroRight+ ' '+self.GroOption+ ' -deffnm npt -v -cpt 5\n'
+			call('mkdir '+run_path+'/npt', shell=True)
+			if os.path.isfile(run_path+'/npt/npt.gro') is False: 
+				groCmd += self.GroLeft+'grompp'+self.GroRight+' -maxwarn 20 -f mdp/npt.mdp -c nvt/nvt.gro -t nvt/nvt.cpt -p topol.top -n index.ndx -o npt/npt.tpr \n'
+				groCmd += self.GroLeft+'mdrun'+self.GroRight+ ' '+self.GroOption+ ' -deffnm npt/npt -v -cpt 5\n'
 
 			#Run md
-			if os.path.isfile(run_path+'/md.gro') is False:
-				groCmd += self.GroLeft+'grompp'+self.GroRight+ ' -maxwarn 20 -f mdp/md.mdp -c npt.gro -t npt.cpt -p topol.top -n index.ndx -o md.tpr \n'
-				groCmd += self.GroLeft+'mdrun'+self.GroRight+ ' '+self.GroOption+ ' -deffnm md -v -cpt 5\n'
-			
+			call('mkdir '+run_path+'/md', shell=True)
+			if os.path.isfile(run_path+'/md/md.gro') is False:
+				groCmd += self.GroLeft+'grompp'+self.GroRight+ ' -maxwarn 20 -f mdp/md.mdp -c npt/npt.gro -t npt/npt.cpt -p topol.top -n index.ndx -o md/md.tpr \n'
+				groCmd += self.GroLeft+'mdrun'+self.GroRight+ ' '+self.GroOption+ ' -deffnm md/md -v -cpt 5\n'
+			groCmd += 'echo -e \"System\"|' + self.GroLeft+'trjconv'+self.GroRight+' -s md/md.tpr -f md/md.xtc -o md/md_noPBC.xtc -pbc mol -ur compact\n'
+			if(self.GroVersion >= 5):
+				groCmd += 'echo -e \"Backbone\\nBackbone\"|' + self.GroLeft+'rms'+self.GroRight+' -s md/md.tpr -f md/md_noPBC.xtc -o md/rmsd.xvg -tu ns\n'
+			else:
+				groCmd += 'echo -e \"Backbone\\nBackbone\"|' + 'g_rms'+self.GroRight+' -s md/md.tpr -f md/md_noPBC.xtc -o md/rmsd.xvg -tu ns\n'
+
 			# if int(Method) == 1:
 			# if (int(self.repeat_times) == 1 or int(self.repeat_times) == 0 ):
 			# 	if(self.GroVersion >= 5):
@@ -78,16 +88,17 @@ class GromacsMD(object):
 			pull_vec = self.dataController.getdata('smd-vel ')
 			pullx_path = ''
 			pullf_path = ''
+			call('mkdir '+run_path+'/smd', shell=True)
 			for k in range(1,int(self.repeat_times)+1):
-				if os.path.isfile(run_path+'/md_st_'+str(k)+'.gro') is False:
-					groCmd += self.GroLeft+'grompp'+self.GroRight+ ' -maxwarn 20 -f mdp/md_pull_repeat.mdp -c md.gro -t md.cpt -p topol.top -n index.ndx -o md_st_'+str(k)+'.tpr \n'
-					groCmd += self.GroLeft+'mdrun'+self.GroRight+ ' '+self.GroOption+ ' -px pullx_'+str(k)+'.xvg -pf pullf_'+str(k)+'.xvg -deffnm md_st_'+str(k)+' -v -cpt 5\n'
-					groCmd += 'python2.7 parse_pull.py -x pullx_'+str(k)+'.xvg -f pullf_'+str(k)+'.xvg -o pullfx_'+str(k)+'.xvg\n'
+				if os.path.isfile(run_path+'/smd/md_st_'+str(k)+'.gro') is False:
+					groCmd += self.GroLeft+'grompp'+self.GroRight+ ' -maxwarn 20 -f mdp/md_pull_repeat.mdp -c md/md.gro -t md/md.cpt -p topol.top -n index.ndx -o smd/md_st_'+str(k)+'.tpr \n'
+					groCmd += self.GroLeft+'mdrun'+self.GroRight+ ' '+self.GroOption+ ' -px smd/pullx_'+str(k)+'.xvg -pf smd/pullf_'+str(k)+'.xvg -deffnm smd/md_st_'+str(k)+' -v -cpt 5\n'
+					groCmd += 'python2.7 parse_pull.py -x smd/pullx_'+str(k)+'.xvg -f smd/pullf_'+str(k)+'.xvg -o smd/pullfx_'+str(k)+'.xvg\n'
 			
-				pullx_path += ' pullx_'+str(k)+'.xvg'
-				pullf_path += ' pullf_'+str(k)+'.xvg'
-			groCmd += 'python2.7 pullana.py -px '+pullx_path+' -pf '+pullf_path+' -plot '+analyse_path+'/pull_force_time.xvg '+analyse_path+'/pull_force_distance.xvg -log '+analyse_path+'/pull_data.csv -v '+pull_vec+'\n'
-
+				pullx_path += ' smd/pullx_'+str(k)+'.xvg'
+				pullf_path += ' smd/pullf_'+str(k)+'.xvg'
+			groCmd += 'python2.7 pullana.py -px '+pullx_path+' -pf '+pullf_path+' -plot '+analyse_path+'/pull_force_time.png '+analyse_path+'/pull_force_distance.png -log '+analyse_path+'/pull_data.csv -v '+pull_vec+'\n'
+			groCmd += 'python2.7 mathplot.py -i md/rmsd.xvg -o '+analyse_path+'/rmsd.png\n'
 			# elif int(Method) == 2:
 			#   if os.path.isfile(run_path+'/md_2.gro') is False:
 			#     groCmd += GroLeft+'grompp'+GroRight+ ' -maxwarn 20 -f mdp/md_md.mdp -c md.gro -t md.cpt -p topol.top -n index.ndx -o md_2.tpr \n'
@@ -102,6 +113,7 @@ class GromacsMD(object):
 			self.CallCommand(run_path, groCmd)
 
 
+		call('rm -r '+run_path+'/#*', shell=True)
 		self.dataController.setdata('status', 'finished')
 		self.CallCommand(main_path, 'rm -r caver')
 		self.CallCommand(main_path+'/analyse', 'python2.7 top_pull.py')

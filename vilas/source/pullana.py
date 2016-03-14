@@ -3,6 +3,9 @@ import os
 import sys
 import string
 import math
+from cycler import cycler
+import matplotlib.pyplot as plt
+import numpy as np
 
 def which(program):
     import os
@@ -23,89 +26,91 @@ def which(program):
     return None
 
 class traj(object):
-	vel = None
-	plot = False
-	def __init__(self,pf,px):
-		self.v = traj.vel
-		self.dt = 0.0
-		self.pfname = pf # store filename
-		self.pxname = px
-		self.xyz = None #Check if the postions have both x y z components
-		self.pullf = [] # kJ/mol/nm
-		self.pullx = []
-		ff = open(pf,'r')
-		fx = open(px,'r')
-		t1 = None
-		t2 = None
-		for line in ff:
-			if line[0]!="#" and line[0]!="@":
-				sp = line.split()
-				t = float(sp[0])
-				v = float(sp[1])
-				if t1 == None:
-					t1 = t
-				elif t2 == None:
-					t2 = t
-					self.dt = t2 - t1
-				self.pullf.append(v)
+    vel = None
+    plot = False
+    def __init__(self,pf,px):
+        self.v = traj.vel
+        self.dt = 0.0
+        self.pfname = pf # store filename
+        self.pxname = px
+        self.xyz = None #Check if the postions have both x y z components
+        self.pullf = [] # kJ/mol/nm
+        self.pullx = []
+        ff = open(pf,'r')
+        fx = open(px,'r')
+        t1 = None
+        t2 = None
+        for line in ff:
+            if line[0]!="#" and line[0]!="@":
+                sp = line.split()
+                t = float(sp[0])
+                v = float(sp[1])
+                if t1 == None:
+            	    t1 = t
+            	elif t2 == None:
+            	    t2 = t
+            	    self.dt = t2 - t1
+            	self.pullf.append(v)
+        ########
+        for line in fx:
+            if line[0]!="#" and line[0]!="@":
+                sp = line.split()
+                if self.xyz == None:
+                	if len(sp) == 3:
+                	    self.xyz = False
+                	elif len(sp) == 7:
+                	    self.xyz = True
+                	else: sys.exit("Problems occur with %s!"%self.pxname)
+                if self.xyz:
+                    self.pullx.append((float(sp[4]),float(sp[5]),float(sp[6])))
+                else:
+                    self.pullx.append(float(sp[2]))
+        ff.close()
+        fx.close()
+        if len(self.pullf) != len(self.pullx):
+            sys.exit("Invalid input files: %s, %s"%(self.pfname,self.pxname))
 
-		for line in fx:
-			if line[0]!="#" and line[0]!="@":
-				sp = line.split()
-				#if self.xyz == None:
-				#	if len(sp) == 3:
-				#		self.xyz = False
-				#	elif len(sp) == 7:
-				#		self.xyz = True
-				#	else: sys.exit("Problems occur with %s!"%self.pxname)
-				#if self.xyz:
-				#	self.pullx.append((float(sp[4]),float(sp[5]),float(sp[6])))
-				#else:
-				self.pullx.append( float(sp[len(sp)-1]) )
-		ff.close()
-		fx.close()
+    def integrate(self):
+    	s = 0.0
+    	for i in xrange(1,len(self.pullf)):
+    		s = s + ((self.pullf[i-1]+self.pullf[i])*self.v*self.dt)/2.0
+    	return s
 
-	def integrate(self):
-		s = 0.0
-		for i in xrange(1,len(self.pullf)):
-			s = s + ((self.pullf[i-1]+self.pullf[i])*self.v*self.dt)/2.0
-		return s
-	
-	def max(self):
-		m = 0.0
-		for v in self.pullf:
-			if m<v: m = v
-		return m
+    def max(self):
+    	m = 0.0
+    	for v in self.pullf:
+    		if m<v: m = v
+    	return m
 
-	def getPosition(self,i): #Get z component of the postion
-		if self.xyz:
-			return self.pullx[i][3]
-		else: return self.pullx[i]
+    def getPosition(self,i): #Get z component of the postion
+    	if self.xyz:
+    		return self.pullx[i][3]
+    	else: return self.pullx[i]
 
-	def genfx(self,filename):
-		first_value = self.getPosition(0)
-		f = open(filename,'w')
-		f.write('@    xaxis  label "Position (nm)"\n')
-		f.write('@    yaxis  label "Force (kJ/mol/nm)"\n')
-		f.write('@TYPE xy\n')
-		for i in range(len(self.pullf)):
-		    f.write("%f\t%f\n"%(self.getPosition(i)-first_value,self.pullf[i]))
-		f.close()
+    def genfx(self,filename):
+    	first_value = self.getPosition(0)
+    	f = open(filename,'w')
+    	f.write('@    xaxis  label "Position (nm)"\n')
+    	f.write('@    yaxis  label "Force (kJ/mol/nm)"\n')
+    	f.write('@TYPE xy\n')
+    	for i in range(len(self.pullf)):
+    	    f.write("%f\t%f\n"%(self.getPosition(i)-first_value,self.pullf[i]))
+    	f.close()
 
 
 
-	def plotf(self,outfile):
-		grace = which("grace")
-		if grace == None: sys.exit("Please install Grace to plot data!")
-		else:
-			os.system("%s %s -hdevice PNG -hardcopy -printfile %s"%(grace,self.pfname,outfile))
+    def plotf(self,outfile):
+    	grace = which("grace")
+    	if grace == None: sys.exit("Please install Grace to plot data!")
+    	else:
+    		os.system("%s %s -hdevice PNG -hardcopy -printfile %s"%(grace,self.pfname,outfile))
 
-	def plotx(self,outfile):
-		grace = which("grace")
-		if grace == None: sys.exit("Please install Grace to plot data!")
-		else:
-			os.system("%s %s -hdevice PNG -hardcopy -printfile %s"%(grace,self.pxname,outfile))		
-	
+    def plotx(self,outfile):
+    	grace = which("grace")
+    	if grace == None: sys.exit("Please install Grace to plot data!")
+    	else:
+    		os.system("%s %s -hdevice PNG -hardcopy -printfile %s"%(grace,self.pxname,outfile))
+
 def pfiles(list_pf,list_px):
 	n = len(list_pf)
 	for i in xrange(n):
@@ -113,7 +118,7 @@ def pfiles(list_pf,list_px):
 		px = list_px[i]
 		if os.path.isfile(pf) and os.path.isfile(px):
 			yield (pf,px,i+1)
-		else: sys.exit("%s or/and %s not found!"%(pf,px))			 
+		else: sys.exit("%s or/and %s not found!"%(pf,px))
 
 def read_files(pf,px,log,list_obj):
 	num_tras = None
@@ -129,7 +134,7 @@ def read_files(pf,px,log,list_obj):
 		s = obj.integrate()/4.18 # Convert from kJ/mol -> kcal/mol
 		f_max = obj.max()*1.66 # Convert from kJ/mol/nm -> pN
 		force.append(f_max)
-		integral.append(s) 
+		integral.append(s)
 		tra_log.write("%d,%.2f,%.2f\n"%(i,f_max,s))
 	favg = sum(force)/num_tras
 	savg = sum(integral)/num_tras
@@ -149,14 +154,14 @@ def read_files(pf,px,log,list_obj):
 	eavgs = eavgs/num_tras
 	tra_log.write("%s,%s,%s,%s\n"%("Average(pN)","Error(pN)","Integral(kcal/mol)","Error(kcal/mol)"))
 	tra_log.write("%.2f,%.2f,%.2f,%.2f\n"%(favg,eavg,savg,eavgs))
-		
+"""
 def plot_data(list_obj,list_plot):
 	grace = which("grace")
 	if grace == None: sys.exit("Please install Grace to plot data!")
 	tmp = "/tmp"
 	if not os.path.isdir(tmp): sys.exit("/tmp directory not found!")
 	#Create position-force profiles
-	list_ft = [] 
+	list_ft = []
 	list_fx = []
 	for i,obj in enumerate(list_obj):
 		pfx = os.path.join(tmp,"pullfx%d.xvg"%(i+1))
@@ -173,11 +178,49 @@ def plot_data(list_obj,list_plot):
 	for f in list_fx:
 		buf = buf + "%s "%f
 	os.system("%s %s -hdevice PNG -hardcopy -printfile %s"%(grace,buf,list_plot[1]))
+"""
+
+def plot_data(list_obj,list_plot):
+    cm = plt.get_cmap('gist_rainbow')
+    numColors = len(list_obj)
+    fontsize = 16
+    linewidth = 2
+    figsize = (9,6)
+    #####
+    figft = plt.figure(figsize=figsize)
+    figft.suptitle('Force-time Profile',fontsize=fontsize)
+    axft = figft.add_subplot(1,1,1)
+    axft.set_color_cycle([cm(1.*i/numColors) for i in range(numColors)])
+    #axft.set_prop_cycle(cycler('color',[cm(1.*i/numColors) for i in range(numColors)]))
+    axft.set_xlabel("Time(ps)", fontsize=fontsize)
+    axft.set_ylabel("Force(pN)", fontsize=fontsize)
+    axft.grid(True)
+    #####
+    figfx = plt.figure(figsize=figsize)
+    figfx.suptitle('Force-position Profile',fontsize=fontsize)
+    axfx = figfx.add_subplot(1,1,1)
+    axfx.set_color_cycle([cm(1.*i/numColors) for i in range(numColors)])
+    #axfx.set_prop_cycle(cycler('color',[cm(1.*i/numColors) for i in range(numColors)]))
+    axfx.set_xlabel("Position(nm)", fontsize=fontsize)
+    axfx.set_ylabel("Force(pN)", fontsize=fontsize)
+    axfx.grid(True)
+    #####
+    for i,obj in enumerate(list_obj):
+        time = np.arange(0.0,len(obj.pullf)*obj.dt,obj.dt)
+        force = np.array(obj.pullf)*1.66
+        pos = np.array(obj.pullx) - obj.getPosition(0)
+        axft.plot(time,force,linewidth=linewidth)
+        axfx.plot(pos,force,linewidth=linewidth)
+    #####
+    figft.tight_layout(pad=1.5)
+    figft.savefig(list_plot[0], dpi=125)
+    figfx.tight_layout(pad=1.5)
+    figfx.savefig(list_plot[1], dpi=125)
 
 
 
 
-		
+
 list_pf = []
 list_px = []
 list_plot = []
@@ -206,7 +249,6 @@ if '-plot' in sys.argv:
 			list_plot.append(sys.argv[i])
 			i=i+1
 
-print list_pf, list_px, list_plot
 logfile = "pull.csv"
 if '-log' in sys.argv:
 	i=sys.argv.index('-log')
@@ -230,7 +272,3 @@ list_obj = [] #contain all information from Force and Position profiles
 read_files(list_pf, list_px, logfile, list_obj)
 
 if len(list_plot) != 0: plot_data(list_obj,list_plot)
-		
-	
-	
-
