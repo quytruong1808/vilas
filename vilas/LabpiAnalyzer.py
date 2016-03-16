@@ -5,8 +5,8 @@ import numpy as np
 # from Utils import DataController
 from subprocess import call, Popen, PIPE  # check_output,
 # import subprocess
-# from sys import argv, exit
-# import getopt
+from sys import argv, exit
+import getopt
 import os
 import prody
 from shutil import copy
@@ -14,57 +14,55 @@ from glob import glob
 
 
 class GromacsAnalyzer(object):
-    """
-    Attribute:
-        pdbFile: filename of the .pdb file
-        grofile: filename of .grofile
-        trajfile: filename of trajectory file. Eg: .xtc file, .trr file
-        mdMdpFile: filename of .mdp file used for MD simulation
-        tprfile: filename of .tpr file
-        start_time: time to start calculate hbond
-        end_time: time to end calculate hbond
-        pdbChain1: chain name of receptor in pdb file
-        pdbChain2: chain name of ligand in pdb file
-        group: group of molecules to calculate hbond forms between itself and conjugate group
-        conjugateGroup: conjugate group of the one mentioned above
-        rootAnalyzer: path of LabpiAnalyzer.py
-        runfolder: absolute path of folder contains all .gro, traj.trr, .xtc, .ndx, .mdp,... file
-        GroLeft: prefix of gromacs packages
-        GroRight: suffix of gromacs packages
-    """
-    def __init__(self,
-                 pdbFile,
-                 grofile,
-                 trajfile,
-                 mdMdpFile,
-                 tprfile,
-                 start_time,
-                 end_time,
-                 pdbChain1,
-                 pdbChain2,
-                 group,
-                 conjugateGroup,
-                 rootAnalyzer,
-                 runfolder,
-                 GroLeft,
-                 GroRight):
-        self.pdbFile = str(pdbFile)
-        self.grofile = str(grofile)
-        self.trajfile = str(trajfile)
-        self.mdMdpFile = str(mdMdpFile)
-        self.tprfile = str(tprfile)
-        self.start_time = str(start_time)
-        self.end_time = str(end_time)
-        self.pdbChain1 = str(pdbChain1)
-        self.pdbChain2 = str(pdbChain2)
-        self.group = str(group)
-        self.conjugateGroup = str(conjugateGroup)
-        self.rootAnalyzer = rootAnalyzer
-        self.runfolder = str(runfolder)
-        self.GroLeft = GroLeft
-        self.GroRight = GroRight
-        self.resid, self.residFile = self.Resid(self.pdbFile, self.pdbChain1, self.pdbChain2, self.runfolder)
+    pdbFile = ''
+    grofile = ''
+    trajfile = ''
+    mdMdpFile = ''
+    tprfile = ''
+    start_time = ''
+    end_time = ''
+    pdbChain1 = ''
+    pdbChain2 = ''
+    group = ''
+    conjugateGroup = ''
+    rootAnalyzer = ''
+    runfolder = ''
+    analyze = ''
+    GroLeft = ''
+    GroRight = ''
+    def __init__(self):
+                # pdbFile,
+                # grofile,
+                # trajfile,
+                # mdMdpFile,
+                # tprfile,
+                # start_time,
+                # end_time,
+                # pdbChain1,
+                # pdbChain2,
+                # group,
+                # conjugateGroup,
+                # rootAnalyzer,
+                # runfolder,
+                # GroLeft,
+                # GroRight):
         pass
+        # self.pdbFile = str(pdbFile)
+        # self.grofile = str(grofile)
+        # self.trajfile = str(trajfile)
+        # self.mdMdpFile = str(mdMdpFile)
+        # self.tprfile = str(tprfile)
+        # self.start_time = str(start_time)
+        # self.end_time = str(end_time)
+        # self.pdbChain1 = str(pdbChain1)
+        # self.pdbChain2 = str(pdbChain2)
+        # self.group = str(group)
+        # self.conjugateGroup = str(conjugateGroup)
+        # self.rootAnalyzer = rootAnalyzer
+        # self.runfolder = str(runfolder)
+        # self.GroLeft = GroLeft
+        # self.GroRight = GroRight
+        # pass
 
     def copyScript(self, rootAnalyzer, runfolder):
         filelist = glob(rootAnalyzer + '/analyzer/*')
@@ -77,6 +75,8 @@ class GromacsAnalyzer(object):
         """
         Return a list of residue in `Receptor` which distance from `Ligand` is less or equal 5 angstroms.
         """
+        print "wthelelelelle"
+        print self.runfolder
         os.chdir(runfolder)
         acpype = glob('*.acpype')
         if not acpype:
@@ -102,7 +102,7 @@ class GromacsAnalyzer(object):
             protein = receptor
             # print "this is protein before add ligand[i]"
             # print protein
-            haha = ''
+            haha = []
             for i in range(len(Ligand)):
                 protein += ligand[i]
                 haha = np.array(list(sorted(set(ligand[i].getResnames()))), dtype='str')
@@ -132,7 +132,7 @@ class GromacsAnalyzer(object):
             Popen(makeIndex, stdin=PIPE, shell=True).communicate('r ' + resid + '\nq\n')
             return 0
         else:
-            makeIndex = 'make_ndx -f ' + grofile + ' -o index.ndx'
+            makeIndex = self.GroLeft + 'make_ndx' + self.GroRight + ' -f ' + grofile + ' -o index.ndx'
             Popen(makeIndex, stdin=PIPE, shell=True).communicate('r ' + resid + '\nq\n')
             return 0
         print "Add residue " + resid + " to index file."
@@ -174,7 +174,10 @@ class GromacsAnalyzer(object):
 
     def g_energy(self, resid, group, runfolder):
         os.chdir(runfolder + '/' + resid)
-        genergy = self.GroLeft + 'g_energy' + self.GroRight + ' -f ener.edr -s ' + resid + '.tpr -o energy ' + resid + '.xvg'
+        if self.GroLeft == 'gmx ':
+            genergy = self.GroLeft + 'energy' + self.GroRight + ' -f ener.edr -s ' + resid + '.tpr -o energy' + resid + '.xvg'
+        else:
+            genergy = self.GroLeft + 'g_energy' + self.GroRight + ' -f ener.edr -s ' + resid + '.tpr -o energy' + resid + '.xvg'
         Popen(genergy, stdin=PIPE,
               shell=True).communicate('LJ-14\nCoulomb-14\nLJ-(SR)\nCoulomb-(SR)\nCoul.-recip.\nPotential\nKinetic-En.\nTotal-Energy\nCoul-SR:r_'+resid+'-'+group+'\nLJ-SR:r_'+resid+'-'+group+'\nCoul-14:r_'+resid+'-'+group+'\nLJ-14:r_'+resid+'-'+group+'\n0\n')
         # 4 5 6 8 9 10 11 12 50 51 52 53
@@ -197,7 +200,10 @@ class GromacsAnalyzer(object):
     def g_hbond(self, group1, group2, start_time, end_time, tprfile, trajfile, runfolder):
         """Calculate hbond between group1 and group2, time unit: ps"""
         os.chdir(runfolder)
-        ghbond = self.GroLeft + 'g_hbond' + self.GroRight + ' -n index.ndx -s ' + tprfile + ' -f ' + trajfile + ' -num hbond.xvg -hbn hbond.ndx -hbm hbond.xpm -b ' + start_time + ' -e ' + end_time
+        if self.GroLeft == 'gmx ':
+            ghbond = self.GroLeft + 'hbond' + self.GroRight + ' -n index.ndx -s ' + tprfile + ' -f ' + trajfile + ' -num hbond.xvg -hbn hbond.ndx -hbm hbond.xpm -b ' + start_time + ' -e ' + end_time
+        else:
+            ghbond = self.GroLeft + 'g_hbond' + self.GroRight + ' -n index.ndx -s ' + tprfile + ' -f ' + trajfile + ' -num hbond.xvg -hbn hbond.ndx -hbm hbond.xpm -b ' + start_time + ' -e ' + end_time
         a = Popen(ghbond, shell=True, stdin=PIPE)
         a.communicate(group1 + '\n' + group2 + '\n')[0]
         readhbondmap = 'python readHBmap.py -hbn hbond.ndx -hbm hbond.xpm -t 10'
@@ -320,7 +326,10 @@ class GromacsAnalyzer(object):
 
     def R_mean(self, residFile, runfolder):
         os.chdir(str(runfolder) + '/plot_potential')
-        residue = 'residues <- read.table("' + str(residFile) + '",header=F)'
+        if residFile:
+            residue = 'residues <- read.table("' + str(residFile) + '",header=F)'
+        else:
+            residue = self.resid
 
         # modify plot_potential.r file
         f = open(runfolder + '/plot_potential.r', 'r')
@@ -370,118 +379,100 @@ class GromacsAnalyzer(object):
         # call gnuplot
         Popen(['gnuplot', 'potential.plot'])
 
-    def main(self, hbond=True, potential=True):
-        self.copyScript(self.rootAnalyzer, self.runfolder)
-        os.chdir(self.runfolder)
-        residList = self.resid
+    def main(self, argv):
+        try:
+            opts, args = getopt.getopt(argv, "hh:i:",["pro=", "gro=", "trj=", "mdp=", "tpr=", "start=", "end=", "rechain=", "lichain=", "receptor=", "ligand=", "root=", "run=", "analyze=", "gleft=", "gright="])
+        except getopt.GetoptError:
+            print 'input error for LabpiAnalyzer'
+            exit(2)
+        for opt, arg in opts:
+            if opt == '-h':
+                print """
+    Attribute:
+        pdbFile: filename of the .pdb file
+        grofile: filename of .grofile
+        trajfile: filename of trajectory file. Eg: .xtc file, .trr file
+        mdMdpFile: filename of .mdp file used for MD simulation
+        tprfile: filename of .tpr file
+        start_time: time to start calculate hbond
+        end_time: time to end calculate hbond
+        pdbChain1: chain name of receptor in pdb file
+        pdbChain2: chain name of ligand in pdb file
+        group: group of molecules to calculate hbond forms between itself and conjugate group
+        conjugateGroup: conjugate group of the one mentioned above
+        rootAnalyzer: path of LabpiAnalyzer.py
+        runfolder: absolute path of folder contains all .gro, traj.trr, .xtc, .ndx, .mdp,... file
+        GroLeft: prefix of gromacs packages
+        GroRight: suffix of gromacs packages
+    """
+                exit()
+            elif opt in ("--pro"):
+                self.pdbFile = arg
+            elif opt in ("--gro"):
+                self.grofile = arg
+            elif opt in ("--trj"):
+                self.trajfile = arg
+            elif opt in ("--mdp"):
+                self.mdMdpFile = arg
+            elif opt in ("--tpr"):
+                self.tprfile = arg
+            elif opt in ("--start"):
+                self.start_time = arg
+            elif opt in ("--end"):
+                self.end_time = arg
+            elif opt in ("--rechain"):
+                self.pdbChain1 = arg
+            elif opt in ("--lichain"):
+                self.pdbChain2 = arg
+            elif opt in ("--receptor"):
+                self.group = arg
+            elif opt in ("--ligand"):
+                self.conjugateGroup = arg
+            elif opt in ("--root"):
+                self.rootAnalyzer = arg
+            elif opt in ("--run"):
+                self.runfolder = arg
+                # print self.runfolder
+            elif opt in ("--analyze"):
+                self.analyze = arg
+            elif opt in ("--gleft"):
+                self.GroLeft = arg
+            elif opt in ("--gright"):
+                self.GroRight = arg
+            elif opt in ("-i"):
+                print "shit here right?"
+                self.resid, self.residFile = self.Resid(self.pdbFile, self.pdbChain1, self.pdbChain2, self.runfolder)
+                residList = self.resid
+                if arg.replace(' ','') == 'True' or arg.replace(' ','') == 'true':
+                    self.copyScript(self.rootAnalyzer, self.runfolder)
+                    os.chdir(self.runfolder)
 
-        for i in range(len(residList)):
-            self.make_ndx(str(residList[i]), self.grofile, self.runfolder)
-        call('rm \\#*', shell=True)
+                    for i in range(len(residList)):
+                        self.make_ndx(str(residList[i]), self.grofile, self.runfolder)
+                    call('rm \\#*', shell=True)
+                elif arg.replace(' ','') == 'False':
+                    # rerun
+                    for i in range(len(residList)):
+                        self.mkdir(str(residList[i]), self.conjugateGroup, self.mdMdpFile, self.runfolder)
+                        self.mdrun(str(residList[i]), self.trajfile, self.runfolder)
 
-        if potential:
-            # rerun
-            for i in range(len(residList)):
-                self.mkdir(str(residList[i]), self.conjugateGroup, self.mdMdpFile, self.runfolder)
-                self.mdrun(str(residList[i]), self.trajfile, self.runfolder)
+                    # Calculate potential & plot
+                    for i in range(len(residList)):
+                        self.g_energy(str(residList[i]), str(self.conjugateGroup), self.runfolder)
+                    for i in range(len(residList)):
+                        self.change_Header(str(residList[i]), self.runfolder)
+                    self.R_mean(self.residFile, self.runfolder)
+                    self.plotPotential(self.residFile, self.runfolder, self.analyze)
 
-            # Calculate potential & plot
-            for i in range(len(residList)):
-                self.g_energy(str(residList[i]), str(self.conjugateGroup), self.runfolder)
-            for i in range(len(residList)):
-                self.change_Header(str(residList[i]), self.runfolder)
-            self.R_mean(self.residFile, self.runfolder)
-            self.plotPotential(self.residFile, self.runfolder)
+                    # Calculate Hydrogen bond & plot
+                    self.g_hbond(str(self.group), str(self.conjugateGroup), self.start_time, self.end_time, self.tprfile, self.trajfile, self.runfolder)
+                    self.plotHbond(str(self.runfolder), self.analyze)
+                    filelist = glob(runfolder + '/*.png') + glob(runfolder + '/*/*.xvg')
+                    print filelist
+                    os.makedirs(self.analyze)
+                    for i in filelist:
+                        copy(i, str(self.analyze))
 
-        if hbond:
-            # Calculate Hydrogen bond & plot
-            self.g_hbond(str(self.group), str(self.conjugateGroup), self.start_time, self.end_time, self.tprfile, self.trajfile, self.runfolder)
-            self.plotHbond(str(self.runfolder))
-
-
-"""
-# Test script section
-import numpy as np
-from LabpiAnalyzer import *
-residFile = 'cutoff-resid-14angstroms'
-grofile =
-trajfile =
-tprfile =
-start_time =
-end_time =
-group =
-conjugateGroup =
-runfolder = '/home/quyngan/CPL/Ngan/Ngan_MD/no_fix_comm/4L25/md'
-GA = GromacsAnalyzer(residFile, runfolder)
-residList = GA.Resid('cutoff-resid-14angstroms', '/home/quyngan/CPL/Ngan/Ngan_MD/no_fix_comm/3L25/md')
-
-# for i in range(len(residList)):
-    # GA.make_ndx(str(residList[i]), 'npt.gro', '/home/quyngan/CPL/Ngan/Ngan_MD/no_fix_comm/3L25/md')
-# call('rm \\#*', shell=True)
-
-# for i in range(len(residList)):
-    # GA.mkdir(str(residList[i]), 'RNA', '/home/quyngan/CPL/Ngan/Ngan_MD/no_fix_comm/3L25/md')
-    # GA.mdrun(str(residList[i]), '/home/quyngan/CPL/Ngan/Ngan_MD/no_fix_comm/3L25/md', 'md_noPBC.xtc')
-
-for i in range(len(residList)):
-    GA.g_energy(str(residList[i]), 'RNA', '/home/quyngan/CPL/Ngan/Ngan_MD/no_fix_comm/3L25/md')
-
-for i in range(len(residList)):
-    GA.change_Header(str(residList[i]), '/home/quyngan/CPL/Ngan/Ngan_MD/no_fix_comm/3L25/md')
-
-GA.R_mean('cutoff-resid-14angstroms', '/home/quyngan/CPL/Ngan/Ngan_MD/no_fix_comm/3L25/md')
-GA.plotPotential('cutoff-resid-14angstroms', '/home/quyngan/CPL/Ngan/Ngan_MD/no_fix_comm/3L25/md')
-
-
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Set argv ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
-# script, first_argv = argv
-# working_path = os.path.dirname(os.path.abspath(__file__))
-# print type(working_path)
-# print working_path
-# os.chdir(working_path)
-
-    # def __init__(self):
-        # try:
-            # opts, args = getopt.getopt(argv,
-                                       # "x:s:f:l:",
-                                       # ["trajfile=",
-                                        # "tprfile=",
-                                        # "grofile=",
-                                        # "residuelist="])
-        # except getopt.GetoptError:
-            # print 'LabpiAnalyzer.py -x <trajfile> -s <tprfile> -f <grofile> -l <residuelist>'
-            # exit(2)
-        # for opt, arg in opts:
-            # if opt == '-h' or opt == '--help':
-                # print """"""
-    # def Resid(self, residFile, runfolder):
-        # Read file containing ID number of residues. Return list of residues.
-        # The file must be in format:
-        # resid1 resid2 resid3 ...
-        # For example:
-        # 1 69 123 124 125 146 332
-        # ...
-        # os.chdir(runfolder)
-        # o = open(residFile, 'r')
-        # resid = o.read().split()
-        # o.close()
-        # return resid
-                # exit()
-            # elif opt in ("-x", "--trajfile"):
-                # trajfile = arg
-            # elif opt in ("-s", "--tprfile"):
-                # tprfile = arg
-            # elif opt in ("-f", "--grofile"):
-                # grofile = arg
-            # elif opt in ("-o", "--residuelist"):
-                # residfile = arg
-        # # main_path = self.dataController.getdata('path ')
-        # main_path = os.path.dirname(os.path.abspath(__file__))
-        # self.runfolders = check_output('ls '+main_path+'/run/', shell=True).splitlines()
-
-        # self.residfile = residfile
-        # self.grofile = grofile
-        # self.tprfile = tprfile
-        # self.trajfile = trajfile
-        # return 0
-"""
+if __name__ == "__main__":
+    A = GromacsAnalyzer()
+    A.main(argv[1:])
