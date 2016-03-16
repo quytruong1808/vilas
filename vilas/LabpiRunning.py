@@ -90,9 +90,9 @@ class RunningScreen(Screen):
         #Check if folder is exits
         call('mkdir '+self.dataController.getdata('path '), shell=True)
         call('mkdir '+self.dataController.getdata('path ')+'/run', shell=True)
-        call('mkdir '+self.dataController.getdata('path ')+'/output', shell=True)
-        call('mkdir '+self.dataController.getdata('path ')+'/output/receptor', shell=True)
-        call('mkdir '+self.dataController.getdata('path ')+'/output/ligand', shell=True)
+        call('mkdir '+self.dataController.getdata('path ')+'/input', shell=True)
+        call('mkdir '+self.dataController.getdata('path ')+'/input/receptor', shell=True)
+        call('mkdir '+self.dataController.getdata('path ')+'/input/ligand', shell=True)
         call('mkdir '+self.dataController.getdata('path ')+'/analyse', shell=True)
         
         runfolders = check_output('ls '+self.dataController.getdata('path ')+'/run/', shell = True).splitlines()
@@ -101,8 +101,8 @@ class RunningScreen(Screen):
             popup.open()
         else:
             call('rm -r '+self.dataController.getdata('path ')+'/run/*', shell=True)
-            call('rm -r '+self.dataController.getdata('path ')+'/output/ligand/*', shell=True)
-            call('rm -r '+self.dataController.getdata('path ')+'/output/receptor/*', shell=True)
+            call('rm -r '+self.dataController.getdata('path ')+'/input/ligand/*', shell=True)
+            call('rm -r '+self.dataController.getdata('path ')+'/input/receptor/*', shell=True)
             self.thread = Process(target= self.gromacsRun.main)
             self.thread.start()
 
@@ -157,7 +157,7 @@ class RunningScreen(Screen):
                 self.checkPOINT = str(self.dataController.getdata('status'))
 
 
-            em_path = run_path + '/em.gro' 
+            em_path = run_path + '/em/em.gro' 
             if os.path.isfile(em_path) == True:
                 self.emImg.source = self.root_path+'/img/tick_select.png'
                 if self.checkEM == False: 
@@ -169,7 +169,7 @@ class RunningScreen(Screen):
                 self.progressText.text = 'ViLAS is running at Energy minimization step'
             # self.emImg.reload()
 
-            nvt_path = run_path + '/nvt.gro' 
+            nvt_path = run_path + '/nvt/nvt.gro' 
             if os.path.isfile(nvt_path) == True:
                 self.nvtImg.source = self.root_path+'/img/tick_select.png'
                 if self.checkNVT == False: 
@@ -180,7 +180,7 @@ class RunningScreen(Screen):
                 self.nvtImg.source = self.root_path+'/img/tick_normal.png'
             # self.nvtImg.reload()
 
-            npt_path = run_path + '/npt.gro' 
+            npt_path = run_path + '/npt/npt.gro' 
             if os.path.isfile(npt_path) == True:
                 self.nptImg.source = self.root_path+'/img/tick_select.png'
                 if self.checkNPT == False: 
@@ -191,7 +191,7 @@ class RunningScreen(Screen):
                 self.nptImg.source = self.root_path+'/img/tick_normal.png'
             # self.nptImg.reload()
 
-            md_path = run_path + '/md.gro' 
+            md_path = run_path + '/md/md.gro' 
             if os.path.isfile(md_path) == True:
                 self.mdImg.source = self.root_path+'/img/tick_select.png'
                 if self.checkMD == False: 
@@ -205,7 +205,7 @@ class RunningScreen(Screen):
             # TODO: check percent import signal
             smd_log = 0
             for x in range(0, int(repeat_times)):
-                smd_path_x = run_path + '/md_st_'+str(x)+'.gro'
+                smd_path_x = run_path + '/smd/md_st_'+str(x)+'.gro'
                 if os.path.isfile(smd_path_x) == True:
                     smd_log+=1
                     if self.lastSMD < x:
@@ -217,7 +217,7 @@ class RunningScreen(Screen):
                         self.progressPoint += self.progressUnit
             self.smdLog.text = str(smd_log)+'/'+str(repeat_times)
 
-            smd_path_last = run_path + '/md_st_'+str(repeat_times-1)+'.gro' 
+            smd_path_last = run_path + '/smd/md_st_'+str(repeat_times-1)+'.gro' 
             if os.path.isfile(smd_path_last) == True:
                 self.smdImg.source = self.root_path+'/img/tick_select.png'
             else:
@@ -239,19 +239,19 @@ class RunningScreen(Screen):
 
         # Check point for pymol
         check_path = ''
-        if os.path.isfile(run_path+'/em.gro') == False and os.path.isfile(run_path+'/em.cpt') == True and os.path.isfile(run_path+'/em.tpr') == True:
-            check_path = run_path+'/em'
-        if os.path.isfile(run_path+'/nvt.gro') == False and os.path.isfile(run_path+'/nvt.cpt') == True and os.path.isfile(run_path+'/nvt.tpr') == True:
-            check_path = run_path+'/nvt'
-        if os.path.isfile(run_path+'/npt.gro') == False and os.path.isfile(run_path+'/npt.cpt') == True and os.path.isfile(run_path+'/npt.tpr') == True:
-            check_path = run_path+'/npt'
-        if os.path.isfile(run_path+'/md.gro') == False and os.path.isfile(run_path+'/md.cpt') == True and os.path.isfile(run_path+'/md.tpr') == True:
-            check_path = run_path+'/md'
-        if os.path.isfile(run_path+'/md_st.gro') == False and os.path.isfile(run_path+'/md_st.cpt') == True and os.path.isfile(run_path+'/md_st.tpr') == True:
-            check_path = run_path+'/md_st'
+        if os.path.isfile(run_path+'/em/em.gro') == False and os.path.isfile(run_path+'/em/em.cpt') == True and os.path.isfile(run_path+'/em/em.tpr') == True:
+            check_path = run_path+'/em/em'
+        if os.path.isfile(run_path+'/nvt/nvt.gro') == False and os.path.isfile(run_path+'/nvt/nvt.cpt') == True and os.path.isfile(run_path+'/nvt/nvt.tpr') == True:
+            check_path = run_path+'/nvt/nvt'
+        if os.path.isfile(run_path+'/npt/npt.gro') == False and os.path.isfile(run_path+'/npt/npt.cpt') == True and os.path.isfile(run_path+'/npt/npt.tpr') == True:
+            check_path = run_path+'/npt/npt'
+        if os.path.isfile(run_path+'/md/md.gro') == False and os.path.isfile(run_path+'/md/md.cpt') == True and os.path.isfile(run_path+'/md/md.tpr') == True:
+            check_path = run_path+'/md/md'
+        if os.path.isfile(run_path+'/smd/md_st.gro') == False and os.path.isfile(run_path+'/smd/md_st.cpt') == True and os.path.isfile(run_path+'/smd/md_st.tpr') == True:
+            check_path = run_path+'/smd/md_st'
         for x in range(0, int(repeat_times)):
-            if os.path.isfile(run_path+'/md_st_'+str(x)+'.gro') == False and os.path.isfile(run_path+'/md_st_'+str(x)+'.cpt') == True and os.path.isfile(run_path+'/md_st_'+str(x)+'.tpr') == True:
-                check_path = run_path+'/md_st_'+str(x)
+            if os.path.isfile(run_path+'/smd/md_st_'+str(x)+'.gro') == False and os.path.isfile(run_path+'/smd/md_st_'+str(x)+'.cpt') == True and os.path.isfile(run_path+'/smd/md_st_'+str(x)+'.tpr') == True:
+                check_path = run_path+'/smd/md_st_'+str(x)
 
         if(check_path != ''):
             call('echo \"non-Water\"|' + self.GroLeft + 'trjconv' + self.GroRight +'-f '+ check_path +'.cpt -s '+ check_path +'.tpr -o '+ check_path +'.pdb', shell=True)
@@ -327,8 +327,8 @@ class RemoveDialog(Popup):
     def remove(self):
         self.dismiss()
         call('rm -r '+self.dataController.getdata('path ')+'/run/*', shell=True)
-        call('rm -r '+self.dataController.getdata('path ')+'/output/ligand/*', shell=True)
-        call('rm -r '+self.dataController.getdata('path ')+'/output/receptor/*', shell=True)
+        call('rm -r '+self.dataController.getdata('path ')+'/input/ligand/*', shell=True)
+        call('rm -r '+self.dataController.getdata('path ')+'/input/receptor/*', shell=True)
         self.thread = Process(target= self.gromacsRun.main)
         self.thread.start()
         pass
