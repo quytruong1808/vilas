@@ -81,7 +81,7 @@ class GromacsAnalyzer(object):
         acpype = glob('*.acpype')
         if not acpype:
             a = prody.parsePDB(str(pdbFile)).select('chain ' + pdbChain1 + ' and within 5 of chain ' + pdbChain2)
-            residList = np.array(list(sorted(set(a.getResnums()))), dtype='str')
+            residList = list(sorted(set(a.getResnums())))
             residlist = " ".join(residList)
             # for i in range(1, len(residList)):
             # residlist += ' ' + str(residList[i])
