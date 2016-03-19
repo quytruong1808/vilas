@@ -34,6 +34,8 @@ repeat_times = '0'
 Method = '1'
 main_path = ''
 root_path = ''
+ReceptorChain = ''
+LigandChain = ''
 
 ReceptorNumAtom = 0
 ReceptorResidues = []
@@ -347,6 +349,7 @@ class GromacsRun(object):
 
   def PrepareCluster(self):
     global ReceptorChain
+    global LigandChain
     call('cp '+root_path+'/source/top_pull.py '+main_path+'/analyse', shell = True)
     ligands = check_output('cd '+main_path+'/input/ligand; ls *.pdb', shell = True).splitlines()
       
@@ -360,7 +363,6 @@ class GromacsRun(object):
         call('mkdir '+main_path+'/run/run_' + ligandName, shell = True)
         call('mkdir '+main_path+'/run/run_' + ligandName+'/mdp', shell = True)
         call('cp '+main_path+'/input/ligand/'+ligands[x]+' '+main_path+'/run/run_' + ligandName+'/'+ligandName+'.pdb', shell = True)
-        call('cp '+root_path+'/source/mathplot.py '+main_path+'/run/run_' + ligandName, shell = True)
         call('cp -r '+root_path+'/config/* '+main_path+'/run/run_'+ligandName+'/mdp', shell = True)
       else:      
         if os.path.isfile(main_path+'/input/ligand/'+ligandName+'.acpype/'+ligandName+'_GMX.gro') is False:
@@ -369,10 +371,11 @@ class GromacsRun(object):
         call('mkdir '+main_path+'/run/run_' + ligandName+'/mdp', shell = True)
         call('cp -r '+main_path+'/input/ligand/'+ligandName+'.acpype '+main_path+'/run/run_'+ligandName, shell = True)
         call('cp -r '+root_path+'/config/* '+main_path+'/run/run_'+ligandName+'/mdp', shell = True)
-        call('cp '+root_path+'/source/mathplot.py '+main_path+'/run/run_' + ligandName, shell = True)
         call('cp '+main_path+'/run/run_'+ligandName+'/'+ligandName+'.acpype/'+ligandName+'.pdb '+main_path+'/run/run_'+ligandName+'/'+ligandName+'.pdb', shell = True)
 
       # call('cp '+root_path+'/source/antechamber '+main_path+'/run/run_'+ligandName, shell=True)
+      call('cp '+root_path+'/source/mathplot.py '+main_path+'/run/run_' + ligandName, shell = True)
+      call('cp '+root_path+'/LabpiAnalyzer.py '+main_path+'/run/run_' + ligandName, shell = True)
       call('cp '+root_path+'/source/parse_pull.py '+main_path+'/run/run_'+ligandName, shell=True)
       call('cp '+root_path+'/source/pullana.py '+main_path+'/run/run_'+ligandName, shell=True)
       # call('cp '+root_path+'/source/MmPbSaStat.py '+main_path+'/run/run_'+ligandName, shell=True)
@@ -387,7 +390,9 @@ class GromacsRun(object):
       for numR in range(0, len(ReceptorFile)):
         chains.append(parsePDB(ReceptorFile[numR]+'.pdb'))
         # change chain name A, B, C 
-        ReceptorChain = ChainNames[numR]
+        if ReceptorChain != '':
+          ReceptorChain += ' or '
+        ReceptorChain += 'chain '+ChainNames[numR]
         chainName = []
         for z in range(0, chains[numR].numAtoms()): 
           chainName.append(ChainNames[numR])
@@ -402,6 +407,7 @@ class GromacsRun(object):
         chains.append(parsePDB(main_path+'/input/ligand/'+ligands[x]))
         # change chain name A, B, C 
         chainName = []
+        LigandChain = ChainNames[numR+1]
         for z in range(0, chains[numR+1].numAtoms()): 
           chainName.append(ChainNames[numR+1])
         chains[numR+1].setChids(chainName)
@@ -845,6 +851,18 @@ class GromacsRun(object):
       #add ligand_atomtypes.itp to topol.top
       self.insertLine('; Include forcefield parameters', 2, '#include "ligand_atomtypes.itp" \n', topolfile)
 
+      #*********************************************************************************
+      #init analyzer
+      cmd_analyse = 'python2.7 LabpiAnalyzer.py --pro '+run_path+'/protein.pdb --mdp '+run_path+'/mdp/md.mdp --rechain \'' +ReceptorChain+ '\' --root '+root_path+' --run '+run_path+ ' --ligand '+ligandCurrent
+      if LigandChain != '':
+        cmd_analyse += ' --lichain \'' + LigandChain +'\''
+      if GroLeft.replace(' ','') != '':
+        cmd_analyse += ' --gleft '+GroLeft
+      if GroRight.replace(' ','') != '':
+        cmd_analyse += ' --gright '+GroRight
+      self.CallCommand(run_path, cmd_analyse +' -i True')
+      print "check point analyzer"
+
       #*****************************************************************************************************#
       #setup Box
       if os.path.isfile(run_path+'/'+ligandCurrent+'.acpype/'+ligandCurrent+'.pdb') is True:
@@ -1086,6 +1104,7 @@ class GromacsRun(object):
 
       self.replaceLine('continuation', 'continuation  = no   ; Restarting after NPT\n', run_path+'/mdp/md_pull_repeat.mdp')
       
+
   #**********************************************************************#
   #****************************  QSub File  *****************************#
   #**********************************************************************#

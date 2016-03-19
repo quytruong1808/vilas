@@ -99,6 +99,13 @@ class GromacsMD(object):
 				pullf_path += ' smd/pullf_'+str(k)+'.xvg'
 			groCmd += 'python2.7 pullana.py -px '+pullx_path+' -pf '+pullf_path+' -plot '+analyse_path+'/pull_force_time.png '+analyse_path+'/pull_force_distance.png -log '+analyse_path+'/pull_data.csv -v '+pull_vec+'\n'
 			groCmd += 'python2.7 mathplot.py -i md/rmsd.xvg -o '+analyse_path+'/rmsd.png\n'
+			# analyze cmd
+			cmd_analyze = 'python2.7 LabpiAnalyzer.py --gro '+run_path+'/md/md.gro --trj '+run_path+'/md/md.xtc --mdp '+run_path+'/mdp/md.mdp --tpr '+run_path+'/md/md.tpr --start 0 --end 5 --receptor Receptor --ligand '+ligandCurrent+ ' --run '+run_path+' --analyze '+main_path+'/analyse '
+			if self.GroLeft.replace(' ','') != '':
+				cmd_analyze += ' --gleft '+self.GroLeft 
+			if self.GroRight.replace(' ','') != '':
+				cmd_analyze += ' --gright '+self.GroRight
+			groCmd += cmd_analyze +' -i False\n'
 			# elif int(Method) == 2:
 			#   if os.path.isfile(run_path+'/md_2.gro') is False:
 			#     groCmd += GroLeft+'grompp'+GroRight+ ' -maxwarn 20 -f mdp/md_md.mdp -c md.gro -t md.cpt -p topol.top -n index.ndx -o md_2.tpr \n'
@@ -111,6 +118,7 @@ class GromacsMD(object):
 			#   groCmd += 'python2.7 MmPbSaStat.py -m energy_MM.xvg -p polar.xvg -a sasa.xvg \n'
 
 			self.CallCommand(run_path, groCmd)
+			# print groCmd
 
 
 		call('rm -r '+run_path+'/#*', shell=True)
