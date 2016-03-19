@@ -9,4 +9,4 @@ set ylabel 'Potential (kJ/mol)'
 set grid
 set xtics rotate by -45
 
-plot './mean.dat' u 2:7:8 t 'potential' w boxerror
+plot './plot_potential/mean.dat' u 2:7:8 t 'potential' w boxerror
