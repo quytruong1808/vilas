@@ -349,8 +349,14 @@ class GromacsAnalyzer(object):
 
         # copy plot_potential.r and cutoff-resid-5angstroms file to
         # plot_potential folder
-        copy(runfolder + '/../plot_potential.r', runfolder + 'plot_potential')
-        copy(residFile, runfolder + 'plot_potential')
+        try:
+            copy(runfolder + '/../plot_potential.r', runfolder + 'plot_potential')
+        except IOError, e:
+            print "Unable to copy file. %s" % e
+        try:
+            copy(residFile, runfolder + 'plot_potential')
+        except IOError, e:
+            print "Unable to copy file. %s" % e
         # call R script
         call('R CMD BATCH plot_potential.r', shell=True)
 
