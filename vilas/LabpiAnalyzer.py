@@ -202,13 +202,15 @@ class GromacsAnalyzer(object):
     def g_hbond(self, group1, group2, start_time, end_time, tprfile, trajfile, runfolder):
         """Calculate hbond between group1 and group2, time unit: ps"""
         os.chdir(runfolder)
-        if self.GroLeft == 'gmx ':
+        if 'gmx' in self.GroLeft:
+            print self.GroLeft + 'hbond' + self.GroRight + ' -n index.ndx -s ' + tprfile + ' -f ' + trajfile + ' -num hbond.xvg -hbn hbond.ndx -hbm hbond.xpm -b ' + start_time + ' -e ' + end_time
             ghbond = self.GroLeft + 'hbond' + self.GroRight + ' -n index.ndx -s ' + tprfile + ' -f ' + trajfile + ' -num hbond.xvg -hbn hbond.ndx -hbm hbond.xpm -b ' + start_time + ' -e ' + end_time
         else:
+            print self.GroLeft + 'g_hbond' + self.GroRight + ' -n index.ndx -s ' + tprfile + ' -f ' + trajfile + ' -num hbond.xvg -hbn hbond.ndx -hbm hbond.xpm -b ' + start_time + ' -e ' + end_time
             ghbond = self.GroLeft + 'g_hbond' + self.GroRight + ' -n index.ndx -s ' + tprfile + ' -f ' + trajfile + ' -num hbond.xvg -hbn hbond.ndx -hbm hbond.xpm -b ' + start_time + ' -e ' + end_time
         a = Popen(ghbond, shell=True, stdin=PIPE)
         a.communicate(group1 + '\n' + group2 + '\n')[0]
-        readhbondmap = 'python readHBmap.py -hbn hbond.ndx -hbm hbond.xpm -t 10'
+        readhbondmap = 'python2.7 readHBmap.py -hbn hbond.ndx -hbm hbond.xpm -t 10'
         Popen(readhbondmap, shell=True)
 
     def getXvgLegend(self, xvgfile, runfolder):
@@ -245,12 +247,12 @@ class GromacsAnalyzer(object):
         contents.remove('\n')
         for i in range(len(contents)):
             contents[i] = contents[i].split()
-        print contents
+        # print contents
         tranpose = np.transpose(contents)
         frames = tranpose[0]
-        print frames
+        # print frames
         tranpose = np.delete(tranpose, 0, axis=0)
-        print tranpose
+        # print tranpose
         f = open('tranpose.csv', 'w')
         for i in range(0, len(tranpose)):
             for j in range(0, len(tranpose[i])):
@@ -286,10 +288,10 @@ class GromacsAnalyzer(object):
                 contents[i] = yrange
 
         # Check contents and write to file
-        print contents
+        # print contents
         f = open('test_hbond.plot', 'w')
         contents = "".join(contents)
-        print contents
+        # print contents
         f.write(contents)
         f.close()
 
@@ -320,7 +322,7 @@ class GromacsAnalyzer(object):
         for i in range(1, len(a)):
             if contents[i].find('@') == 0 or contents[i].find('#') == 0:
                 contents[a[i]] = ''
-        print runfolder + '/' + str(resid) + '.dat'
+        # print runfolder + '/' + str(resid) + '.dat'
         f = open(runfolder + '/plot_potential/' + str(resid) + '.dat', 'w')
         contents = "".join(contents)
         f.write(contents)
@@ -334,7 +336,7 @@ class GromacsAnalyzer(object):
             residue = self.resid
 
         # modify plot_potential.r file
-        f = open(runfolder + '/../plot_potential.r', 'r')
+        f = open(runfolder + '/plot_potential.r', 'r')
         contents = f.readlines()
         f.close()
         for i in range(len(contents)):
@@ -349,6 +351,7 @@ class GromacsAnalyzer(object):
 
         # copy plot_potential.r and cutoff-resid-5angstroms file to
         # plot_potential folder
+<<<<<<< HEAD
         try:
             copy(runfolder + '/../plot_potential.r', runfolder + 'plot_potential')
         except IOError, e:
@@ -357,7 +360,12 @@ class GromacsAnalyzer(object):
             copy(residFile, runfolder + 'plot_potential')
         except IOError, e:
             print "Unable to copy file. %s" % e
+=======
+        copy(runfolder + '/plot_potential.r', runfolder + '/plot_potential')
+        copy(residFile, runfolder + '/plot_potential')
+>>>>>>> a5c9db3cd8e43fc2039574d846dd88f14689c5f8
         # call R script
+        call('rm mean.dat', shell=True)
         call('R CMD BATCH plot_potential.r', shell=True)
 
     def plotPotential(self, residFile, runfolder, analyze):
@@ -365,7 +373,7 @@ class GromacsAnalyzer(object):
         resid = self.resid
 
         # read potential.plot file
-        f = open('plot_potential.plot', 'r')
+        f = open('potential.plot', 'r')
         contents = f.readlines()
         f.close()
 
@@ -378,14 +386,14 @@ class GromacsAnalyzer(object):
 
         # Check contents and write to file
         # print contents
-        f = open('plot_potential.plot', 'w')
+        f = open('potential.plot', 'w')
         contents = "".join(contents)
         # print contents
         f.write(contents)
         f.close()
 
         # call gnuplot
-        Popen(['gnuplot', 'plot_potential.plot'])
+        Popen(['gnuplot', 'potential.plot'])
 
     def main(self, argv):
         try:
@@ -455,8 +463,16 @@ class GromacsAnalyzer(object):
                     os.chdir(self.runfolder)
 
                 elif arg.replace(' ','') == 'False' or arg.replace(' ','') == 'false':
-                    call('rm -rf '+self.runfolder+'/residues/*', shell=True)
+                    # call('rm -rf '+self.runfolder+'/residues/*', shell=True)
                     call('cp '+self.runfolder+'/index.ndx '+self.runfolder+'/residues/', shell=True)
+                    call('cp '+self.runfolder+'/potential.plot '+self.runfolder+'/residues/', shell=True)
+                    call('cp '+self.runfolder+'/hbond.plot '+self.runfolder+'/residues/', shell=True)
+                    call('cp '+self.runfolder+'/occupancy.xvg '+self.runfolder+'/residues/', shell=True)
+                    call('cp '+self.runfolder+'/cutoff-resid-5angstroms '+self.runfolder+'/residues/', shell=True)
+                    call('cp '+self.runfolder+'/readHBmap.py '+self.runfolder+'/residues/', shell=True)
+                    call('cp '+self.runfolder+'/test_hbond.plot '+self.runfolder+'/residues/', shell=True)
+                    call('cp '+self.runfolder+'/tranpose.csv '+self.runfolder+'/residues/', shell=True)
+                    call('cp '+self.runfolder+'/plot_potential.r '+self.runfolder+'/residues/', shell=True)
 
                     with open('cutoff-resid-5angstroms','r') as line:
                         contents = line.readlines()
@@ -470,15 +486,16 @@ class GromacsAnalyzer(object):
                     if not os.path.isdir(self.runfolder + '/residues'):
                         os.makedirs(self.runfolder + '/residues')
                     # rerun
-                    for i in range(len(residList)):
-                        self.mkdir(str(residList[i]), self.conjugateGroup, self.mdMdpFile, self.runfolder + '/residues')
-                        self.mdrun(str(residList[i]), self.trajfile, self.runfolder + '/residues')
+                    # for i in range(len(residList)):
+                    #     self.mkdir(str(residList[i]), self.conjugateGroup, self.mdMdpFile, self.runfolder + '/residues')
+                    #     self.mdrun(str(residList[i]), self.trajfile, self.runfolder + '/residues')
 
                     # Calculate potential & plot
-                    for i in range(len(residList)):
-                        self.g_energy(str(residList[i]), str(self.conjugateGroup), self.runfolder + '/residues')
+                    # for i in range(len(residList)):
+                    #     self.g_energy(str(residList[i]), str(self.conjugateGroup), self.runfolder + '/residues')
                     for i in range(len(residList)):
                         self.change_Header(str(residList[i]), self.runfolder + '/residues')
+
 
                     self.R_mean(self.runfolder+'/cutoff-resid-5angstroms', self.runfolder + '/residues')
                     self.plotPotential(self.runfolder+'/cutoff-resid-5angstroms', self.runfolder + '/residues', self.analyze)
@@ -486,9 +503,10 @@ class GromacsAnalyzer(object):
                     # Calculate Hydrogen bond & plot
                     self.g_hbond(str(self.group), str(self.conjugateGroup), self.start_time, self.end_time, self.tprfile, self.trajfile, self.runfolder + '/residues')
                     self.plotHbond(str(self.runfolder) + '/residues', self.analyze)
-                    filelist = glob(runfolder + '/residues' + '/*.png') + glob(runfolder + '/*/*.xvg')
-                    print filelist
-                    os.makedirs(self.analyze)
+                    filelist = glob(self.runfolder + '/residues' + '/*.png') + glob(self.runfolder + '/*/*.xvg')
+                    # print filelist
+                    if not os.path.isdir(self.analyze):
+                        os.makedirs(self.analyze)
                     for i in filelist:
                         copy(i, str(self.analyze))
 

@@ -8,30 +8,23 @@ if expand('%') == '' && !&modified && line('$') <= 1 && getline(1) == ''
   let s:wipebuf = bufnr('%')
 endif
 set shortmess=aoO
-badd +92 LabpiAnalyzer.py
+badd +121 LabpiAnalyzer.py
 badd +67 analyzer/readHBmap.py
-badd +1 analyzer/plot_potential.r
-badd +9 analyzer/potential.plot
+badd +5 analyzer/plot_potential.r
+badd +1 analyzer/potential.plot
 args LabpiAnalyzer.py
 edit analyzer/potential.plot
 set splitbelow splitright
 wincmd _ | wincmd |
 vsplit
 1wincmd h
-wincmd _ | wincmd |
-split
-1wincmd k
-wincmd w
 wincmd w
 set nosplitbelow
 set nosplitright
 wincmd t
 set winheight=1 winwidth=1
-exe '1resize ' . ((&lines * 17 + 24) / 48)
-exe 'vert 1resize ' . ((&columns * 41 + 70) / 141)
-exe '2resize ' . ((&lines * 28 + 24) / 48)
-exe 'vert 2resize ' . ((&columns * 41 + 70) / 141)
-exe 'vert 3resize ' . ((&columns * 99 + 70) / 141)
+exe 'vert 1resize ' . ((&columns * 39 + 67) / 134)
+exe 'vert 2resize ' . ((&columns * 94 + 67) / 134)
 argglobal
 setlocal fdm=manual
 setlocal fde=0
@@ -42,29 +35,11 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 1 - ((0 * winheight(0) + 8) / 17)
+let s:l = 1 - ((0 * winheight(0) + 20) / 41)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
 1
-normal! 0
-wincmd w
-argglobal
-edit analyzer/plot_potential.r
-setlocal fdm=manual
-setlocal fde=0
-setlocal fmr={{{,}}}
-setlocal fdi=#
-setlocal fdl=0
-setlocal fml=1
-setlocal fdn=20
-setlocal fen
-silent! normal! zE
-let s:l = 17 - ((16 * winheight(0) + 14) / 28)
-if s:l < 1 | let s:l = 1 | endif
-exe s:l
-normal! zt
-17
 normal! 0
 wincmd w
 argglobal
@@ -83,29 +58,22 @@ normal! zo
 normal! zo
 74
 normal! zo
-202
-normal! zo
-262
-normal! zo
 300
 normal! zo
-329
-normal! zo
+300
+normal! zc
 390
 normal! zo
-let s:l = 313 - ((28 * winheight(0) + 23) / 46)
+let s:l = 121 - ((0 * winheight(0) + 20) / 41)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-313
+121
 normal! 09|
 wincmd w
-3wincmd w
-exe '1resize ' . ((&lines * 17 + 24) / 48)
-exe 'vert 1resize ' . ((&columns * 41 + 70) / 141)
-exe '2resize ' . ((&lines * 28 + 24) / 48)
-exe 'vert 2resize ' . ((&columns * 41 + 70) / 141)
-exe 'vert 3resize ' . ((&columns * 99 + 70) / 141)
+2wincmd w
+exe 'vert 1resize ' . ((&columns * 39 + 67) / 134)
+exe 'vert 2resize ' . ((&columns * 94 + 67) / 134)
 tabnext 1
 if exists('s:wipebuf')
   silent exe 'bwipe ' . s:wipebuf

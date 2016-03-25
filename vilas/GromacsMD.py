@@ -100,7 +100,7 @@ class GromacsMD(object):
 			groCmd += 'python2.7 pullana.py -px '+pullx_path+' -pf '+pullf_path+' -plot '+analyse_path+'/pull_force_time.png '+analyse_path+'/pull_force_distance.png -log '+analyse_path+'/pull_data.csv -v '+pull_vec+'\n'
 			groCmd += 'python2.7 mathplot.py -i md/rmsd.xvg -o '+analyse_path+'/rmsd.png\n'
 			# analyze cmd
-			cmd_analyze = 'python2.7 LabpiAnalyzer.py --gro '+run_path+'/md/md.gro --trj '+run_path+'/md/md.xtc --mdp '+run_path+'/mdp/md.mdp --tpr '+run_path+'/md/md.tpr --start 0 --end 5 --receptor Receptor --ligand '+ligandCurrent+ ' --run '+run_path+' --analyze '+main_path+'/analyse '
+			cmd_analyze = 'python2.7 LabpiAnalyzer.py --gro '+run_path+'/md/md.gro --trj '+run_path+'/md/md.xtc --mdp '+run_path+'/mdp/md.mdp --tpr '+run_path+'/md/md.tpr --start 0 --end 20 --receptor Receptor --ligand '+ligandCurrent+ ' --run '+run_path+' --analyze '+main_path+'/analyse '
 			if self.GroLeft.replace(' ','') != '':
 				cmd_analyze += ' --gleft '+self.GroLeft 
 			if self.GroRight.replace(' ','') != '':

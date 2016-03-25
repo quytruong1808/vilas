@@ -26,8 +26,8 @@ or
 7. Pymol
 `sudo apt-get install pymol`
 
-8. Xmgrace
-`sudo apt-get install grace`
+8. R base
+`sudo apt-get install r-base`
 
 9. ANTECHAMBER - download: http://ambermd.org/AmberTools14-get.html
 ```
