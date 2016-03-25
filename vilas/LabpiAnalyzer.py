@@ -30,6 +30,7 @@ class GromacsAnalyzer(object):
     analyze = ''
     GroLeft = ''
     GroRight = ''
+
     def __init__(self):
                 # pdbFile,
                 # grofile,
@@ -78,7 +79,7 @@ class GromacsAnalyzer(object):
         print "wthelelelelle"
         print self.runfolder
         os.chdir(runfolder)
-        acpype = glob('*.acpype')
+        # acpype = glob('*.acpype')
         if pdbChain2 != '':
             a = prody.parsePDB(str(pdbFile)).select('('+pdbChain1+')' + ' and within 5 of chain ' + pdbChain2)
             residList = np.array(list(sorted(set(a.getResnums()))), dtype='str')
@@ -92,7 +93,7 @@ class GromacsAnalyzer(object):
             receptor = prody.parsePDB(str(pdbFile))
             Ligand = []
             # for i in range(len(acpype)):
-                # Ligand.append(str(acpype[i].strip('.acpype')))
+            # Ligand.append(str(acpype[i].strip('.acpype')))
             # print "is it a bug here??"
             # print Ligand
             # ligand = []
@@ -249,7 +250,7 @@ class GromacsAnalyzer(object):
             contents[i] = contents[i].split()
         # print contents
         tranpose = np.transpose(contents)
-        frames = tranpose[0]
+        # frames = tranpose[0]
         # print frames
         tranpose = np.delete(tranpose, 0, axis=0)
         # print tranpose
@@ -351,7 +352,6 @@ class GromacsAnalyzer(object):
 
         # copy plot_potential.r and cutoff-resid-5angstroms file to
         # plot_potential folder
-<<<<<<< HEAD
         try:
             copy(runfolder + '/../plot_potential.r', runfolder + 'plot_potential')
         except IOError, e:
@@ -360,10 +360,7 @@ class GromacsAnalyzer(object):
             copy(residFile, runfolder + 'plot_potential')
         except IOError, e:
             print "Unable to copy file. %s" % e
-=======
-        copy(runfolder + '/plot_potential.r', runfolder + '/plot_potential')
-        copy(residFile, runfolder + '/plot_potential')
->>>>>>> a5c9db3cd8e43fc2039574d846dd88f14689c5f8
+
         # call R script
         call('rm mean.dat', shell=True)
         call('R CMD BATCH plot_potential.r', shell=True)
@@ -397,7 +394,7 @@ class GromacsAnalyzer(object):
 
     def main(self, argv):
         try:
-            opts, args = getopt.getopt(argv, "hh:i:",["pro=", "gro=", "trj=", "mdp=", "tpr=", "start=", "end=", "rechain=", "lichain=", "receptor=", "ligand=", "root=", "run=", "analyze=", "gleft=", "gright="])
+            opts, args = getopt.getopt(argv, "hh:i:", ["pro=", "gro=", "trj=", "mdp=", "tpr=", "start=", "end=", "rechain=", "lichain=", "receptor=", "ligand=", "root=", "run=", "analyze=", "gleft=", "gright="])
         except getopt.GetoptError:
             print 'input error for LabpiAnalyzer'
             exit(2)
@@ -455,14 +452,14 @@ class GromacsAnalyzer(object):
             elif opt in ("--gright"):
                 self.GroRight = arg
             elif opt in ("-i"):
-                if arg.replace(' ','') == 'True' or arg.replace(' ','') == 'true':
+                if arg.replace(' ', '') == 'True' or arg.replace(' ', '') == 'true':
                     self.resid, self.residFile = self.Resid(self.pdbFile, self.pdbChain1, self.pdbChain2, self.conjugateGroup, self.runfolder)
                     residList = self.resid
 
                     self.copyScript(self.rootAnalyzer, self.runfolder)
                     os.chdir(self.runfolder)
 
-                elif arg.replace(' ','') == 'False' or arg.replace(' ','') == 'false':
+                elif arg.replace(' ', '') == 'False' or arg.replace(' ', '') == 'false':
                     # call('rm -rf '+self.runfolder+'/residues/*', shell=True)
                     call('cp '+self.runfolder+'/index.ndx '+self.runfolder+'/residues/', shell=True)
                     call('cp '+self.runfolder+'/potential.plot '+self.runfolder+'/residues/', shell=True)
@@ -474,10 +471,10 @@ class GromacsAnalyzer(object):
                     call('cp '+self.runfolder+'/tranpose.csv '+self.runfolder+'/residues/', shell=True)
                     call('cp '+self.runfolder+'/plot_potential.r '+self.runfolder+'/residues/', shell=True)
 
-                    with open('cutoff-resid-5angstroms','r') as line:
+                    with open('cutoff-resid-5angstroms', 'r') as line:
                         contents = line.readlines()
-                        if len(contents)>0:
-                            residList = list(contents[0].replace('\n',' ').split(' '))
+                        if len(contents) > 0:
+                            residList = list(contents[0].replace('\n', ' ').split(' '))
                     self.resid = residList
 
                     for i in range(len(residList)):
@@ -496,9 +493,8 @@ class GromacsAnalyzer(object):
                     for i in range(len(residList)):
                         self.change_Header(str(residList[i]), self.runfolder + '/residues')
 
-
-                    self.R_mean(self.runfolder+'/cutoff-resid-5angstroms', self.runfolder + '/residues')
-                    self.plotPotential(self.runfolder+'/cutoff-resid-5angstroms', self.runfolder + '/residues', self.analyze)
+                    self.R_mean(self.runfolder + '/cutoff-resid-5angstroms', self.runfolder + '/residues')
+                    self.plotPotential(self.runfolder + '/cutoff-resid-5angstroms', self.runfolder + '/residues', self.analyze)
 
                     # Calculate Hydrogen bond & plot
                     self.g_hbond(str(self.group), str(self.conjugateGroup), self.start_time, self.end_time, self.tprfile, self.trajfile, self.runfolder + '/residues')
