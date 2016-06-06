@@ -30,6 +30,7 @@ class GromacsAnalyzer(object):
     analyze = ''
     GroLeft = ''
     GroRight = ''
+
     def __init__(self):
                 # pdbFile,
                 # grofile,
@@ -78,7 +79,7 @@ class GromacsAnalyzer(object):
         print "wthelelelelle"
         print self.runfolder
         os.chdir(runfolder)
-        acpype = glob('*.acpype')
+        # acpype = glob('*.acpype')
         if pdbChain2 != '':
             a = prody.parsePDB(str(pdbFile)).select('('+pdbChain1+')' + ' and within 5 of chain ' + pdbChain2)
             residList = np.array(list(sorted(set(a.getResnums()))), dtype='str')
@@ -92,7 +93,7 @@ class GromacsAnalyzer(object):
             receptor = prody.parsePDB(str(pdbFile))
             Ligand = []
             # for i in range(len(acpype)):
-                # Ligand.append(str(acpype[i].strip('.acpype')))
+            # Ligand.append(str(acpype[i].strip('.acpype')))
             # print "is it a bug here??"
             # print Ligand
             # ligand = []
@@ -383,30 +384,30 @@ class GromacsAnalyzer(object):
 
     def main(self, argv):
         try:
-            opts, args = getopt.getopt(argv, "hh:i:",["pro=", "gro=", "trj=", "mdp=", "tpr=", "start=", "end=", "rechain=", "lichain=", "receptor=", "ligand=", "root=", "run=", "analyze=", "gleft=", "gright="])
+            opts, args = getopt.getopt(argv, "hh:i:", ["pro=", "gro=", "trj=", "mdp=", "tpr=", "start=", "end=", "rechain=", "lichain=", "receptor=", "ligand=", "root=", "run=", "analyze=", "gleft=", "gright="])
         except getopt.GetoptError:
             print 'input error for LabpiAnalyzer'
             exit(2)
         for opt, arg in opts:
             if opt == '-h':
                 print """
-    Attribute:
-        pdbFile: filename of the .pdb file
-        grofile: filename of .grofile
-        trajfile: filename of trajectory file. Eg: .xtc file, .trr file
-        mdMdpFile: filename of .mdp file used for MD simulation
-        tprfile: filename of .tpr file
-        start_time: time to start calculate hbond
-        end_time: time to end calculate hbond
-        pdbChain1: chain name of receptor in pdb file
-        pdbChain2: chain name of ligand in pdb file
-        group: group of molecules to calculate hbond forms between itself and conjugate group
-        conjugateGroup: conjugate group of the one mentioned above
-        rootAnalyzer: path of LabpiAnalyzer.py
-        runfolder: absolute path of folder contains all .gro, traj.trr, .xtc, .ndx, .mdp,... file
-        GroLeft: prefix of gromacs packages
-        GroRight: suffix of gromacs packages
-    """
+            Attribute:
+                pdbFile: filename of the .pdb file
+                grofile: filename of .grofile
+                trajfile: filename of trajectory file. Eg: .xtc file, .trr file
+                mdMdpFile: filename of .mdp file used for MD simulation
+                tprfile: filename of .tpr file
+                start_time: time to start calculate hbond
+                end_time: time to end calculate hbond
+                pdbChain1: chain name of receptor in pdb file
+                pdbChain2: chain name of ligand in pdb file
+                group: group of molecules to calculate hbond forms between itself and conjugate group
+                conjugateGroup: conjugate group of the one mentioned above
+                rootAnalyzer: path of LabpiAnalyzer.py
+                runfolder: absolute path of folder contains all .gro, traj.trr, .xtc, .ndx, .mdp,... file
+                GroLeft: prefix of gromacs packages
+                GroRight: suffix of gromacs packages
+                    """
                 exit()
             elif opt in ("--pro"):
                 self.pdbFile = arg
@@ -441,21 +442,21 @@ class GromacsAnalyzer(object):
             elif opt in ("--gright"):
                 self.GroRight = arg
             elif opt in ("-i"):
-                if arg.replace(' ','') == 'True' or arg.replace(' ','') == 'true':
+                if arg.replace(' ', '') == 'True' or arg.replace(' ', '') == 'true':
                     self.resid, self.residFile = self.Resid(self.pdbFile, self.pdbChain1, self.pdbChain2, self.conjugateGroup, self.runfolder)
                     residList = self.resid
 
                     self.copyScript(self.rootAnalyzer, self.runfolder)
                     os.chdir(self.runfolder)
 
-                elif arg.replace(' ','') == 'False' or arg.replace(' ','') == 'false':
+                elif arg.replace(' ', '') == 'False' or arg.replace(' ', '') == 'false':
                     call('rm -rf '+self.runfolder+'/residues/*', shell=True)
                     call('cp '+self.runfolder+'/index.ndx '+self.runfolder+'/residues/', shell=True)
 
-                    with open('cutoff-resid-5angstroms','r') as line:
+                    with open('cutoff-resid-5angstroms', 'r') as line:
                         contents = line.readlines()
-                        if len(contents)>0:
-                            residList = list(contents[0].replace('\n',' ').split(' '))
+                        if len(contents) > 0:
+                            residList = list(contents[0].replace('\n', ' ').split(' '))
                     self.resid = residList
 
                     for i in range(len(residList)):
@@ -480,7 +481,7 @@ class GromacsAnalyzer(object):
                     # Calculate Hydrogen bond & plot
                     self.g_hbond(str(self.group), str(self.conjugateGroup), self.start_time, self.end_time, self.tprfile, self.trajfile, self.runfolder + '/residues')
                     self.plotHbond(str(self.runfolder) + '/residues', self.analyze)
-                    filelist = glob(runfolder + '/residues' + '/*.png') + glob(runfolder + '/*/*.xvg')
+                    filelist = glob(self.runfolder + '/residues' + '/*.png') + glob(self.runfolder + '/*/*.xvg')
                     print filelist
                     os.makedirs(self.analyze)
                     for i in filelist:
