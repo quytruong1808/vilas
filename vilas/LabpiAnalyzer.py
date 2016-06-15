@@ -76,7 +76,7 @@ class GromacsAnalyzer(object):
         """
         Return a list of residue in `Receptor` which distance from `Ligand` is less or equal 5 angstroms.
         """
-        print "wthelelelelle"
+        # print "wthelelelelle"
         print self.runfolder
         os.chdir(runfolder)
         # acpype = glob('*.acpype')
@@ -321,11 +321,24 @@ class GromacsAnalyzer(object):
         for i in range(1, len(a)):
             if contents[i].find('@') == 0 or contents[i].find('#') == 0:
                 contents[a[i]] = ''
-        print runfolder + '/' + str(resid) + '.dat'
+        print runfolder + '/plot_potential/' + str(resid) + '.dat'
         f = open(runfolder + '/plot_potential/' + str(resid) + '.dat', 'w')
         contents = "".join(contents)
         f.write(contents)
         f.close()
+
+    def read_potential_dat(self, resid, runfolder):
+        """
+        Read residue.dat file using numpy. Return mean value of potential
+        and standard deviation of potential of the residue.
+        """
+        os.chdir(str(runfolder) + '/plot_potential')
+        data = np.genfromtxt(resid + '.dat', dtype=float, delimiter='  ', names=True)
+        LJSRmean = data['LJSR'].mean()
+        LJSRdeviation = data['LJSR'].std()
+        CoulombSRmean = data['CoulombSR'].mean()
+        CoulombSRdeviation = data['CoulombSR'].std()
+        return float(LJSRmean), float(LJSRdeviation), float(CoulombSRmean), float(CoulombSRdeviation)
 
     def R_mean(self, residFile, runfolder):
         os.chdir(str(runfolder) + '/plot_potential')
@@ -350,10 +363,18 @@ class GromacsAnalyzer(object):
 
         # copy plot_potential.r and cutoff-resid-5angstroms file to
         # plot_potential folder
-        copy(runfolder + '/../plot_potential.r', runfolder + 'plot_potential')
-        copy(residFile, runfolder + 'plot_potential')
-        # call R script
-        call('R CMD BATCH plot_potential.r', shell=True)
+        copy(runfolder + '/../plot_potential.r', runfolder + '/plot_potential')
+        copy(residFile, runfolder + '/plot_potential')
+        # # call R script
+        # call('R CMD BATCH plot_potential.r', shell=True)
+
+        # Call read_potential_dat to calculate each residue's mean & deviation
+        f = open('mean.dat', 'w')
+        f.write('residue  meanLJ  sdLJ  meanCoulomb sdCoulomb meanPotential sdPotential\n')
+        for i in range(len(self.resid.split())):
+            a, b, c, d = self.read_potential_dat(i, runfolder)
+            f.write(i + ' ' + str(a) + ' ' + str(b) + ' ' + str(c) + ' ' + str(d) + ' ' + str(a + c) + ' ' + str(b + d) + '\n')
+        f.close()
 
     def plotPotential(self, residFile, runfolder, analyze):
         os.chdir(runfolder)
@@ -390,8 +411,7 @@ class GromacsAnalyzer(object):
             exit(2)
         for opt, arg in opts:
             if opt == '-h':
-                print """
-            Attribute:
+                print """ Attribute:
                 pdbFile: filename of the .pdb file
                 grofile: filename of .grofile
                 trajfile: filename of trajectory file. Eg: .xtc file, .trr file
@@ -406,8 +426,7 @@ class GromacsAnalyzer(object):
                 rootAnalyzer: path of LabpiAnalyzer.py
                 runfolder: absolute path of folder contains all .gro, traj.trr, .xtc, .ndx, .mdp,... file
                 GroLeft: prefix of gromacs packages
-                GroRight: suffix of gromacs packages
-                    """
+                GroRight: suffix of gromacs packages """
                 exit()
             elif opt in ("--pro"):
                 self.pdbFile = arg
