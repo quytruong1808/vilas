@@ -12,7 +12,7 @@ badd +382 LabpiAnalyzer.py
 badd +1 analyzer/plot_potential.r
 badd +6 analyzer/potential.plot
 badd +1 analyzer/test_hbond.plot
-badd +3 test.py
+badd +49 test.py
 badd +46 GromacsMD.py
 badd +973 LabpiRun.py
 badd +168 LabpiRunning.py
@@ -33,11 +33,7 @@ set nosplitbelow
 set nosplitright
 wincmd t
 set winheight=1 winwidth=1
-exe '1resize ' . ((&lines * 18 + 19) / 38)
-exe 'vert 1resize ' . ((&columns * 59 + 59) / 119)
-exe '2resize ' . ((&lines * 17 + 19) / 38)
-exe 'vert 2resize ' . ((&columns * 59 + 59) / 119)
-exe 'vert 3resize ' . ((&columns * 59 + 59) / 119)
+wincmd =
 argglobal
 setlocal fdm=expr
 setlocal fde=pymode#folding#expr(v:lnum)
@@ -47,7 +43,7 @@ setlocal fdl=0
 setlocal fml=1
 setlocal fdn=20
 setlocal fen
-let s:l = 49 - ((17 * winheight(0) + 9) / 18)
+let s:l = 49 - ((25 * winheight(0) + 13) / 26)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -55,7 +51,7 @@ normal! zt
 normal! 0
 wincmd w
 argglobal
-edit LabpiAnalyzer.py
+edit LabpiRun.py
 setlocal fdm=expr
 setlocal fde=pymode#folding#expr(v:lnum)
 setlocal fmr={{{,}}}
@@ -64,12 +60,21 @@ setlocal fdl=0
 setlocal fml=1
 setlocal fdn=20
 setlocal fen
-let s:l = 382 - ((373 * winheight(0) + 8) / 17)
+450
+normal! zo
+751
+normal! zo
+let s:l = 483 - ((0 * winheight(0) + 8) / 17)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-382
-normal! 0
+483
+let s:c = 73 - ((32 * winwidth(0) + 35) / 70)
+if s:c > 0
+  exe 'normal! ' . s:c . '|zs' . 73 . '|'
+else
+  normal! 073|
+endif
 wincmd w
 argglobal
 edit LabpiAnalyzer.py
@@ -81,18 +86,15 @@ setlocal fdl=0
 setlocal fml=1
 setlocal fdn=20
 setlocal fen
-let s:l = 382 - ((381 * winheight(0) + 18) / 36)
+let s:l = 12 - ((11 * winheight(0) + 25) / 51)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-382
-normal! 0
+12
+normal! 012|
 wincmd w
-exe '1resize ' . ((&lines * 18 + 19) / 38)
-exe 'vert 1resize ' . ((&columns * 59 + 59) / 119)
-exe '2resize ' . ((&lines * 17 + 19) / 38)
-exe 'vert 2resize ' . ((&columns * 59 + 59) / 119)
-exe 'vert 3resize ' . ((&columns * 59 + 59) / 119)
+2wincmd w
+wincmd =
 tabnext 1
 if exists('s:wipebuf')
   silent exe 'bwipe ' . s:wipebuf
