@@ -455,7 +455,7 @@ class GromacsRun(object):
 
       mdpFolder = main_path+'/run/'+runfolders[x]+'/mdp'
 
-      nsteps = int(self.dataController.getdata('nvt-nsteps '))/0.002
+      nsteps = int(int(self.dataController.getdata('nvt-nsteps '))/0.002)
       nstout = self.dataController.getdata('nvt-nst ')
       self.replaceLine('nsteps', 'nsteps     = '+str(nsteps)+'\n', mdpFolder+'/nvt.mdp')
       self.replaceLine('nstxout', 'nstxout     = '+str(nstout)+'\n', mdpFolder+'/nvt.mdp')
@@ -463,7 +463,7 @@ class GromacsRun(object):
       self.replaceLine('nstenergy', 'nstenergy     = '+str(nstout)+'\n', mdpFolder+'/nvt.mdp')
       self.replaceLine('nstlog', 'nstlog     = '+str(nstout)+'\n', mdpFolder+'/nvt.mdp')
 
-      nsteps = int(self.dataController.getdata('npt-nsteps '))/0.002
+      nsteps = int(int(self.dataController.getdata('npt-nsteps '))/0.002)
       nstout = self.dataController.getdata('npt-nst ')
       self.replaceLine('nsteps', 'nsteps     = '+str(nsteps)+'\n', mdpFolder+'/npt.mdp')
       self.replaceLine('nstxout', 'nstxout     = '+str(nstout)+'\n', mdpFolder+'/npt.mdp')
@@ -471,7 +471,7 @@ class GromacsRun(object):
       self.replaceLine('nstenergy', 'nstenergy     = '+str(nstout)+'\n', mdpFolder+'/npt.mdp')
       self.replaceLine('nstlog', 'nstlog     = '+str(nstout)+'\n', mdpFolder+'/npt.mdp')
 
-      nsteps = int(self.dataController.getdata('md-nsteps '))/0.002
+      nsteps = int(int(self.dataController.getdata('md-nsteps '))/0.002)
       nstout = self.dataController.getdata('md-nst ')
       self.replaceLine('nsteps', 'nsteps     = '+str(nsteps)+'\n', mdpFolder+'/md.mdp')
       self.replaceLine('nstxout', 'nstxout     = '+str(nstout)+'\n', mdpFolder+'/md.mdp')
