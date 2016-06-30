@@ -108,7 +108,8 @@ class RunningScreen(Screen):
 
         #Check log
         repeat_times = int(self.dataController.getdata('repeat_times '))
-        self.progressUnit = 1000/(4.5 + repeat_times)/len(Variable.parsepdb.Ligands)
+        time_config = ( int(self.dataController.getdata('nvt-nsteps ')) + int(self.dataController.getdata('npt-nsteps ')) + int(self.dataController.getdata('md-nsteps ')))/ int( self.dataController.getdata('smd-nsteps ') ) 
+        self.progressUnit = 1000/(0.5 + time_config + repeat_times)/len(Variable.parsepdb.Ligands)
         self.progressPoint = 0
         self.dataController.setdata('status', '')
         Clock.schedule_interval(self.check_log, 5)
@@ -174,7 +175,7 @@ class RunningScreen(Screen):
                 self.nvtImg.source = self.root_path+'/img/tick_select.png'
                 if self.checkNVT == False: 
                     self.checkNVT = True
-                    self.progressPoint += self.progressUnit*0.5
+                    self.progressPoint += self.progressUnit* int(self.dataController.getdata('nvt-nsteps '))/int(self.dataController.getdata('smd-nsteps '))
                     self.progressText.text = 'ViLAS is running at NPT step'
             else:
                 self.nvtImg.source = self.root_path+'/img/tick_normal.png'
@@ -185,7 +186,7 @@ class RunningScreen(Screen):
                 self.nptImg.source = self.root_path+'/img/tick_select.png'
                 if self.checkNPT == False: 
                     self.checkNPT = True
-                    self.progressPoint += self.progressUnit*0.5
+                    self.progressPoint += self.progressUnit*int(self.dataController.getdata('npt-nsteps '))/int(self.dataController.getdata('smd-nsteps '))
                     self.progressText.text = 'ViLAS is running at MD step'
             else:
                 self.nptImg.source = self.root_path+'/img/tick_normal.png'
@@ -196,7 +197,7 @@ class RunningScreen(Screen):
                 self.mdImg.source = self.root_path+'/img/tick_select.png'
                 if self.checkMD == False: 
                     self.checkMD = True
-                    self.progressPoint += self.progressUnit
+                    self.progressPoint += self.progressUnit*int(self.dataController.getdata('md-nsteps '))/int(self.dataController.getdata('smd-nsteps '))
                     self.progressText.text = 'ViLAS is running at SMD step'
             else:
                 self.mdImg.source = self.root_path+'/img/tick_normal.png'
@@ -204,7 +205,7 @@ class RunningScreen(Screen):
 
             # TODO: check percent import signal
             smd_log = 0
-            for x in range(0, int(repeat_times)):
+            for x in range(1, int(repeat_times)+1):
                 smd_path_x = run_path + '/smd/md_st_'+str(x)+'.gro'
                 if os.path.isfile(smd_path_x) == True:
                     smd_log+=1
@@ -217,7 +218,7 @@ class RunningScreen(Screen):
                         self.progressPoint += self.progressUnit
             self.smdLog.text = str(smd_log)+'/'+str(repeat_times)
 
-            smd_path_last = run_path + '/smd/md_st_'+str(repeat_times-1)+'.gro' 
+            smd_path_last = run_path + '/smd/md_st_'+str(repeat_times)+'.gro' 
             if os.path.isfile(smd_path_last) == True:
                 self.smdImg.source = self.root_path+'/img/tick_select.png'
             else:
