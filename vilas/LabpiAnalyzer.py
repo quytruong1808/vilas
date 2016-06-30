@@ -2,6 +2,7 @@
 
 # from GromacsMD import GromacsMD
 import numpy as np
+import matplotlib.pyplot as plt
 # from Utils import DataController
 from subprocess import call, Popen, PIPE  # check_output,
 # import subprocess
@@ -370,38 +371,35 @@ class GromacsAnalyzer(object):
 
         # Call read_potential_dat to calculate each residue's mean & deviation
         f = open('mean.dat', 'w')
-        f.write('residue  meanLJ  sdLJ  meanCoulomb sdCoulomb meanPotential sdPotential\n')
+        f.write('residue  meanLJ  sdLJ  meanCoulomb  sdCoulomb  meanPotential  sdPotential\n')
         for i in range(len(self.resid.split())):
             a, b, c, d = self.read_potential_dat(i, runfolder)
-            f.write(i + ' ' + str(a) + ' ' + str(b) + ' ' + str(c) + ' ' + str(d) + ' ' + str(a + c) + ' ' + str(b + d) + '\n')
+            f.write(i + '  ' + str(a) + '  ' + str(b) + '  ' + str(c) + '  ' + str(d) + '  ' + str(a + c) + '  ' + str(b + d) + '\n')
         f.close()
 
     def plotPotential(self, residFile, runfolder, analyze):
-        os.chdir(runfolder)
-        resid = self.resid
+        os.chdir(runfolder + '/plot_potential')
 
-        # read potential.plot file
-        f = open('plot_potential.plot', 'r')
-        contents = f.readlines()
-        f.close()
+        data = np.genfromtxt('mean.dat', dtype=float, delimiter='  ', names=True)
+        plt.figure()
+        plt.errorbar(x=data['residue'], y=data['meanPotential'], yerr=data['sdPotential'])
+        plt.title("Potential between each residue and ligand")
+        plt.ylabel("Potential (kJ/mol)")
+        plt.xlabel("residue ID")
 
-        # Change xrange, i.e. change name of residue to be displayed
-        xran = 'set xrange[' + str(int(resid[0]) - 1) + ':' + str(int(resid[-1]) + 1) + ']\n'
-        for i in range(len(contents)):
-            if contents[i].find('set xrange') == 0:
-                contents[i] = xran
-        print 'modified hbond.plot file'
+        plt.figure()
+        plt.errorbar(x=data['residue'], y=data['meanCoulomb'], yerr=data['sdCoulomb'])
+        plt.title("Coulomb potential between each residue and ligand")
+        plt.ylabel("Potential (kJ/mol)")
+        plt.xlabel("residue ID")
 
-        # Check contents and write to file
-        # print contents
-        f = open('plot_potential.plot', 'w')
-        contents = "".join(contents)
-        # print contents
-        f.write(contents)
-        f.close()
+        plt.figure()
+        plt.errorbar(x=data['residue'], y=data['meanLJ'], yerr=data['sdLJ'])
+        plt.title("Van der Waal potential between each residue and ligand")
+        plt.ylabel("Potential (kJ/mol)")
+        plt.xlabel("residue ID")
 
-        # call gnuplot
-        Popen(['gnuplot', 'plot_potential.plot'])
+        plt.show()
 
     def main(self, argv):
         try:
@@ -489,6 +487,7 @@ class GromacsAnalyzer(object):
                         self.mdrun(str(residList[i]), self.trajfile, self.runfolder + '/residues')
 
                     # Calculate potential & plot
+                    os.makedirs(self.analyze)
                     for i in range(len(residList)):
                         self.g_energy(str(residList[i]), str(self.conjugateGroup), self.runfolder + '/residues')
                     for i in range(len(residList)):
@@ -502,7 +501,6 @@ class GromacsAnalyzer(object):
                     self.plotHbond(str(self.runfolder) + '/residues', self.analyze)
                     filelist = glob(self.runfolder + '/residues' + '/*.png') + glob(self.runfolder + '/*/*.xvg')
                     print filelist
-                    os.makedirs(self.analyze)
                     for i in filelist:
                         copy(i, str(self.analyze))
 
