@@ -2,6 +2,7 @@
 
 # from GromacsMD import GromacsMD
 import numpy as np
+import matplotlib.pyplot as plt
 # from Utils import DataController
 from subprocess import call, Popen, PIPE  # check_output,
 # import subprocess
@@ -30,6 +31,7 @@ class GromacsAnalyzer(object):
     analyze = ''
     GroLeft = ''
     GroRight = ''
+
     def __init__(self):
                 # pdbFile,
                 # grofile,
@@ -75,10 +77,10 @@ class GromacsAnalyzer(object):
         """
         Return a list of residue in `Receptor` which distance from `Ligand` is less or equal 5 angstroms.
         """
-        print "wthelelelelle"
+        # print "wthelelelelle"
         print self.runfolder
         os.chdir(runfolder)
-        acpype = glob('*.acpype')
+        # acpype = glob('*.acpype')
         if pdbChain2 != '':
             a = prody.parsePDB(str(pdbFile)).select('('+pdbChain1+')' + ' and within 5 of chain ' + pdbChain2)
             residList = np.array(list(sorted(set(a.getResnums()))), dtype='str')
@@ -92,7 +94,7 @@ class GromacsAnalyzer(object):
             receptor = prody.parsePDB(str(pdbFile))
             Ligand = []
             # for i in range(len(acpype)):
-                # Ligand.append(str(acpype[i].strip('.acpype')))
+            # Ligand.append(str(acpype[i].strip('.acpype')))
             # print "is it a bug here??"
             # print Ligand
             # ligand = []
@@ -203,12 +205,14 @@ class GromacsAnalyzer(object):
         """Calculate hbond between group1 and group2, time unit: ps"""
         os.chdir(runfolder)
         if self.GroLeft == 'gmx ':
+            # print self.GroLeft + 'hbond' + self.GroRight + ' -n index.ndx -s ' + tprfile + ' -f ' + trajfile + ' -num hbond.xvg -hbn hbond.ndx -hbm hbond.xpm -b ' + start_time + ' -e ' + end_time
             ghbond = self.GroLeft + 'hbond' + self.GroRight + ' -n index.ndx -s ' + tprfile + ' -f ' + trajfile + ' -num hbond.xvg -hbn hbond.ndx -hbm hbond.xpm -b ' + start_time + ' -e ' + end_time
         else:
+            # print self.GroLeft + 'g_hbond' + self.GroRight + ' -n index.ndx -s ' + tprfile + ' -f ' + trajfile + ' -num hbond.xvg -hbn hbond.ndx -hbm hbond.xpm -b ' + start_time + ' -e ' + end_time
             ghbond = self.GroLeft + 'g_hbond' + self.GroRight + ' -n index.ndx -s ' + tprfile + ' -f ' + trajfile + ' -num hbond.xvg -hbn hbond.ndx -hbm hbond.xpm -b ' + start_time + ' -e ' + end_time
         a = Popen(ghbond, shell=True, stdin=PIPE)
         a.communicate(group1 + '\n' + group2 + '\n')[0]
-        readhbondmap = 'python readHBmap.py -hbn hbond.ndx -hbm hbond.xpm -t 10'
+        readhbondmap = 'python2.7 readHBmap.py -hbn hbond.ndx -hbm hbond.xpm -t 10'
         Popen(readhbondmap, shell=True)
 
     def getXvgLegend(self, xvgfile, runfolder):
@@ -245,12 +249,12 @@ class GromacsAnalyzer(object):
         contents.remove('\n')
         for i in range(len(contents)):
             contents[i] = contents[i].split()
-        print contents
+        # print contents
         tranpose = np.transpose(contents)
-        frames = tranpose[0]
-        print frames
+        # frames = tranpose[0]
+        # print frames
         tranpose = np.delete(tranpose, 0, axis=0)
-        print tranpose
+        # print tranpose
         f = open('tranpose.csv', 'w')
         for i in range(0, len(tranpose)):
             for j in range(0, len(tranpose[i])):
@@ -286,10 +290,10 @@ class GromacsAnalyzer(object):
                 contents[i] = yrange
 
         # Check contents and write to file
-        print contents
+        # print contents
         f = open('test_hbond.plot', 'w')
         contents = "".join(contents)
-        print contents
+        # print contents
         f.write(contents)
         f.close()
 
@@ -320,11 +324,24 @@ class GromacsAnalyzer(object):
         for i in range(1, len(a)):
             if contents[i].find('@') == 0 or contents[i].find('#') == 0:
                 contents[a[i]] = ''
-        print runfolder + '/' + str(resid) + '.dat'
+        # print runfolder + '/plot_potential/' + str(resid) + '.dat'
         f = open(runfolder + '/plot_potential/' + str(resid) + '.dat', 'w')
         contents = "".join(contents)
         f.write(contents)
         f.close()
+
+    def read_potential_dat(self, resid, runfolder):
+        """
+        Read residue.dat file using numpy. Return mean value of potential
+        and standard deviation of potential of the residue.
+        """
+        os.chdir(str(runfolder) + '/plot_potential')
+        data = np.genfromtxt(resid + '.dat', dtype=float, delimiter='  ', names=True)
+        LJSRmean = data['LJSR'].mean()
+        LJSRdeviation = data['LJSR'].std()
+        CoulombSRmean = data['CoulombSR'].mean()
+        CoulombSRdeviation = data['CoulombSR'].std()
+        return float(LJSRmean), float(LJSRdeviation), float(CoulombSRmean), float(CoulombSRdeviation)
 
     def R_mean(self, residFile, runfolder):
         os.chdir(str(runfolder) + '/plot_potential')
@@ -349,64 +366,74 @@ class GromacsAnalyzer(object):
 
         # copy plot_potential.r and cutoff-resid-5angstroms file to
         # plot_potential folder
-        copy(runfolder + '/../plot_potential.r', runfolder + 'plot_potential')
-        copy(residFile, runfolder + 'plot_potential')
-        # call R script
-        call('R CMD BATCH plot_potential.r', shell=True)
+        try:
+            copy(runfolder + '/../plot_potential.r', runfolder + 'plot_potential')
+        except IOError, e:
+            print "Unable to copy file. %s" % e
+        try:
+            copy(residFile, runfolder + 'plot_potential')
+        except IOError, e:
+            print "Unable to copy file. %s" % e
+
+        # # call R script
+        # call('R CMD BATCH plot_potential.r', shell=True)
+
+        # Call read_potential_dat to calculate each residue's mean & deviation
+        f = open('mean.dat', 'w')
+        f.write('residue  meanLJ  sdLJ  meanCoulomb  sdCoulomb  meanPotential  sdPotential\n')
+        for i in range(len(self.resid.split())):
+            a, b, c, d = self.read_potential_dat(i, runfolder)
+            f.write(i + '  ' + str(a) + '  ' + str(b) + '  ' + str(c) + '  ' + str(d) + '  ' + str(a + c) + '  ' + str(b + d) + '\n')
+        f.close()
 
     def plotPotential(self, residFile, runfolder, analyze):
-        os.chdir(runfolder)
-        resid = self.resid
+        os.chdir(runfolder + '/plot_potential')
 
-        # read potential.plot file
-        f = open('plot_potential.plot', 'r')
-        contents = f.readlines()
-        f.close()
+        data = np.genfromtxt('mean.dat', dtype=float, delimiter='  ', names=True)
+        plt.figure()
+        plt.errorbar(x=data['residue'], y=data['meanPotential'], yerr=data['sdPotential'])
+        plt.title("Potential between each residue and ligand")
+        plt.ylabel("Potential (kJ/mol)")
+        plt.xlabel("residue ID")
 
-        # Change xrange, i.e. change name of residue to be displayed
-        xran = 'set xrange[' + str(int(resid[0]) - 1) + ':' + str(int(resid[-1]) + 1) + ']\n'
-        for i in range(len(contents)):
-            if contents[i].find('set xrange') == 0:
-                contents[i] = xran
-        print 'modified hbond.plot file'
+        plt.figure()
+        plt.errorbar(x=data['residue'], y=data['meanCoulomb'], yerr=data['sdCoulomb'])
+        plt.title("Coulomb potential between each residue and ligand")
+        plt.ylabel("Potential (kJ/mol)")
+        plt.xlabel("residue ID")
 
-        # Check contents and write to file
-        # print contents
-        f = open('plot_potential.plot', 'w')
-        contents = "".join(contents)
-        # print contents
-        f.write(contents)
-        f.close()
+        plt.figure()
+        plt.errorbar(x=data['residue'], y=data['meanLJ'], yerr=data['sdLJ'])
+        plt.title("Van der Waal potential between each residue and ligand")
+        plt.ylabel("Potential (kJ/mol)")
+        plt.xlabel("residue ID")
 
-        # call gnuplot
-        Popen(['gnuplot', 'plot_potential.plot'])
+        plt.show()
 
     def main(self, argv):
         try:
-            opts, args = getopt.getopt(argv, "hh:i:",["pro=", "gro=", "trj=", "mdp=", "tpr=", "start=", "end=", "rechain=", "lichain=", "receptor=", "ligand=", "root=", "run=", "analyze=", "gleft=", "gright="])
+            opts, args = getopt.getopt(argv, "hh:i:", ["pro=", "gro=", "trj=", "mdp=", "tpr=", "start=", "end=", "rechain=", "lichain=", "receptor=", "ligand=", "root=", "run=", "analyze=", "gleft=", "gright="])
         except getopt.GetoptError:
             print 'input error for LabpiAnalyzer'
             exit(2)
         for opt, arg in opts:
             if opt == '-h':
-                print """
-    Attribute:
-        pdbFile: filename of the .pdb file
-        grofile: filename of .grofile
-        trajfile: filename of trajectory file. Eg: .xtc file, .trr file
-        mdMdpFile: filename of .mdp file used for MD simulation
-        tprfile: filename of .tpr file
-        start_time: time to start calculate hbond
-        end_time: time to end calculate hbond
-        pdbChain1: chain name of receptor in pdb file
-        pdbChain2: chain name of ligand in pdb file
-        group: group of molecules to calculate hbond forms between itself and conjugate group
-        conjugateGroup: conjugate group of the one mentioned above
-        rootAnalyzer: path of LabpiAnalyzer.py
-        runfolder: absolute path of folder contains all .gro, traj.trr, .xtc, .ndx, .mdp,... file
-        GroLeft: prefix of gromacs packages
-        GroRight: suffix of gromacs packages
-    """
+                print """ Attribute:
+                pdbFile: filename of the .pdb file
+                grofile: filename of .grofile
+                trajfile: filename of trajectory file. Eg: .xtc file, .trr file
+                mdMdpFile: filename of .mdp file used for MD simulation
+                tprfile: filename of .tpr file
+                start_time: time to start calculate hbond
+                end_time: time to end calculate hbond
+                pdbChain1: chain name of receptor in pdb file
+                pdbChain2: chain name of ligand in pdb file
+                group: group of molecules to calculate hbond forms between itself and conjugate group
+                conjugateGroup: conjugate group of the one mentioned above
+                rootAnalyzer: path of LabpiAnalyzer.py
+                runfolder: absolute path of folder contains all .gro, traj.trr, .xtc, .ndx, .mdp,... file
+                GroLeft: prefix of gromacs packages
+                GroRight: suffix of gromacs packages """
                 exit()
             elif opt in ("--pro"):
                 self.pdbFile = arg
@@ -441,21 +468,29 @@ class GromacsAnalyzer(object):
             elif opt in ("--gright"):
                 self.GroRight = arg
             elif opt in ("-i"):
-                if arg.replace(' ','') == 'True' or arg.replace(' ','') == 'true':
+                if arg.replace(' ', '') == 'True' or arg.replace(' ', '') == 'true':
                     self.resid, self.residFile = self.Resid(self.pdbFile, self.pdbChain1, self.pdbChain2, self.conjugateGroup, self.runfolder)
                     residList = self.resid
 
                     self.copyScript(self.rootAnalyzer, self.runfolder)
                     os.chdir(self.runfolder)
 
-                elif arg.replace(' ','') == 'False' or arg.replace(' ','') == 'false':
-                    call('rm -rf '+self.runfolder+'/residues/*', shell=True)
+                elif arg.replace(' ', '') == 'False' or arg.replace(' ', '') == 'false':
+                    # call('rm -rf '+self.runfolder+'/residues/*', shell=True)
                     call('cp '+self.runfolder+'/index.ndx '+self.runfolder+'/residues/', shell=True)
+                    call('cp '+self.runfolder+'/potential.plot '+self.runfolder+'/residues/', shell=True)
+                    call('cp '+self.runfolder+'/hbond.plot '+self.runfolder+'/residues/', shell=True)
+                    call('cp '+self.runfolder+'/occupancy.xvg '+self.runfolder+'/residues/', shell=True)
+                    call('cp '+self.runfolder+'/cutoff-resid-5angstroms '+self.runfolder+'/residues/', shell=True)
+                    call('cp '+self.runfolder+'/readHBmap.py '+self.runfolder+'/residues/', shell=True)
+                    call('cp '+self.runfolder+'/test_hbond.plot '+self.runfolder+'/residues/', shell=True)
+                    call('cp '+self.runfolder+'/tranpose.csv '+self.runfolder+'/residues/', shell=True)
+                    call('cp '+self.runfolder+'/plot_potential.r '+self.runfolder+'/residues/', shell=True)
 
-                    with open('cutoff-resid-5angstroms','r') as line:
+                    with open('cutoff-resid-5angstroms', 'r') as line:
                         contents = line.readlines()
-                        if len(contents)>0:
-                            residList = list(contents[0].replace('\n',' ').split(' '))
+                        if len(contents) > 0:
+                            residList = list(contents[0].replace('\n', ' ').split(' '))
                     self.resid = residList
 
                     for i in range(len(residList)):
@@ -469,20 +504,20 @@ class GromacsAnalyzer(object):
                         self.mdrun(str(residList[i]), self.trajfile, self.runfolder + '/residues')
 
                     # Calculate potential & plot
+                    os.makedirs(self.analyze)
                     for i in range(len(residList)):
                         self.g_energy(str(residList[i]), str(self.conjugateGroup), self.runfolder + '/residues')
                     for i in range(len(residList)):
                         self.change_Header(str(residList[i]), self.runfolder + '/residues')
 
-                    self.R_mean(self.runfolder+'/cutoff-resid-5angstroms', self.runfolder + '/residues')
-                    self.plotPotential(self.runfolder+'/cutoff-resid-5angstroms', self.runfolder + '/residues', self.analyze)
+                    self.R_mean(self.runfolder + '/cutoff-resid-5angstroms', self.runfolder + '/residues')
+                    self.plotPotential(self.runfolder + '/cutoff-resid-5angstroms', self.runfolder + '/residues', self.analyze)
 
                     # Calculate Hydrogen bond & plot
                     self.g_hbond(str(self.group), str(self.conjugateGroup), self.start_time, self.end_time, self.tprfile, self.trajfile, self.runfolder + '/residues')
                     self.plotHbond(str(self.runfolder) + '/residues', self.analyze)
-                    filelist = glob(runfolder + '/residues' + '/*.png') + glob(runfolder + '/*/*.xvg')
+                    filelist = glob(self.runfolder + '/residues' + '/*.png') + glob(self.runfolder + '/*/*.xvg')
                     print filelist
-                    os.makedirs(self.analyze)
                     for i in filelist:
                         copy(i, str(self.analyze))
 
