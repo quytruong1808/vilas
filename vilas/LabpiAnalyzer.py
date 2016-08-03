@@ -212,7 +212,7 @@ class GromacsAnalyzer(object):
             ghbond = self.GroLeft + 'g_hbond' + self.GroRight + ' -n index.ndx -s ' + tprfile + ' -f ' + trajfile + ' -num hbond.xvg -hbn hbond.ndx -hbm hbond.xpm -b ' + start_time + ' -e ' + end_time
         a = Popen(ghbond, shell=True, stdin=PIPE)
         a.communicate(group1 + '\n' + group2 + '\n')[0]
-        readhbondmap = 'python2.7 readHBmap.py -hbn hbond.ndx -hbm hbond.xpm -t 10'
+        readhbondmap = 'python2.7 readHBmap.py -hbn hbond.ndx -hbm hbond.xpm -t 10 -f md.gro -dt 10'
         Popen(readhbondmap, shell=True)
 
     def getXvgLegend(self, xvgfile, runfolder):
@@ -238,7 +238,7 @@ class GromacsAnalyzer(object):
 
     def genTranposeFile(self, xvgfile, runfolder):
         os.chdir(runfolder)
-        f = open('occupancy.xvg', 'r')
+        f = open(xvgfile, 'r')
         start, contents = 0, []
         for start, line in enumerate(f):
             if (line.find('@') != -1) or (line.find('#') != -1):
@@ -256,14 +256,15 @@ class GromacsAnalyzer(object):
         tranpose = np.delete(tranpose, 0, axis=0)
         # print tranpose
         f = open('tranpose.csv', 'w')
-        for i in range(0, len(tranpose)):
+        for i in range(0, tranpose.shape[0]):
             for j in range(0, len(tranpose[i])):
                 f.write(tranpose[i][j] + '\t')
                 if j == (len(tranpose[i]) - 1):
                     f.write('\n')
         f.close()
+        return tranpose
 
-    def plotHbond(self, runfolder, analyze):
+    def plotHbond(self, runfolder, xvgfile):
         os.chdir(runfolder)
         f = open('hbond.plot', 'r')
         contents = f.readlines()
@@ -271,7 +272,7 @@ class GromacsAnalyzer(object):
 
         # Change ytics, i.e. change name of residue to be displayed
         blah = ''
-        list_of_occupant = self.getXvgLegend('occupancy.xvg', runfolder)
+        list_of_occupant = self.getXvgLegend(xvgfile, runfolder)
         for i in range(len(list_of_occupant)):
             if i == len(list_of_occupant) - 1:
                 blah += '"' + str(list_of_occupant[i]) + '" ' + str(i)
@@ -298,7 +299,7 @@ class GromacsAnalyzer(object):
         f.close()
 
         # Generate tranpose.csv file & execute GNUplot
-        self.genTranposeFile('occupancy.xvg', runfolder)
+        self.genTranposeFile(xvgfile, runfolder)
         call('gnuplot test_hbond.plot', shell=True)
 
     def change_Header(self, resid, runfolder):
@@ -351,29 +352,29 @@ class GromacsAnalyzer(object):
             residue = self.resid
 
         # modify plot_potential.r file
-        f = open(runfolder + '/../plot_potential.r', 'r')
-        contents = f.readlines()
-        f.close()
-        for i in range(len(contents)):
-            if contents[i].find('cutoff') == 0:
-                contents[i] = residue
-        # print contents
-        f = open('plot_potential.plot', 'w')
-        contents = "".join(contents)
-        # print contents
-        f.write(contents)
-        f.close()
+        # f = open(runfolder + '/../plot_potential.r', 'r')
+        # contents = f.readlines()
+        # f.close()
+        # for i in range(len(contents)):
+            # if contents[i].find('cutoff') == 0:
+                # contents[i] = residue
+        # # print contents
+        # f = open('plot_potential.plot', 'w')
+        # contents = "".join(contents)
+        # # print contents
+        # f.write(contents)
+        # f.close()
 
         # copy plot_potential.r and cutoff-resid-5angstroms file to
         # plot_potential folder
-        try:
-            copy(runfolder + '/../plot_potential.r', runfolder + 'plot_potential')
-        except IOError, e:
-            print "Unable to copy file. %s" % e
-        try:
-            copy(residFile, runfolder + 'plot_potential')
-        except IOError, e:
-            print "Unable to copy file. %s" % e
+        # try:
+            # copy(runfolder + '/../plot_potential.r', runfolder + 'plot_potential')
+        # except IOError, e:
+            # print "Unable to copy file. %s" % e
+        # try:
+            # copy(residFile, runfolder + 'plot_potential')
+        # except IOError, e:
+            # print "Unable to copy file. %s" % e
 
         # # call R script
         # call('R CMD BATCH plot_potential.r', shell=True)
