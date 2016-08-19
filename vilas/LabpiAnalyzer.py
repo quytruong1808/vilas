@@ -12,6 +12,7 @@ import os
 import prody
 from shutil import copy
 from glob import glob
+import time
 
 
 class GromacsAnalyzer(object):
@@ -550,6 +551,7 @@ class GromacsAnalyzer(object):
 
                     # Calculate Hydrogen bond & plot
                     self.g_hbond(str(self.group), str(self.conjugateGroup), self.start_time, self.end_time, self.tprfile, self.trajfile, self.runfolder)
+                    time.sleep(3)
                     if not self.hbondLog:
                         self.plotHbond(str(self.runfolder), self.runfolder + 'occupancy.xvg')
                     else:
