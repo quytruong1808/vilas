@@ -6,8 +6,10 @@ import matplotlib.pyplot as plt
 # from Utils import DataController
 from subprocess import call, Popen, PIPE  # check_output,
 # import subprocess
-from sys import argv, exit
-import getopt
+# from sys import argv, exit
+# import getopt
+from argparse import RawTextHelpFormatter
+import argparse
 import os
 import prody
 from shutil import copy
@@ -216,7 +218,7 @@ class GromacsAnalyzer(object):
         print "%s" % output
         print output.find('No hydrogen bonds found')
         if output.find('No hydrogen bonds found') == -1:
-            readhbondmap = 'python2.7 readHBmap.py -hbn hbond.ndx -hbm hbond.xpm -t 10 -f md.gro -dt 10'
+            readhbondmap = 'python2.7 readHBmap.py -hbn hbond.ndx -hbm hbond.xpm -t 0 -f md.gro -dt 10'
             Popen(readhbondmap, shell=True)
             self.hbondLog, self.hbondStdOut = False, output
         else:
@@ -274,6 +276,9 @@ class GromacsAnalyzer(object):
         return tranpose
 
     def plotHbond(self, runfolder, xvgfile):
+        """modify hbond.plot and call gnuplot to export image. Input needs:runfolder, xvgfile.
+        You must put hbond.plot file in the runfolder. You can modify test_hbond.plot after
+        this function run to change the output of gnuplot."""
         os.chdir(runfolder)
         f = open('hbond.plot', 'r')
         contents = f.readlines()
@@ -306,6 +311,12 @@ class GromacsAnalyzer(object):
         for i in range(len(contents)):
             if contents[i].find('set xrange') == 0:
                 contents[i] = x_range
+
+        # Change output image file name
+        output_image = "set output 'hbond" + str(self.group) + ".png'"
+        for i in range(len(contents)):
+            if contents[i].find('set output') == 0:
+                contents[i] = output_image
 
         # Check contents and write to file
         # print contents
@@ -374,18 +385,18 @@ class GromacsAnalyzer(object):
 
     def R_mean(self, residFile, runfolder):
         os.chdir(str(runfolder) + '/plot_potential')
-        if residFile != '':
-            residue = 'residues <- read.table("' + str(residFile) + '",header=F)'
-        else:
-            residue = self.resid
+        # if residFile != '':
+        #     residue = 'residues <- read.table("' + str(residFile) + '",header=F)'
+        # else:
+        #     residue = self.resid
 
         # modify plot_potential.r file
         # f = open(runfolder + '/../plot_potential.r', 'r')
         # contents = f.readlines()
         # f.close()
         # for i in range(len(contents)):
-            # if contents[i].find('cutoff') == 0:
-                # contents[i] = residue
+        #     if contents[i].find('cutoff') == 0:
+        #         contents[i] = residue
         # # print contents
         # f = open('plot_potential.plot', 'w')
         # contents = "".join(contents)
@@ -396,13 +407,13 @@ class GromacsAnalyzer(object):
         # copy plot_potential.r and cutoff-resid-5angstroms file to
         # plot_potential folder
         # try:
-            # copy(runfolder + '/../plot_potential.r', runfolder + 'plot_potential')
+        #     copy(runfolder + '/../plot_potential.r', runfolder + 'plot_potential')
         # except IOError, e:
-            # print "Unable to copy file. %s" % e
+        #     print "Unable to copy file. %s" % e
         # try:
-            # copy(residFile, runfolder + 'plot_potential')
+        #     copy(residFile, runfolder + 'plot_potential')
         # except IOError, e:
-            # print "Unable to copy file. %s" % e
+        #     print "Unable to copy file. %s" % e
 
         # # call R script
         # call('R CMD BATCH plot_potential.r', shell=True)
@@ -425,110 +436,112 @@ class GromacsAnalyzer(object):
         plt.title("Potential between each residue and ligand")
         plt.ylabel("Potential (kJ/mol)")
         plt.xlabel("residue ID")
-        plt.savefig(analyze + '/Potential.eps', bbox_inches='tight')
+        plt.savefig(analyze + '/Potential_' + self.conjugateGroup + '.eps', bbox_inches='tight')
 
         plt.figure()
         plt.errorbar(x=data['residue'], y=data['meanCoulomb'], yerr=data['sdCoulomb'])
         plt.title("Coulomb potential between each residue and ligand")
         plt.ylabel("Potential (kJ/mol)")
         plt.xlabel("residue ID")
-        plt.savefig(analyze + '/Coulomb.pdf', bbox_inches='tight')
+        plt.savefig(analyze + '/Coulomb_' + self.conjugateGroup + '.pdf', bbox_inches='tight')
 
         plt.figure()
         plt.errorbar(x=data['residue'], y=data['meanLJ'], yerr=data['sdLJ'])
         plt.title("Van der Waal potential between each residue and ligand")
         plt.ylabel("Potential (kJ/mol)")
         plt.xlabel("residue ID")
-        plt.savefig(analyze + '/VdW.pdf', bbox_inches='tight')
+        plt.savefig(analyze + '/VdW_' + self.conjugateGroup + '.pdf', bbox_inches='tight')
         # plt.show()
 
-    def main(self, argv):
-        try:
-            opts, args = getopt.getopt(argv, "hh:i:", ["pro=", "gro=", "trj=", "mdp=", "tpr=", "start=", "end=", "rechain=", "lichain=", "receptor=", "ligand=", "root=", "run=", "analyze=", "gleft=", "gright="])
-        except getopt.GetoptError:
-            print 'input error for LabpiAnalyzer'
-            exit(2)
-        for opt, arg in opts:
-            if opt == '-h':
-                print """ Attribute:
-                pdbFile: filename of the .pdb file
-                grofile: filename of .grofile
-                trajfile: filename of trajectory file. Eg: .xtc file, .trr file
-                mdMdpFile: filename of .mdp file used for MD simulation
-                tprfile: filename of .tpr file
-                start_time: time to start calculate hbond
-                end_time: time to end calculate hbond
-                pdbChain1: chain name of receptor in pdb file
-                pdbChain2: chain name of ligand in pdb file
-                group: group of molecules to calculate hbond forms between itself and conjugate group
-                conjugateGroup: conjugate group of the one mentioned above
-                rootAnalyzer: path of LabpiAnalyzer.py
-                runfolder: absolute path of folder contains all .gro, traj.trr, .xtc, .ndx, .mdp,... file
-                GroLeft: prefix of gromacs packages
-                GroRight: suffix of gromacs packages """
-                exit()
-            elif opt in ("--pro"):
-                self.pdbFile = arg
-            elif opt in ("--gro"):
-                self.grofile = arg
-            elif opt in ("--trj"):
-                self.trajfile = arg
-            elif opt in ("--mdp"):
-                self.mdMdpFile = arg
-            elif opt in ("--tpr"):
-                self.tprfile = arg
-            elif opt in ("--start"):
-                self.start_time = arg
-            elif opt in ("--end"):
-                self.end_time = arg
-            elif opt in ("--rechain"):
-                self.pdbChain1 = arg
-            elif opt in ("--lichain"):
-                self.pdbChain2 = arg
-            elif opt in ("--receptor"):
-                self.group = arg
-            elif opt in ("--ligand"):
-                self.conjugateGroup = arg
-            elif opt in ("--root"):
-                self.rootAnalyzer = arg
-            elif opt in ("--run"):
-                self.runfolder = arg
-            elif opt in ("--analyze"):
-                self.analyze = arg
-            elif opt in ("--gleft"):
-                self.GroLeft = arg
-            elif opt in ("--gright"):
-                self.GroRight = arg
-            elif opt in ("-i"):
-                if arg.replace(' ', '') == 'True' or arg.replace(' ', '') == 'true':
+    def main(self):
+        # try:
+            # opts, args = getopt.getopt(argv, "hh:i:", ["pro=", "gro=", "trj=", "mdp=", "tpr=", "start=", "end=", "rechain=", "lichain=", "receptor=", "ligand=", "root=", "run=", "analyze=", "gleft=", "gright="])
+        # except getopt.GetoptError:
+            # print 'input error for LabpiAnalyzer'
+            # exit(2)
+        # for opt, arg in opts:
+            # if opt == '-h':
+                # print """ Attribute:
+                # pdbFile: filename of the .pdb file
+                # grofile: filename of .grofile
+                # trajfile: filename of trajectory file. Eg: .xtc file, .trr file
+                # mdMdpFile: filename of .mdp file used for MD simulation
+                # tprfile: filename of .tpr file
+                # start_time: time to start calculate hbond
+                # end_time: time to end calculate hbond
+                # pdbChain1: chain name of receptor in pdb file
+                # pdbChain2: chain name of ligand in pdb file
+                # group: group of molecules to calculate hbond forms between itself and conjugate group
+                # conjugateGroup: conjugate group of the one mentioned above
+                # rootAnalyzer: path of LabpiAnalyzer.py
+                # runfolder: absolute path of folder contains all .gro, traj.trr, .xtc, .ndx, .mdp,... file
+                # GroLeft: prefix of gromacs packages
+                # GroRight: suffix of gromacs packages """
+                # exit()
+            # elif opt in ("--pro"):
+                # self.pdbFile = arg
+            # elif opt in ("--gro"):
+                # self.grofile = arg
+            # elif opt in ("--trj"):
+                # self.trajfile = arg
+            # elif opt in ("--mdp"):
+                # self.mdMdpFile = arg
+            # elif opt in ("--tpr"):
+                # self.tprfile = arg
+            # elif opt in ("--start"):
+                # self.start_time = arg
+            # elif opt in ("--end"):
+                # self.end_time = arg
+            # elif opt in ("--rechain"):
+                # self.pdbChain1 = arg
+            # elif opt in ("--lichain"):
+                # self.pdbChain2 = arg
+            # elif opt in ("--receptor"):
+                # self.group = arg
+            # elif opt in ("--ligand"):
+                # self.conjugateGroup = arg
+            # elif opt in ("--root"):
+                # self.rootAnalyzer = arg
+            # elif opt in ("--run"):
+                # self.runfolder = arg
+            # elif opt in ("--analyze"):
+                # self.analyze = arg
+            # elif opt in ("--gleft"):
+                # self.GroLeft = arg
+            # elif opt in ("--gright"):
+                # self.GroRight = arg
+            # elif opt in ("-i"):
+                # if arg.replace(' ', '') == 'True' or arg.replace(' ', '') == 'true':
+                    # self.copyScript(self.rootAnalyzer, self.runfolder)
+                    # os.chdir(self.runfolder)
+
+                # elif arg.replace(' ', '') == 'False' or arg.replace(' ', '') == 'false':
+                    # call('rm -rf '+self.runfolder+'/residues/*', shell=True)
+                    # call('cp '+self.runfolder+'/index.ndx '+self.runfolder+'/residues/', shell=True)
+                    # call('cp '+self.runfolder+'/potential.plot '+self.runfolder+'/residues/', shell=True)
+                    # call('cp '+self.runfolder+'/hbond.plot '+self.runfolder+'/residues/', shell=True)
+                    # call('cp '+self.runfolder+'/occupancy.xvg '+self.runfolder+'/residues/', shell=True)
+                    # call('cp '+self.runfolder+'/cutoff-resid-5angstroms '+self.runfolder+'/residues/', shell=True)
+                    # call('cp '+self.runfolder+'/readHBmap.py '+self.runfolder+'/residues/', shell=True)
+                    # call('cp '+self.runfolder+'/test_hbond.plot '+self.runfolder+'/residues/', shell=True)
+                    # call('cp '+self.runfolder+'/tranpose.csv '+self.runfolder+'/residues/', shell=True)
+                    # call('cp '+self.runfolder+'/plot_potential.r '+self.runfolder+'/residues/', shell=True)
+
+                    # with open('cutoff-resid-5angstroms', 'r') as line:
+                        # contents = line.readlines()
+                        # if len(contents) > 0:
+                            # residList = list(contents[0].replace('\n', ' ').split(' '))
+                    # self.resid = residList
+
                     self.resid, self.residFile = self.Resid(self.pdbFile, self.pdbChain1, self.pdbChain2, self.conjugateGroup, self.runfolder)
                     residList = self.resid
 
                     self.copyScript(self.rootAnalyzer, self.runfolder)
                     os.chdir(self.runfolder)
-
-                elif arg.replace(' ', '') == 'False' or arg.replace(' ', '') == 'false':
-                    # call('rm -rf '+self.runfolder+'/residues/*', shell=True)
-                    call('cp '+self.runfolder+'/index.ndx '+self.runfolder+'/residues/', shell=True)
-                    call('cp '+self.runfolder+'/potential.plot '+self.runfolder+'/residues/', shell=True)
-                    call('cp '+self.runfolder+'/hbond.plot '+self.runfolder+'/residues/', shell=True)
-                    call('cp '+self.runfolder+'/occupancy.xvg '+self.runfolder+'/residues/', shell=True)
-                    call('cp '+self.runfolder+'/cutoff-resid-5angstroms '+self.runfolder+'/residues/', shell=True)
-                    call('cp '+self.runfolder+'/readHBmap.py '+self.runfolder+'/residues/', shell=True)
-                    call('cp '+self.runfolder+'/test_hbond.plot '+self.runfolder+'/residues/', shell=True)
-                    call('cp '+self.runfolder+'/tranpose.csv '+self.runfolder+'/residues/', shell=True)
-                    call('cp '+self.runfolder+'/plot_potential.r '+self.runfolder+'/residues/', shell=True)
-
-                    with open('cutoff-resid-5angstroms', 'r') as line:
-                        contents = line.readlines()
-                        if len(contents) > 0:
-                            residList = list(contents[0].replace('\n', ' ').split(' '))
-                    self.resid = residList
-
                     if not os.path.isdir(self.runfolder + '/residues'):
                         os.makedirs(self.runfolder + '/residues')
                     try:
-                        copy(self.runfolder +'/index.ndx', self.runfolder +'/residues')
+                        copy(self.runfolder + '/index.ndx', self.runfolder + '/residues')
                     except IOError, e:
                         print "Unable to copy index file. %s" % e
                     for i in range(len(residList)):
@@ -537,7 +550,10 @@ class GromacsAnalyzer(object):
                     # rerun
                     for i in range(len(residList)):
                         self.mkdir(str(residList[i]), self.conjugateGroup, self.mdMdpFile, self.runfolder + '/residues')
-                        self.mdrun(str(residList[i]), self.trajfile, self.runfolder + '/residues')
+                        if not os.path.isfile(self.runfolder + '/residues/' + residList[i] + '/energy' + residList[i] + '.xvg'):
+                            self.mdrun(str(residList[i]), self.trajfile, self.runfolder + '/residues')
+                        else:
+                            pass
 
                     # Calculate potential & plot
                     # os.makedirs(self.analyze)
@@ -553,12 +569,208 @@ class GromacsAnalyzer(object):
                     self.g_hbond(str(self.group), str(self.conjugateGroup), self.start_time, self.end_time, self.tprfile, self.trajfile, self.runfolder)
                     time.sleep(3)
                     if not self.hbondLog:
-                        self.plotHbond(str(self.runfolder), self.runfolder + 'occupancy.xvg')
+                        self.plotHbond(str(self.runfolder), self.runfolder + '/occupancy.xvg')
                     else:
                         self.hbondLogOut(self.analyze)
 
                     # call('rm -rf '+self.runfolder+'/residues/\#*', shell=True)
 
+
+def connection():
+    o = open('connection.txt', 'r')
+    lines = []
+    connection = {}
+    for i, line in enumerate(o):
+        lines.append(line)
+        connection[str(lines[i].split()[1].split('.')[0])] = str(lines[i].split()[0])
+    return connection
+
 if __name__ == "__main__":
-    A = GromacsAnalyzer()
-    A.main(argv[1:])
+    container = os.path.dirname(os.path.abspath(__file__))
+    parser = argparse.ArgumentParser(description='\tPython script (version > 2.7.x) to analyze potential and hydrogen bond between\n'\
+                                     '\ta ligand (or a chain of molecules) and the receptor using output files from\n'\
+                                     '\tGROMACS. LabpiAnalyzer is an automated program analyzing data from MD process.\n'\
+                                     '\tThe script outputs 3 images which show potential of the ligand and nearest residues\n'\
+                                     '\tof receptor and 1 images which show hydrogen bond (if there is).\n'
+                                     '\tYou can use LabpiAnalyzer to analyze potential & hydrogen bonds from SMD process\n'\
+                                     '\tproviding manual tag (--manual) and specify input files.\n'\
+                                     '\tThe script use readHBmap.py of Ricardo O. S. Soares, PhD.\n'\
+                                     '\tDefault value of threshold pass through is 10%, default value of timestep is 10\n'\
+                                     '\tto match the MD process. You can call plotHbond() function seperately to\n'\
+                                     '\tplot xvg data files manually generated from readHBmap.py', formatter_class=RawTextHelpFormatter)
+    parser.add_argument('--root', dest='rootAnalyzer',
+                        help='Input, directory which install vilas (default: /home/quyngan/Documents/vilas/vilas/vilas).')
+    parser.add_argument('--runfolder', dest='runfolder',
+                        help='Input, directory containing data files.')
+    parser.add_argument('--pdb', dest='pdbFile',
+                        help='Input, pdb file of receptor or the whole molecules.')
+    parser.add_argument('--gro', dest='grofile',
+                        help='Input, gro file of the whole system.')
+    parser.add_argument('--mdp', dest='mdMdpFile',
+                        help='Input, mdp file of the process to be analyzed.')
+    parser.add_argument('--traj', dest='trajfile',
+                        help='Input, trajectory (.xtc or .trr) file of the process to be analyzed.')
+    parser.add_argument('--tpr', dest='tprfile',
+                        help='Input, tpr file of the process.')
+    parser.add_argument('--analyze', dest='analyze',
+                        help='Input, destination to copy all result.')
+    parser.add_argument('--start', dest='start_time', default='0',
+                        help='Input, start time to calculate hydrogen bond.')
+    parser.add_argument('--end', dest='end_time', default='1000',
+                        help='Input, end time to calculate hydrogen bond.')
+    parser.add_argument('--chain1', dest='pdbChain1', default='chain A',
+                        help='Input, chain name of receptor in pdb file.')
+    parser.add_argument('--chain2', dest='pdbChain2', default='',
+                        help='Input, chain name of group to calculate potential and hydrogen bond with receptor.')
+    parser.add_argument('--group1', dest='group', default='Receptor',
+                        help='Input, name of receptor group of molecules in index file.')
+    parser.add_argument('--group2', dest='conjugateGroup',
+                        help='Input, name of ligand or group of molecules in index file,\n'\
+                        '\twhich to be calculated potential and hydrogen bond with receptor.')
+    parser.add_argument('--groleft', dest='GroLeft',
+                        help='Input, prefix of GROMACS.')
+    parser.add_argument('--groright', dest='GroRight',
+                        help='Input, suffix of GROMACS.')
+    args = parser.parse_args()
+    print 'pwd: %s' % container
+    try:
+        listLigand = connection()
+        for key, value in listLigand.iteritems():
+            if args.runfolder is None:
+                runfolder = container + '/run_' + str(key)
+            else:
+                runfolder = args.runfolder
+            if args.rootAnalyzer is None:
+                rootAnalyzer = '/home/quyngan/Documents/vilas/vilas/vilas'
+            else:
+                rootAnalyzer = args.rootAnalyzer
+            if args.pdbFile is None:
+                pdbFile = runfolder + '/protein.pdb'
+            else:
+                pdbFile = args.pdbFile
+            if args.grofile is None:
+                grofile = runfolder + '/md.gro'
+            else:
+                grofile = args.grofile
+            if args.mdMdpFile is None:
+                mdMdpFile = runfolder + '/mdp/md_md.mdp'
+            else:
+                mdMdpFile = args.mdMdpFile
+            if args.trajfile is None:
+                trajfile = runfolder + '/md.xtc'
+            else:
+                trajfile = args.trajfile
+            if args.tprfile is None:
+                tprfile = runfolder + '/md.tpr'
+            else:
+                tprfile = args.tprfile
+            if args.analyze is None:
+                analyze = runfolder + '/../../analyse'
+            else:
+                analyze = args.analyze
+            if args.conjugateGroup is None:
+                conjugateGroup = str(key)
+            else:
+                conjugateGroup = args.conjugateGroup
+            if args.GroLeft is None:
+                GroLeft = 'gmx '
+            else:
+                GroLeft = args.GroLeft
+            if args.GroRight is None:
+                GroRight = ''
+            else:
+                GroRight = args.GroRight
+            start_time = args.start_time
+            end_time = args.end_time
+            pdbChain1 = args.pdbChain1
+            pdbChain2 = args.pdbChain2
+            group = args.group
+
+            b = GromacsAnalyzer()
+            b.rootAnalyzer = rootAnalyzer
+            b.runfolder = runfolder
+            b.pdbFile = pdbFile
+            b.grofile = grofile
+            b.mdMdpFile = mdMdpFile
+            b.trajfile = trajfile
+            b.tprfile = tprfile
+            b.analyze = analyze
+            b.start_time = start_time
+            b.end_time = end_time
+            b.pdbChain1 = pdbChain1
+            b.pdbChain2 = pdbChain2
+            b.group = group
+            b.conjugateGroup = conjugateGroup
+            b.GroLeft = GroLeft
+            b.GroRight = GroRight
+            b.main()
+    except IOError, e:
+        print "%s" % e
+        if args.runfolder is None:
+            runfolder = container + '/run_A01'
+        else:
+            runfolder = args.runfolder
+        if args.rootAnalyzer is None:
+            rootAnalyzer = '/home/quyngan/Documents/vilas/vilas/vilas'
+        else:
+            rootAnalyzer = args.rootAnalyzer
+        if args.pdbFile is None:
+            pdbFile = runfolder + '/protein.pdb'
+        else:
+            pdbFile = args.pdbFile
+        if args.grofile is None:
+            grofile = runfolder + '/md.gro'
+        else:
+            grofile = args.grofile
+        if args.mdMdpFile is None:
+            mdMdpFile = runfolder + '/mdp/md_md.mdp'
+        else:
+            mdMdpFile = args.mdMdpFile
+        if args.trajfile is None:
+            trajfile = runfolder + '/md.xtc'
+        else:
+            trajfile = args.trajfile
+        if args.tprfile is None:
+            tprfile = runfolder + '/md.tpr'
+        else:
+            tprfile = args.tprfile
+        if args.analyze is None:
+            analyze = runfolder + '/../../analyse'
+        else:
+            analyze = args.analyze
+        if args.conjugateGroup is None:
+            conjugateGroup = 'A01'
+        else:
+            conjugateGroup = args.conjugateGroup
+        if args.GroLeft is None:
+            GroLeft = 'gmx '
+        else:
+            GroLeft = args.GroLeft
+        if args.GroRight is None:
+            GroRight = ''
+        else:
+            GroRight = args.GroRight
+        start_time = args.start_time
+        end_time = args.end_time
+        pdbChain1 = args.pdbChain1
+        pdbChain2 = args.pdbChain2
+        group = args.group
+
+        b = GromacsAnalyzer()
+        b.rootAnalyzer = rootAnalyzer
+        b.runfolder = runfolder
+        b.pdbFile = pdbFile
+        b.grofile = grofile
+        b.mdMdpFile = mdMdpFile
+        b.trajfile = trajfile
+        b.tprfile = tprfile
+        b.analyze = analyze
+        b.start_time = start_time
+        b.end_time = end_time
+        b.pdbChain1 = pdbChain1
+        b.pdbChain2 = pdbChain2
+        b.group = group
+        b.conjugateGroup = conjugateGroup
+        b.GroLeft = GroLeft
+        b.GroRight = GroRight
+        b.main()
