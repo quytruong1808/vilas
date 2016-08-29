@@ -8,7 +8,7 @@ if expand('%') == '' && !&modified && line('$') <= 1 && getline(1) == ''
   let s:wipebuf = bufnr('%')
 endif
 set shortmess=aoO
-badd +487 LabpiAnalyzer.py
+badd +435 LabpiAnalyzer.py
 badd +1 analyzer/plot_potential.r
 badd +6 analyzer/potential.plot
 badd +9 analyzer/test_hbond.plot
@@ -33,67 +33,11 @@ badd +1 source/pullana.py
 argglobal
 silent! argdel *
 argadd LabpiAnalyzer.py
-edit LabpiAnalyzer.py
 set splitbelow splitright
 set nosplitbelow
 set nosplitright
 wincmd t
 set winheight=1 winwidth=1
-argglobal
-setlocal fdm=expr
-setlocal fde=pymode#folding#expr(v:lnum)
-setlocal fmr={{{,}}}
-setlocal fdi=#
-setlocal fdl=0
-setlocal fml=1
-setlocal fdn=20
-setlocal fen
-20
-normal! zo
-79
-normal! zo
-79
-normal! zc
-130
-normal! zo
-130
-normal! zc
-146
-normal! zo
-146
-normal! zc
-170
-normal! zo
-170
-normal! zc
-278
-normal! zo
-278
-normal! zc
-338
-normal! zo
-338
-normal! zc
-367
-normal! zo
-367
-normal! zc
-452
-normal! zo
-745
-normal! zo
-745
-normal! zo
-745
-normal! zo
-745
-normal! zo
-let s:l = 744 - ((50 * winheight(0) + 25) / 51)
-if s:l < 1 | let s:l = 1 | endif
-exe s:l
-normal! zt
-744
-normal! 058|
 tabnext 1
 if exists('s:wipebuf')
   silent exe 'bwipe ' . s:wipebuf

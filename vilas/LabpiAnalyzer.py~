@@ -559,46 +559,58 @@ if __name__ == "__main__":
         for key, value in listLigand.iteritems():
             if args.runfolder is None:
                 runfolder = container + '/run_' + str(key)
+                print "You have not parse runfolder variable. By default, it is " + runfolder
             else:
                 runfolder = args.runfolder
             if args.rootAnalyzer is None:
-                rootAnalyzer = '/home/quyngan/Documents/vilas/vilas/vilas'
+                assumedPath = os.path.dirname(os.path.dirname(os.path.abspath(prody.__file__))) + '/vilas'
+                rootAnalyzer = assumedPath
+                print "You have not parse rootAnalyzer variable. By default, it is " + rootAnalyzer
             else:
                 rootAnalyzer = args.rootAnalyzer
             if args.pdbFile is None:
                 pdbFile = runfolder + '/protein.pdb'
+                print "You have not parse pdbFile variable. By default, it is " + pdbFile
             else:
                 pdbFile = args.pdbFile
             if args.grofile is None:
                 grofile = runfolder + '/md.gro'
+                print "You have not parse grofile variable. By default, it is " + grofile
             else:
                 grofile = args.grofile
             if args.mdMdpFile is None:
                 mdMdpFile = runfolder + '/mdp/md_md.mdp'
+                print "You have not parse mdMdpFile variable. By default, it is " + mdMdpFile
             else:
                 mdMdpFile = args.mdMdpFile
             if args.trajfile is None:
                 trajfile = runfolder + '/md.xtc'
+                print "You have not parse trajfile variable. By default, it is " + trajfile
             else:
                 trajfile = args.trajfile
             if args.tprfile is None:
                 tprfile = runfolder + '/md.tpr'
+                print "You have not parse tprfile variable. By default, it is " + tprfile
             else:
                 tprfile = args.tprfile
             if args.analyze is None:
                 analyze = runfolder + '/../../analyse'
+                print "You have not parse analyze variable. By default, it is " + analyze
             else:
                 analyze = args.analyze
             if args.conjugateGroup is None:
                 conjugateGroup = str(key)
+                print "You have not parse conjugateGroup variable. By default, it is " + conjugateGroup
             else:
                 conjugateGroup = args.conjugateGroup
             if args.GroLeft is None:
                 GroLeft = 'gmx '
+                print "You have not parse GroLeft variable. By default, it is " + GroLeft
             else:
                 GroLeft = args.GroLeft
             if args.GroRight is None:
                 GroRight = ''
+                print "You have not parse GroRight variable. By default, it is " + GroRight
             else:
                 GroRight = args.GroRight
             start_time = args.start_time
@@ -629,47 +641,58 @@ if __name__ == "__main__":
         print "%s" % e
         if args.runfolder is None:
             runfolder = container + '/run_A01'
+            print "You have not parse runfolder variable. By default, it is " + runfolder
         else:
             runfolder = args.runfolder
         if args.rootAnalyzer is None:
             assumedPath = os.path.dirname(os.path.dirname(os.path.abspath(prody.__file__))) + '/vilas'
             rootAnalyzer = assumedPath
+            print "You have not parse rootAnalyzer variable. By default, it is " + rootAnalyzer
         else:
             rootAnalyzer = args.rootAnalyzer
         if args.pdbFile is None:
             pdbFile = runfolder + '/protein.pdb'
+            print "You have not parse pdbFile variable. By default, it is " + pdbFile
         else:
             pdbFile = args.pdbFile
         if args.grofile is None:
             grofile = runfolder + '/md.gro'
+            print "You have not parse grofile variable. By default, it is " + grofile
         else:
             grofile = args.grofile
         if args.mdMdpFile is None:
             mdMdpFile = runfolder + '/mdp/md_md.mdp'
+            print "You have not parse mdMdpFile variable. By default, it is " + mdMdpFile
         else:
             mdMdpFile = args.mdMdpFile
         if args.trajfile is None:
             trajfile = runfolder + '/md.xtc'
+            print "You have not parse trajfile variable. By default, it is " + trajfile
         else:
             trajfile = args.trajfile
         if args.tprfile is None:
             tprfile = runfolder + '/md.tpr'
+            print "You have not parse tprfile variable. By default, it is " + tprfile
         else:
             tprfile = args.tprfile
         if args.analyze is None:
             analyze = runfolder + '/../../analyse'
+            print "You have not parse analyze variable. By default, it is " + analyze
         else:
             analyze = args.analyze
         if args.conjugateGroup is None:
             conjugateGroup = 'A01'
+            print "You have not parse conjugateGroup variable. By default, it is " + conjugateGroup
         else:
             conjugateGroup = args.conjugateGroup
         if args.GroLeft is None:
             GroLeft = 'gmx '
+            print "You have not parse GroLeft variable. By default, it is " + GroLeft
         else:
             GroLeft = args.GroLeft
         if args.GroRight is None:
             GroRight = ''
+            print "You have not parse GroRight variable. By default, it is %r" %GroRight
         else:
             GroRight = args.GroRight
         start_time = args.start_time
