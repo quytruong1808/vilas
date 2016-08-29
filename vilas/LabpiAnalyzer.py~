@@ -632,7 +632,8 @@ if __name__ == "__main__":
         else:
             runfolder = args.runfolder
         if args.rootAnalyzer is None:
-            rootAnalyzer = '/home/quyngan/Documents/vilas/vilas/vilas'
+            assumedPath = os.path.dirname(os.path.dirname(os.path.abspath(prody.__file__))) + '/vilas'
+            rootAnalyzer = assumedPath
         else:
             rootAnalyzer = args.rootAnalyzer
         if args.pdbFile is None:

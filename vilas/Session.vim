@@ -80,20 +80,20 @@ normal! zo
 normal! zc
 452
 normal! zo
-722
+745
 normal! zo
-722
+745
 normal! zo
-722
+745
 normal! zo
-722
+745
 normal! zo
-let s:l = 636 - ((45 * winheight(0) + 25) / 51)
+let s:l = 744 - ((50 * winheight(0) + 25) / 51)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-636
-normal! 038|
+744
+normal! 058|
 tabnext 1
 if exists('s:wipebuf')
   silent exe 'bwipe ' . s:wipebuf
