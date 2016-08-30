@@ -9,12 +9,12 @@ set ytics ("1C  -340ILE" 0,"1C  -340ILE" 1,"8G  -279GLN" 2,"8G  -279GLN" 3,"322A
 set ztics border in scale 0,0 nomirror norotate  offset character 0, 0, 0 autojustify
 set nocbtics
 set rtics axis in scale 0,0 nomirror norotate  offset character 0, 0, 0 autojustify
-set title "Hydrogen-bonds percentage of each residue throughout MD simulation of 3L25 - above threshold of 10.00%"
+set title "Hydrogen-bonds percentage of each residue throughout MD simulation of Receptor - above threshold of 10.00%"
 
 set yrange[-0.5:15.5] noreverse nowriteback
 set xrange[-0.5:100.5] noreverse nowriteback
 set cbrange[0:100] noreverse nowriteback
-set xlabel "time (ps)"
+set xlabel "frames"
 set ylabel "residue"
 set cblabel "percentage"
 set palette rgbformula -7,2,-7
