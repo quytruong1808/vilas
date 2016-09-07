@@ -33,11 +33,57 @@ badd +1 source/pullana.py
 argglobal
 silent! argdel *
 argadd LabpiAnalyzer.py
+edit source/pullana.py
 set splitbelow splitright
 set nosplitbelow
 set nosplitright
 wincmd t
 set winheight=1 winwidth=1
+argglobal
+setlocal fdm=expr
+setlocal fde=pymode#folding#expr(v:lnum)
+setlocal fmr={{{,}}}
+setlocal fdi=#
+setlocal fdl=0
+setlocal fml=1
+setlocal fdn=20
+setlocal fen
+10
+normal! zo
+10
+normal! zc
+28
+normal! zo
+31
+normal! zo
+73
+normal! zo
+79
+normal! zo
+85
+normal! zo
+90
+normal! zo
+102
+normal! zo
+108
+normal! zo
+28
+normal! zc
+114
+normal! zo
+123
+normal! zo
+159
+normal! zo
+184
+normal! zo
+let s:l = 190 - ((52 * winheight(0) + 26) / 53)
+if s:l < 1 | let s:l = 1 | endif
+exe s:l
+normal! zt
+190
+normal! 05|
 tabnext 1
 if exists('s:wipebuf')
   silent exe 'bwipe ' . s:wipebuf
