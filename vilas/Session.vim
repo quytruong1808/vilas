@@ -8,7 +8,7 @@ if expand('%') == '' && !&modified && line('$') <= 1 && getline(1) == ''
   let s:wipebuf = bufnr('%')
 endif
 set shortmess=aoO
-badd +435 LabpiAnalyzer.py
+badd +540 LabpiAnalyzer.py
 badd +1 analyzer/plot_potential.r
 badd +6 analyzer/potential.plot
 badd +9 analyzer/test_hbond.plot
@@ -29,11 +29,11 @@ badd +42 ~/crc/Hoa/Hoa/Hoa/run/install.sh
 badd +81 analyzer/readHBmap.py
 badd +16 /media/quyngan/CoMoBioPhys/crc/testAnalyzer.py
 badd +1 analyzer/hbond.plot
-badd +1 source/pullana.py
+badd +143 source/pullana.py
 argglobal
 silent! argdel *
 argadd LabpiAnalyzer.py
-edit source/pullana.py
+edit LabpiAnalyzer.py
 set splitbelow splitright
 set nosplitbelow
 set nosplitright
@@ -48,42 +48,30 @@ setlocal fdl=0
 setlocal fml=1
 setlocal fdn=20
 setlocal fen
-10
+20
 normal! zo
-10
-normal! zc
-28
+278
 normal! zo
-31
+426
 normal! zo
-73
+452
 normal! zo
-79
+501
 normal! zo
-85
+747
 normal! zo
-90
+747
 normal! zo
-102
+747
 normal! zo
-108
+747
 normal! zo
-28
-normal! zc
-114
-normal! zo
-123
-normal! zo
-159
-normal! zo
-184
-normal! zo
-let s:l = 190 - ((52 * winheight(0) + 26) / 53)
+let s:l = 328 - ((121 * winheight(0) + 26) / 53)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-190
-normal! 05|
+328
+normal! 0
 tabnext 1
 if exists('s:wipebuf')
   silent exe 'bwipe ' . s:wipebuf
