@@ -47,39 +47,68 @@
 # fig.suptitle('Variable errorbars')
 
 # plt.show()
-import re
-import glob
+
+################# This is part of testing regular expresion builtin module #####
+# import re
+# import glob
+# import os
+# from subprocess import call, Popen, PIPE
+
+# def makeListOfResult():
+    # # Get the root directory of the project
+    # pwd = os.getcwd()
+    # files = glob.glob('log/*')
+
+    # # Pre-compile regex
+    # regex = re.compile(r"  1      *")
+    # ligands = []
+    # for i in files:
+        # # Open all log files and get 1st results
+        # with open(i) as f:
+            # for line in f:
+                # if regex.search(line):
+                    # idRank = regex.search(line)
+                    # ligands.append([os.path.split(i)[-1].split('_')[0], float(line.split()[1])])
+    # ligands.sort(key = lambda x: x[1])
+    # f = open('result.txt', 'w')
+    # for i in range(len(ligands)):
+        # f.write(str(ligands[i][0]) + "  " + str(ligands[i][1]) + "\n")
+    # f.close()
+    # # print ligands
+
+# def pickLigands(n):
+    # while k <= n:
+        # l
+
+
+# open('result.txt', 'r')
+# result = f.readlines()
+# f.close()
+# os.makedirs(os.path.dirname(os.path.realpath(__file__)) + '/ligand')
+
+############ This part is for seaborn module testing ###########################
 import os
-from subprocess import call, Popen, PIPE
+import numpy as np
+import seaborn as sns; sns.set()
 
-def makeListOfResult():
-    # Get the root directory of the project
-    pwd = os.getcwd()
-    files = glob.glob('log/*')
-
-    # Pre-compile regex
-    regex = re.compile(r"  1      *")
-    ligands = []
-    for i in files:
-        # Open all log files and get 1st results
-        with open(i) as f:
-            for line in f:
-                if regex.search(line):
-                    idRank = regex.search(line)
-                    ligands.append([os.path.split(i)[-1].split('_')[0], float(line.split()[1])])
-    ligands.sort(key = lambda x: x[1])
-    f = open('result.txt', 'w')
-    for i in range(len(ligands)):
-        f.write(str(ligands[i][0]) + "  " + str(ligands[i][1]) + "\n")
-    f.close()
-    # print ligands
-
-def pickLigands(n):
-    while k <= n:
-        l
-
-
-open('result.txt', 'r')
-result = f.readlines()
+os.chdir('/media/quyngan/CoMoBioPhys/crc/10323441/run/run_A01')
+f = open('occupancy.xvg', 'r')
+start, contents = 0, []
+for start, line in enumerate(f):
+    if (line.find('@') != -1 ) or (line.find('#') != -1):
+        continue
+    else:
+        contents.append(line)
 f.close()
-os.makedirs(os.path.dirname(os.path.realpath(__file__)) + '/ligand')
+contents = [x for x in contents if x != '\n']
+for i in range(len(contents)):
+    contents[i] = contents[i].split()
+print '%r' % contents
+tranpose = np.transpose(contents)
+print '%r' % tranpose
+tranpose = np.delete(tranpose, 0, axis=0)
+print '%r' % tranpose
+print type(tranpose)
+
+# test seaborn
+ax = sns.heatmap(tranpose)

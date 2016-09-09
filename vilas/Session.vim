@@ -8,7 +8,7 @@ if expand('%') == '' && !&modified && line('$') <= 1 && getline(1) == ''
   let s:wipebuf = bufnr('%')
 endif
 set shortmess=aoO
-badd +540 LabpiAnalyzer.py
+badd +307 LabpiAnalyzer.py
 badd +1 analyzer/plot_potential.r
 badd +6 analyzer/potential.plot
 badd +9 analyzer/test_hbond.plot
@@ -16,7 +16,7 @@ badd +31 test.py
 badd +6 GromacsMD.py
 badd +257 LabpiRun.py
 badd +95 LabpiRunning.py
-badd +1 ~/crc/test.py
+badd +37 ~/crc/test.py
 badd +169 LabpiConfiguration.py
 badd +63 config/md_pull.mdp
 badd +48 config/md_pull_5.mdp
@@ -30,16 +30,39 @@ badd +81 analyzer/readHBmap.py
 badd +16 /media/quyngan/CoMoBioPhys/crc/testAnalyzer.py
 badd +1 analyzer/hbond.plot
 badd +143 source/pullana.py
+badd +58 ~/Documents/vilas/vilas/setup.py
 argglobal
 silent! argdel *
 argadd LabpiAnalyzer.py
-edit LabpiAnalyzer.py
+edit test.py
 set splitbelow splitright
+wincmd _ | wincmd |
+vsplit
+1wincmd h
+wincmd w
 set nosplitbelow
 set nosplitright
 wincmd t
 set winheight=1 winwidth=1
+wincmd =
 argglobal
+setlocal fdm=expr
+setlocal fde=pymode#folding#expr(v:lnum)
+setlocal fmr={{{,}}}
+setlocal fdi=#
+setlocal fdl=0
+setlocal fml=1
+setlocal fdn=20
+setlocal fen
+let s:l = 92 - ((4 * winheight(0) + 14) / 29)
+if s:l < 1 | let s:l = 1 | endif
+exe s:l
+normal! zt
+92
+normal! 019|
+wincmd w
+argglobal
+edit LabpiAnalyzer.py
 setlocal fdm=expr
 setlocal fde=pymode#folding#expr(v:lnum)
 setlocal fmr={{{,}}}
@@ -50,28 +73,30 @@ setlocal fdn=20
 setlocal fen
 20
 normal! zo
-278
+248
 normal! zo
-426
+278
 normal! zo
 452
 normal! zo
-501
+500
 normal! zo
-747
+745
 normal! zo
-747
+745
 normal! zo
-747
+745
 normal! zo
-747
+745
 normal! zo
-let s:l = 328 - ((121 * winheight(0) + 26) / 53)
+let s:l = 254 - ((108 * winheight(0) + 18) / 36)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-328
-normal! 0
+254
+normal! 021|
+wincmd w
+wincmd =
 tabnext 1
 if exists('s:wipebuf')
   silent exe 'bwipe ' . s:wipebuf
