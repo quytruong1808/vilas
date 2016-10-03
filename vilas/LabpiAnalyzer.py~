@@ -432,21 +432,21 @@ class GromacsAnalyzer(object):
         plt.title("Potential between each residue and ligand")
         plt.ylabel("Potential (kJ/mol)")
         plt.xlabel("residue ID")
-        plt.savefig(analyze + '/Potential_' + self.conjugateGroup + '.eps', bbox_inches='tight')
+        plt.savefig(analyze + '/' + self.conjugateGroup + '/Potential_' + self.conjugateGroup + '.eps', bbox_inches='tight')
 
         plt.figure()
         plt.errorbar(x=data['residue'], y=data['meanCoulomb'], yerr=data['sdCoulomb'])
         plt.title("Coulomb potential between each residue and ligand")
         plt.ylabel("Potential (kJ/mol)")
         plt.xlabel("residue ID")
-        plt.savefig(analyze + '/Coulomb_' + self.conjugateGroup + '.pdf', bbox_inches='tight')
+        plt.savefig(analyze + '/' + self.conjugateGroup + '/Coulomb_' + self.conjugateGroup + '.pdf', bbox_inches='tight')
 
         plt.figure()
         plt.errorbar(x=data['residue'], y=data['meanLJ'], yerr=data['sdLJ'])
         plt.title("Van der Waal potential between each residue and ligand")
         plt.ylabel("Potential (kJ/mol)")
         plt.xlabel("residue ID")
-        plt.savefig(analyze + '/VdW_' + self.conjugateGroup + '.pdf', bbox_inches='tight')
+        plt.savefig(analyze + '/' + self.conjugateGroup + '/VdW_' + self.conjugateGroup + '.pdf', bbox_inches='tight')
         # plt.show()
 
     def main(self):

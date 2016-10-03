@@ -46,8 +46,7 @@ set nosplitbelow
 set nosplitright
 wincmd t
 set winheight=1 winwidth=1
-exe 'vert 1resize ' . ((&columns * 59 + 59) / 119)
-exe 'vert 2resize ' . ((&columns * 59 + 59) / 119)
+wincmd =
 argglobal
 setlocal fdm=expr
 setlocal fde=pymode#folding#expr(v:lnum)
@@ -57,12 +56,18 @@ setlocal fdl=0
 setlocal fml=1
 setlocal fdn=20
 setlocal fen
-let s:l = 1 - ((0 * winheight(0) + 19) / 38)
+20
+normal! zo
+248
+normal! zo
+280
+normal! zo
+let s:l = 258 - ((9 * winheight(0) + 14) / 29)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-1
-normal! 0
+258
+normal! 058|
 wincmd w
 argglobal
 edit test.py
@@ -74,15 +79,19 @@ setlocal fdl=0
 setlocal fml=1
 setlocal fdn=20
 setlocal fen
-let s:l = 117 - ((36 * winheight(0) + 19) / 38)
+let s:l = 104 - ((22 * winheight(0) + 18) / 36)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-117
-normal! 0
+104
+let s:c = 53 - ((22 * winwidth(0) + 25) / 50)
+if s:c > 0
+  exe 'normal! ' . s:c . '|zs' . 53 . '|'
+else
+  normal! 053|
+endif
 wincmd w
-exe 'vert 1resize ' . ((&columns * 59 + 59) / 119)
-exe 'vert 2resize ' . ((&columns * 59 + 59) / 119)
+wincmd =
 tabnext 1
 if exists('s:wipebuf')
   silent exe 'bwipe ' . s:wipebuf

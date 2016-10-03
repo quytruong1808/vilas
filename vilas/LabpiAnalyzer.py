@@ -252,13 +252,15 @@ class GromacsAnalyzer(object):
         for start, line in enumerate(f):
             if (line.find('@') != -1) or (line.find('#') != -1):
                 continue
+            elif len(line.strip()) == 0:
+                continue
             else:
-                contents.append(line)
+                contents.append(map(float, line.split()[1:]))
         f.close()
         # contents.remove('\n')
-        contents = [x for x in contents if x != '\n']
-        for i in range(len(contents)):
-            contents[i] = contents[i].split()
+        # contents = [x for x in contents if x != '\n']
+        # for i in range(len(contents)):
+            # contents[i] = contents[i].split()
         # print contents
         tranpose = np.transpose(contents)
         # frames = tranpose[0]
