@@ -89,26 +89,29 @@
 ############ This part is for seaborn module testing ###########################
 import os
 import numpy as np
+# import matplotlib.pyplot as plt
 import seaborn as sns; sns.set()
 
 os.chdir('/media/quyngan/CoMoBioPhys/crc/10323441/run/run_A01')
 f = open('occupancy.xvg', 'r')
-start, contents = 0, []
+contents = []
 for start, line in enumerate(f):
-    if (line.find('@') != -1 ) or (line.find('#') != -1):
+    if (line.find('@') != -1) or (line.find('#') != -1):
+        continue
+    elif len(line.strip()) == 0:
         continue
     else:
-        contents.append(line)
+        contents.append(map(float, line.split()[1:]))
+        # contents.append(line)
 f.close()
-contents = [x for x in contents if x != '\n']
-for i in range(len(contents)):
-    contents[i] = contents[i].split()
+# contents = [x for x in contents if x != '\n']
 print '%r' % contents
 tranpose = np.transpose(contents)
 print '%r' % tranpose
-tranpose = np.delete(tranpose, 0, axis=0)
+# tranpose = np.delete(tranpose, 0, axis=0)
 print '%r' % tranpose
 print type(tranpose)
 
 # test seaborn
 ax = sns.heatmap(tranpose)
+ax.figure.savefig('output.png')
