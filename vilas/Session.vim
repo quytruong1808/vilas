@@ -8,13 +8,13 @@ if expand('%') == '' && !&modified && line('$') <= 1 && getline(1) == ''
   let s:wipebuf = bufnr('%')
 endif
 set shortmess=aoO
-badd +1 LabpiAnalyzer.py
+badd +283 LabpiAnalyzer.py
 badd +1 analyzer/plot_potential.r
 badd +6 analyzer/potential.plot
 badd +9 analyzer/test_hbond.plot
 badd +117 test.py
 badd +6 GromacsMD.py
-badd +257 LabpiRun.py
+badd +275 LabpiRun.py
 badd +95 LabpiRunning.py
 badd +37 ~/crc/test.py
 badd +169 LabpiConfiguration.py
@@ -32,7 +32,7 @@ badd +1 analyzer/hbond.plot
 badd +220 source/pullana.py
 badd +58 ~/Documents/vilas/vilas/setup.py
 badd +20 source/mathplot.py
-badd +0 source/icst
+badd +1 source/icst
 argglobal
 silent! argdel *
 argadd LabpiAnalyzer.py
@@ -46,7 +46,8 @@ set nosplitbelow
 set nosplitright
 wincmd t
 set winheight=1 winwidth=1
-wincmd =
+exe 'vert 1resize ' . ((&columns * 68 + 59) / 119)
+exe 'vert 2resize ' . ((&columns * 50 + 59) / 119)
 argglobal
 setlocal fdm=expr
 setlocal fde=pymode#folding#expr(v:lnum)
@@ -60,14 +61,16 @@ setlocal fen
 normal! zo
 248
 normal! zo
-280
+285
 normal! zo
-let s:l = 258 - ((9 * winheight(0) + 14) / 29)
+285
+normal! zc
+let s:l = 272 - ((11 * winheight(0) + 16) / 33)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-258
-normal! 058|
+272
+normal! 023|
 wincmd w
 argglobal
 edit test.py
@@ -79,19 +82,21 @@ setlocal fdl=0
 setlocal fml=1
 setlocal fdn=20
 setlocal fen
-let s:l = 104 - ((22 * winheight(0) + 18) / 36)
+118
+normal! zo
+155
+normal! zo
+155
+normal! zc
+let s:l = 134 - ((37 * winheight(0) + 16) / 33)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-104
-let s:c = 53 - ((22 * winwidth(0) + 25) / 50)
-if s:c > 0
-  exe 'normal! ' . s:c . '|zs' . 53 . '|'
-else
-  normal! 053|
-endif
+134
+normal! 016|
 wincmd w
-wincmd =
+exe 'vert 1resize ' . ((&columns * 68 + 59) / 119)
+exe 'vert 2resize ' . ((&columns * 50 + 59) / 119)
 tabnext 1
 if exists('s:wipebuf')
   silent exe 'bwipe ' . s:wipebuf
