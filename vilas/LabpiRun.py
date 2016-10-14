@@ -268,31 +268,45 @@ class GromacsRun(object):
     index = 0
     for ligand in ligands:
       index+=1
+      print '\n\n\n\n\n\n\n\n\nthis is ligand variable: %r' % ligand
+      print 'this is the index variable: %r' % index
       #Check name of ligands
       filename = os.path.basename(ligand.file_path)
+      print 'this is the filename variable %r' % filename
       filename = filename.split('.pdb')[0]
+      print 'this is the filename variable %r' % filename
 
       #Change NAME of ligand from input to output
       ligand_name = os.path.basename(ligand.file_path)
       if os.path.isfile(main_path+'/run/connection.txt') is False:
+        print "os.path.isfile(main_path+'/run/connection.txt') is: %r" % os.path.isfile(main_path+'/run/connection.txt')
         if(len(filename)>3 or filename[0].isdigit() == True):
           # ligand_name = ligand.chain_view.getResnames()[0]
+          print 'this is the ligand.chains variable: %r' % ligand.chains
           if len(ligand.chains) > 0:
             ligand_name = ligand.chains[0].chain_view.getResnames()[0]
+            print 'this is the len(ligand.chains): %r' % len(ligand.chains)
+            print 'this is the ligand_name variable: %r' %ligand_name
           else:
             ligand_name = ("A%02d" % (index))+'.pdb'
+            print 'this is the len(ligand.chains): %r' % len(ligand.chains)
+            print 'this is the ligand_name variable: %r' %ligand_name
           # connection between ligand before and after rename
           self.addLine(filename + '\t' + ligand_name +'\n', main_path+'/run/connection.txt')
       else:
+        print "os.path.isfile(main_path+'/run/connection.txt') is: %r" % os.path.isfile(main_path+'/run/connection.txt')
         linesearch = self.searchLine(filename, main_path+'/run/connection.txt')
         if len(linesearch.split('\t')) > 1:
           ligand_name = linesearch.split('\t')[1].split('\n')[0]
-        elif(len(filename)>3 or filename[0].isdigit() == True):
-          # ligand_name = ligand.chain_view.getResnames()[0]
+        elif(len(filename)>3 or filename[0].isdigit() == True): # ligand_name = ligand.chain_view.getResnames()[0]
           if len(ligand.chains) > 0:
             ligand_name = ligand.chains[0].chain_view.getResnames()[0]
+            print 'this is the len(ligand.chains): %r' % len(ligand.chains)
+            print 'this is the ligand_name variable: %r' %ligand_name
           else:
             ligand_name = ("A%02d" % (index))+'.pdb'
+            print 'this is the len(ligand.chains): %r' % len(ligand.chains)
+            print 'this is the ligand_name variable: %r' %ligand_name
           # connection between ligand before and after rename
           self.addLine(filename + '\t' + ligand_name +'\n', main_path+'/run/connection.txt')
 
@@ -315,6 +329,10 @@ class GromacsRun(object):
       writePDB(main_path+'/input/ligand/'+ ligand_name, ligand_view)
 
       # parse pdb file
+      if ligand_name.find('pdb') != -1:
+        ligand_name = ligand_name
+      else:
+        ligand_name = ligand_name + '.pdb'
       lg = parsePDB(main_path+'/input/ligand/'+ ligand_name)
 
       #Check if this pdb is protein => add 'protein_' before this to identify
