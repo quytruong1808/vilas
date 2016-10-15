@@ -8,11 +8,11 @@ if expand('%') == '' && !&modified && line('$') <= 1 && getline(1) == ''
   let s:wipebuf = bufnr('%')
 endif
 set shortmess=aoO
-badd +283 LabpiAnalyzer.py
+badd +266 LabpiAnalyzer.py
 badd +1 analyzer/plot_potential.r
 badd +6 analyzer/potential.plot
 badd +9 analyzer/test_hbond.plot
-badd +117 test.py
+badd +134 test.py
 badd +6 GromacsMD.py
 badd +275 LabpiRun.py
 badd +95 LabpiRunning.py
@@ -36,18 +36,12 @@ badd +1 source/icst
 argglobal
 silent! argdel *
 argadd LabpiAnalyzer.py
-edit LabpiAnalyzer.py
+edit LabpiRun.py
 set splitbelow splitright
-wincmd _ | wincmd |
-vsplit
-1wincmd h
-wincmd w
 set nosplitbelow
 set nosplitright
 wincmd t
 set winheight=1 winwidth=1
-exe 'vert 1resize ' . ((&columns * 68 + 59) / 119)
-exe 'vert 2resize ' . ((&columns * 50 + 59) / 119)
 argglobal
 setlocal fdm=expr
 setlocal fde=pymode#folding#expr(v:lnum)
@@ -57,46 +51,12 @@ setlocal fdl=0
 setlocal fml=1
 setlocal fdn=20
 setlocal fen
-20
-normal! zo
-248
-normal! zo
-285
-normal! zo
-285
-normal! zc
-let s:l = 272 - ((11 * winheight(0) + 16) / 33)
+let s:l = 290 - ((289 * winheight(0) + 18) / 37)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-272
-normal! 023|
-wincmd w
-argglobal
-edit test.py
-setlocal fdm=expr
-setlocal fde=pymode#folding#expr(v:lnum)
-setlocal fmr={{{,}}}
-setlocal fdi=#
-setlocal fdl=0
-setlocal fml=1
-setlocal fdn=20
-setlocal fen
-118
-normal! zo
-155
-normal! zo
-155
-normal! zc
-let s:l = 134 - ((37 * winheight(0) + 16) / 33)
-if s:l < 1 | let s:l = 1 | endif
-exe s:l
-normal! zt
-134
-normal! 016|
-wincmd w
-exe 'vert 1resize ' . ((&columns * 68 + 59) / 119)
-exe 'vert 2resize ' . ((&columns * 50 + 59) / 119)
+290
+normal! 07|
 tabnext 1
 if exists('s:wipebuf')
   silent exe 'bwipe ' . s:wipebuf
