@@ -252,24 +252,31 @@ class GromacsAnalyzer(object):
         for start, line in enumerate(f):
             if (line.find('@') != -1) or (line.find('#') != -1):
                 continue
+            elif len(line.strip()) == 0:
+                continue
             else:
-                contents.append(line)
+                contents.append(map(float, line.split()[1:]))
         f.close()
         # contents.remove('\n')
-        contents = [x for x in contents if x != '\n']
-        for i in range(len(contents)):
-            contents[i] = contents[i].split()
+        # contents = [x for x in contents if x != '\n']
+        # for i in range(len(contents)):
+            # contents[i] = contents[i].split()
         # print contents
         tranpose = np.transpose(contents)
         # frames = tranpose[0]
         # print frames
         tranpose = np.delete(tranpose, 0, axis=0)
-        print "%r" % tranpose
-        print "%r" % len(tranpose[0])
+        # print "%r" % tranpose
+        # print "%r" % len(tranpose[0])
+
+        # get list of occupant residue
+        list_of_occupant = self.getXvgLegend(xvgfile, runfolder)
+
         f = open('tranpose.csv', 'w')
         for i in range(0, tranpose.shape[0]):
+            f.write(list_of_occupant[i] + ',')
             for j in range(0, len(tranpose[i])):
-                f.write(tranpose[i][j] + '\t')
+                f.write(tranpose[i][j] + ',')
                 if j == (len(tranpose[i]) - 1):
                     f.write('\n')
         f.close()
@@ -287,18 +294,18 @@ class GromacsAnalyzer(object):
         # Gen tranpose.csv file
         tranpose = self.genTranposeFile(xvgfile, runfolder)
         # Change ytics, i.e. change name of residue to be displayed
-        blah = ''
-        list_of_occupant = self.getXvgLegend(xvgfile, runfolder)
-        for i in range(len(list_of_occupant)):
-            if i == len(list_of_occupant) - 1:
-                blah += '"' + str(list_of_occupant[i]) + '" ' + str(i)
-            else:
-                blah += '"' + str(list_of_occupant[i]) + '" ' + str(i) + ','
-        ytics = 'set ytics (' + blah + ') border in scale 0,0 mirror norotate  offset character 0, 0, 0 autojustify\n'
-        for i in range(len(contents)):
-            if contents[i].find('set ytics') == 0:
-                contents[i] = ytics
-        print 'modified hbond.plot file'
+        # blah = ''
+        # list_of_occupant = self.getXvgLegend(xvgfile, runfolder)
+        # for i in range(len(list_of_occupant)):
+            # if i == len(list_of_occupant) - 1:
+                # blah += '"' + str(list_of_occupant[i]) + '" ' + str(i)
+            # else:
+                # blah += '"' + str(list_of_occupant[i]) + '" ' + str(i) + ','
+        # ytics = 'set ytics (' + blah + ') border in scale 0,0 mirror norotate  offset character 0, 0, 0 autojustify\n'
+        # for i in range(len(contents)):
+            # if contents[i].find('set ytics') == 0:
+                # contents[i] = ytics
+        # print 'modified hbond.plot file'
 
         # Change yrange, i.e. change amount of residue to be displayed
         yrange = 'set yrange[-0.5:' + str(len(list_of_occupant) - 1) + '.5] noreverse nowriteback\n'

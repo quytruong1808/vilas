@@ -26,10 +26,7 @@ or
 7. Pymol
 `sudo apt-get install pymol`
 
-8. R base
-`sudo apt-get install r-base`
-
-9. ANTECHAMBER - download: http://ambermd.org/AmberTools14-get.html
+8. ANTECHAMBER - download: http://ambermd.org/AmberTools14-get.html
 ```
 tar xvfj AmberTools14.tar.bz2
 cd amber14
@@ -64,7 +61,7 @@ or
 
 ** Missing some package
 ```
-sudo apt-get installgcc swig dialog
+sudo apt-get install gcc swig dialog
 
 sudo apt-get install -y python-pip build-essential libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf-dev libportmidi-dev libswscale-dev libavformat-dev libavcodec-dev zlib1g-dev
 

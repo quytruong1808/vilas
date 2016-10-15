@@ -8,15 +8,15 @@ if expand('%') == '' && !&modified && line('$') <= 1 && getline(1) == ''
   let s:wipebuf = bufnr('%')
 endif
 set shortmess=aoO
-badd +435 LabpiAnalyzer.py
+badd +266 LabpiAnalyzer.py
 badd +1 analyzer/plot_potential.r
 badd +6 analyzer/potential.plot
 badd +9 analyzer/test_hbond.plot
-badd +31 test.py
+badd +134 test.py
 badd +6 GromacsMD.py
-badd +257 LabpiRun.py
+badd +275 LabpiRun.py
 badd +95 LabpiRunning.py
-badd +1 ~/crc/test.py
+badd +37 ~/crc/test.py
 badd +169 LabpiConfiguration.py
 badd +63 config/md_pull.mdp
 badd +48 config/md_pull_5.mdp
@@ -29,15 +29,34 @@ badd +42 ~/crc/Hoa/Hoa/Hoa/run/install.sh
 badd +81 analyzer/readHBmap.py
 badd +16 /media/quyngan/CoMoBioPhys/crc/testAnalyzer.py
 badd +1 analyzer/hbond.plot
-badd +1 source/pullana.py
+badd +220 source/pullana.py
+badd +58 ~/Documents/vilas/vilas/setup.py
+badd +20 source/mathplot.py
+badd +1 source/icst
 argglobal
 silent! argdel *
 argadd LabpiAnalyzer.py
+edit LabpiRun.py
 set splitbelow splitright
 set nosplitbelow
 set nosplitright
 wincmd t
 set winheight=1 winwidth=1
+argglobal
+setlocal fdm=expr
+setlocal fde=pymode#folding#expr(v:lnum)
+setlocal fmr={{{,}}}
+setlocal fdi=#
+setlocal fdl=0
+setlocal fml=1
+setlocal fdn=20
+setlocal fen
+let s:l = 290 - ((289 * winheight(0) + 18) / 37)
+if s:l < 1 | let s:l = 1 | endif
+exe s:l
+normal! zt
+290
+normal! 07|
 tabnext 1
 if exists('s:wipebuf')
   silent exe 'bwipe ' . s:wipebuf

@@ -56,7 +56,7 @@ class traj(object):
             if line[0]!="#" and line[0]!="@":
                 sp = line.split()
                 if self.xyz == None:
-                	if len(sp) == 3:
+                	if len(sp) == 3 or len(sp) == 2:
                 	    self.xyz = False
                 	elif len(sp) == 7:
                 	    self.xyz = True
@@ -64,7 +64,7 @@ class traj(object):
                 if self.xyz:
                     self.pullx.append((float(sp[4]),float(sp[5]),float(sp[6])))
                 else:
-                    self.pullx.append(float(sp[2]))
+                    self.pullx.append(float(sp[-1]))
         ff.close()
         fx.close()
         if len(self.pullf) != len(self.pullx):
@@ -125,14 +125,16 @@ def read_files(pf,px,log,list_obj):
 	force = []
 	integral = [] #List of integrals
 	tra_log = open(log,'w')
-	tra_log.write("%s,%s,%s\n"%("Traj","Force(pN)","Intergral(kcal/mol)"))
+	tra_log.write("%s,%s,%s\n"%("Traj","Force(kJ/mol/nm)","Intergral(kJ/mol)"))
 	for ffile,xfile,i in pfiles(pf,px):
 		#declare needed variables
 		num_tras = i
 		obj = traj(ffile,xfile)
 		list_obj.append(obj)
-		s = obj.integrate()/4.18 # Convert from kJ/mol -> kcal/mol
-		f_max = obj.max()*1.66 # Convert from kJ/mol/nm -> pN
+		# s = obj.integrate()/4.18 # Convert from kJ/mol -> kcal/mol
+		# f_max = obj.max()*1.66 # Convert from kJ/mol/nm -> pN
+		s = obj.integrate() # Use kJ/mol instead of kcal/mol
+		f_max = obj.max() # Use kJ/mol/nm instead of pN
 		force.append(f_max)
 		integral.append(s)
 		tra_log.write("%d,%.2f,%.2f\n"%(i,f_max,s))
@@ -152,8 +154,9 @@ def read_files(pf,px,log,list_obj):
 		eavgs = eavgs + e*e
 	eavgs = math.sqrt(eavgs)
 	eavgs = eavgs/num_tras
-	tra_log.write("%s,%s,%s,%s\n"%("Average(pN)","Error(pN)","Integral(kcal/mol)","Error(kcal/mol)"))
+	tra_log.write("%s,%s,%s,%s\n"%("Average(kJ/mol/nm)","Error(kJ/mol/nm)","Integral(kJ/mol)","Error(kJ/mol)"))
 	tra_log.write("%.2f,%.2f,%.2f,%.2f\n"%(favg,eavg,savg,eavgs))
+
 """
 def plot_data(list_obj,list_plot):
 	grace = which("grace")
@@ -190,19 +193,19 @@ def plot_data(list_obj,list_plot):
     figft = plt.figure(figsize=figsize)
     figft.suptitle('Force-time Profile',fontsize=fontsize)
     axft = figft.add_subplot(1,1,1)
-    axft.set_color_cycle([cm(1.*i/numColors) for i in range(numColors)])
-    #axft.set_prop_cycle(cycler('color',[cm(1.*i/numColors) for i in range(numColors)]))
+    # axft.set_color_cycle([cm(1.*i/numColors) for i in range(numColors)])
+    axft.set_prop_cycle(cycler('color',[cm(1.*i/numColors) for i in range(numColors)]))
     axft.set_xlabel("Time(ps)", fontsize=fontsize)
-    axft.set_ylabel("Force(pN)", fontsize=fontsize)
+    axft.set_ylabel("Force(kJ/mol/nm)", fontsize=fontsize)
     axft.grid(True)
     #####
     figfx = plt.figure(figsize=figsize)
     figfx.suptitle('Force-position Profile',fontsize=fontsize)
     axfx = figfx.add_subplot(1,1,1)
-    axfx.set_color_cycle([cm(1.*i/numColors) for i in range(numColors)])
-    #axfx.set_prop_cycle(cycler('color',[cm(1.*i/numColors) for i in range(numColors)]))
+    # axfx.set_color_cycle([cm(1.*i/numColors) for i in range(numColors)])
+    axfx.set_prop_cycle(cycler('color',[cm(1.*i/numColors) for i in range(numColors)]))
     axfx.set_xlabel("Position(nm)", fontsize=fontsize)
-    axfx.set_ylabel("Force(pN)", fontsize=fontsize)
+    axfx.set_ylabel("Force(kJ/mol/nm)", fontsize=fontsize)
     axfx.grid(True)
     #####
     for i,obj in enumerate(list_obj):
@@ -213,9 +216,9 @@ def plot_data(list_obj,list_plot):
         axfx.plot(pos,force,linewidth=linewidth)
     #####
     figft.tight_layout(pad=1.5)
-    figft.savefig(list_plot[0], dpi=125)
+    figft.savefig(list_plot[0] + ".eps", dpi=196)
     figfx.tight_layout(pad=1.5)
-    figfx.savefig(list_plot[1], dpi=125)
+    figfx.savefig(list_plot[1] + ".eps", dpi=196)
 
 
 
